@@ -1,3 +1,4 @@
+using castlers.Common.Email;
 using castlers.DbContexts;
 using castlers.Repository;
 using castlers.Services;
@@ -17,10 +18,18 @@ builder.Services.AddTransient<ISocietyMemberDetailsService, SocietyMemberDetails
 builder.Services.AddTransient<ISocietyMemberDetailsRepository, SocietyMemberDetailsRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeRepository, SocietyDevelopmentTypeRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeService, SocietyDevelopmentTypeManager>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
 
 builder.Services.AddDbContext<ApplicationDbContext>();
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

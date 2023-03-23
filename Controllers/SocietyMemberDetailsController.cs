@@ -17,7 +17,7 @@ namespace castlers.Controllers
         }
 
         [HttpPost("AddNewMembers")]
-        public async Task<int> AddMember([FromForm] NewMemberDetailsDto memberDetails)
+        public async Task<int> AddMembers([FromForm] NewMemberDetailsDto memberDetails)
         {
             try
             {
@@ -30,6 +30,21 @@ namespace castlers.Controllers
                 throw;
             }
 
+        }
+
+        [HttpPut()]
+        public async Task<int> UpdateMember([FromForm] UpdateSocietyMemberDto updateSocietyMemberDto )
+        {
+            try
+            {
+                //return await _societyMemberDetailsService;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return 0;
         }
         
     }

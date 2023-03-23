@@ -42,7 +42,7 @@ namespace castlers.Services
 
         }
 
-        public Task<List<SocietyMemberDetails>> AddRegisteredSocietyMemberAsync(List<SocietyMemberDetails> memberDetails)
+        public Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto)
         {
             throw new NotImplementedException();
         }

@@ -7,5 +7,6 @@ namespace castlers.Services
     {
         public Task<int> AddRegisteredSocietyMemberListAsync(List<SocietyMemberDetails> societyMemberDetails);
         public Task<int> AddRegisteredSocietyMemberAsync(NewMemberDetailsDto memberDetails);
+        public Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto);
     }
 }

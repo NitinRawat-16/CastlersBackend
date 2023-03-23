@@ -24,9 +24,9 @@ namespace castlers.Common
                             members.Add(new SocietyMemberDetails
                             {
                                 registeredSocietyId = societyId,
-                                memberName = reader.GetValue(1).ToString(),
-                                email = reader.GetValue(2).ToString(),
-                                mobileNumber =reader.GetValue(3).ToString(),
+                                memberName = reader.GetValue(0).ToString(),
+                                email = reader.GetValue(1).ToString(),
+                                mobileNumber =reader.GetValue(2).ToString(),
                                 createdDate = DateTime.Now,
                                 updatedDate = DateTime.Now
                             }); ;
