@@ -1,0 +1,13 @@
+﻿using castlers.Models;
+
+namespace castlers.Repository
+{
+    public interface IDeveloperRepository
+    {
+        public Task<List<Developer>> GetAllDeveloperAsync();
+        public Task<Developer> GetDeveloperByIdAsync(int Id);
+        public Task<int> AddDeveloperAsync(Developer developer);
+        public Task<int> UpdateDeveloperAsync(Developer developer);
+        public Task<int> DeleteDeveloperAsync(int Id);
+    }
+}
