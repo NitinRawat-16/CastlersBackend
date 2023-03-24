@@ -34,6 +34,7 @@ namespace castlers.Common.Email
             {
                 try
                 {
+                    client.ServerCertificateValidationCallback = () => true
                     client.ConnectAsync(_emailconfiguration.SmtpServer, _emailconfiguration.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.AuthenticateAsync(_emailconfiguration.UserName, _emailconfiguration.Password);

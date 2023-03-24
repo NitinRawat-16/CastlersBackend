@@ -65,8 +65,8 @@ namespace castlers.Repository
             SqlParameter Parameter = new SqlParameter("@MembersData", SqlDbType.Structured);
             Parameter.Direction = ParameterDirection.Input;
             Parameter.Value = details;
-            Parameter.TypeName = "dbo.Edit_Member";
-            //Parameter.TypeName = "dbo.Update_MemberDetails";
+            //Parameter.TypeName = "dbo.Edit_Member";
+            Parameter.TypeName = "dbo.Update_MemberDetails";
 
             SqlParameter Parameter1 = new SqlParameter("@RowsCount", SqlDbType.Int);
             Parameter1.Direction = ParameterDirection.Output;
@@ -75,10 +75,10 @@ namespace castlers.Repository
             SqlParameter[] sqlParameters = {Parameter, Parameter1};
 
             var result = await Task.Run(() => _dbContext
-            .Database.ExecuteSqlRawAsync("exec [dbo].[AddMembers]" + "@MembersData, " + "@RowsCount OUT", sqlParameters).IsCompleted);
-            //.Database.ExecuteSqlRawAsync(@"exec [dbo].[AddSocietyMembers]" + "@memberDetail", Parameter));
+            //.Database.ExecuteSqlRawAsync("exec [dbo].[AddMembers]" + "@MembersData, " + "@RowsCount OUT", sqlParameters).IsCompleted);
+            .Database.ExecuteSqlRawAsync(@"exec [dbo].[AddSocietyMembers]" + "@MembersData", Parameter));
 
-            var message = new Message(new string[] { "nitinrawatsde@gmail.com" }, "Test email", "This is the content from our email.");
+            var message = new Message(new string[] { "nitinrawatsmartboy@gmail.com" }, "Test email", "This is the content from our email.");
             var status = _emailSender.SendEmailAsync(message);
 
             return Convert.ToInt16(result);

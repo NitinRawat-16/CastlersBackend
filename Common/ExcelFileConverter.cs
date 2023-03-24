@@ -25,8 +25,8 @@ namespace castlers.Common
                             {
                                 registeredSocietyId = societyId,
                                 memberName = reader.GetValue(0).ToString(),
-                                email = reader.GetValue(1).ToString(),
-                                mobileNumber =reader.GetValue(2).ToString(),
+                                mobileNumber =reader.GetValue(1).ToString(),
+                                email = reader.GetValue(2).ToString(),
                                 createdDate = DateTime.Now,
                                 updatedDate = DateTime.Now
                             }); ;
