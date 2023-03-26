@@ -5,8 +5,10 @@ namespace castlers.Services
 {
     public interface ISocietyMemberDetailsService
     {
+        public Task<int> DeleteRegisteredSocietyMemberByIdAsync (DeleteSocietyMemberDto deleteSocietyMemberDto);
+        public Task<List<SocietyMemberDetailsDto>> GetAllRegisteredSocietyMembersListAsync();
         public Task<int> AddRegisteredSocietyMemberListAsync(List<SocietyMemberDetails> societyMemberDetails);
-        public Task<int> AddRegisteredSocietyMemberAsync(NewMemberDetailsDto memberDetails);
+        public Task<int> AddRegisteredSocietyNewMembersAsync(SocietyNewMemberDetailsDto memberDetails);
         public Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto);
     }
 }

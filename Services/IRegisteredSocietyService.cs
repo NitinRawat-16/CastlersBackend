@@ -9,6 +9,8 @@ namespace castlers.Services
         public Task<int> AddRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto);
         public Task<int> UpdateRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto);
         public Task<int> DeleteRegisteredSocietyAsync(int Id);
+        public Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationList();
+        public Task<RegisteredSocietyDto> GetRegisteredSocietyInfoAsync(string registeredSocietyId);
         public Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto technicalDetailsRegisteredSocietyDto);
     }
 }

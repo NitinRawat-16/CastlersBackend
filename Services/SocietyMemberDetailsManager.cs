@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using castlers.Common;
-using castlers.DbContexts;
 using castlers.Dtos;
 using castlers.Models;
+using castlers.Common;
+using castlers.DbContexts;
 using castlers.Repository;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace castlers.Services
 {
@@ -26,25 +24,45 @@ namespace castlers.Services
             throw new NotImplementedException();
         }
 
-        public Task<int> AddRegisteredSocietyMemberAsync(NewMemberDetailsDto memberDetails)
+        public Task<int> AddRegisteredSocietyNewMembersAsync(SocietyNewMemberDetailsDto memberDetailsDto)
         {
 
-            var members = ExcelFileConverter.ConvertToList(memberDetails.societyId, memberDetails.file);
-            NewMemberDetails newMemberDetails = new NewMemberDetails
+            var members = ExcelFileConverter.ConvertToList(memberDetailsDto.societyId, memberDetailsDto.societyNewMemberDetails);
+            SocietyNewMemberDetails newMemberDetails = new SocietyNewMemberDetails
             {
-                societyId = memberDetails.societyId,
-                societyCode = memberDetails.societyCode,
-                societyMemberDetails = members
+                societyId = memberDetailsDto.societyId,
+                societyNewMemberDetails = members
             };
             //var newMembers = _mapper.Map<NewMemberDetailsDto, NewMemberDetails>(memberDetails);
 
-            return _societyMemberDetailsRepository.AddRegisteredSocietyMemberAsync(newMemberDetails);
-
+            return _societyMemberDetailsRepository.AddRegisteredSocietyNewMembersAsync(newMemberDetails);
         }
 
-        public Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto)
+        public async Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto)
         {
-            throw new NotImplementedException();
+            //var updateMember = _mapper.Map<SocietyMemberDetailsDto, SocietyMemberDetails>(updateSocietyMemberDto);
+            var societyMemberDetails = new SocietyMemberDetails
+            {
+                societyMemberDetailsId = updateSocietyMemberDto.societyMemberDetailsId,
+                memberName = updateSocietyMemberDto.memberName,
+                mobileNumber = updateSocietyMemberDto.mobileNumber,
+                email = updateSocietyMemberDto.email,
+                createdDate = DateTime.Now,
+                updatedDate = DateTime.Now
+            };
+            return await _societyMemberDetailsRepository.UpdateRegisteredSocietyMemberAsync(societyMemberDetails);  
+        }
+
+        public async Task<List<SocietyMemberDetailsDto>> GetAllRegisteredSocietyMembersListAsync()
+        {
+            var societyMemberDetails = await _societyMemberDetailsRepository.GetAllRegisteredSocietyMembersAsync();
+            return _mapper.Map<List<SocietyMemberDetailsDto>>(societyMemberDetails);          
+        }
+
+        public Task<int> DeleteRegisteredSocietyMemberByIdAsync(DeleteSocietyMemberDto deleteSocietyMemberDto)
+        {
+            return _societyMemberDetailsRepository.DeleteRegisteredSocietyMemberByIdAsync(deleteSocietyMemberDto.societyMemberId, deleteSocietyMemberDto.societyId);
+            
         }
     }
 }

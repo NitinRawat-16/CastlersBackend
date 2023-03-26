@@ -1,4 +1,6 @@
-﻿namespace castlers.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace castlers.Models
 {
     public class SocietyMemberDetails
     {
@@ -8,10 +10,10 @@
         public string mobileNumber { get; set; }
         public string email { get; set; }
         public int societyMemberDesignationId { get; set; }
-        public Guid createdBy { get; set; }
-        public DateTime createdDate { get; set; }
-        public Guid updatedBy { get; set; }
-        public DateTime updatedDate { get; set; }
+        public Guid? createdBy { get; set; }
+        public DateTime? createdDate { get; set; }
+        public Guid? updatedBy { get; set; }
+        public DateTime? updatedDate { get; set; }
 
     }
 }

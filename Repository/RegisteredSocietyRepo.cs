@@ -36,8 +36,17 @@ namespace castlers.Repository
 
             parameter[13].Direction = ParameterDirection.Output;
 
-            int result = await Task.Run(() => _dbContext.Database
-           .ExecuteSqlRawAsync(@"exec [dbo].[uspAddNewSociety] @societyRegistrationNumber,@societyName,@registeredAddress,@existingMemberCount,@age,@email,@societyRegisteredCode,@societyDevelopmentTypeId,@societyDevelopmentSubType,@createdBy,@createdDate,@updatedBy,@updatedDate,@registeredSocietyId out", parameter.ToArray()));
+            try
+            {
+                int result = await Task.Run(() => _dbContext.Database
+               .ExecuteSqlRawAsync(@"exec [dbo].[uspAddNewSociety] @societyRegistrationNumber,@societyName,@registeredAddress,@existingMemberCount,@age,@email,@societyRegisteredCode,@societyDevelopmentTypeId,@societyDevelopmentSubType,@createdBy,@createdDate,@updatedBy,@updatedDate,@registeredSocietyId out", parameter.ToArray()));
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
             int registerId = Convert.ToInt32(parameter[13].Value);
 
             return registerId;
@@ -59,11 +68,17 @@ namespace castlers.Repository
         {
             var param = new SqlParameter("@registeredSocietyId", Id);
 
-            RegisteredSociety registeredSociety = await Task.Run(() => _dbContext.RegisteredSociety
-                          .FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).FirstOrDefault());
-
+            RegisteredSociety registeredSociety = await Task.Run(() => _dbContext
+            .RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).FirstOrDefault());
 
             return registeredSociety;
+        }
+
+        public async Task<List<SocietyMemberDesignation>> GetSocietyMemberDesignationsAsync()
+        {
+            return await _dbContext.SocietyMemberDesignations
+                .FromSqlRaw<SocietyMemberDesignation>("GetSocietyMemberDesignations").ToListAsync();
+            //throw new NotImplementedException();
         }
 
         public async Task<int> UpdateRegisteredSocietyAsync(RegisteredSociety registeredSociety)
@@ -73,7 +88,6 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@societyRegistrationNumber", registeredSociety.societyRegistrationNumber));
             parameter.Add(new SqlParameter("@societyName", registeredSociety.societyName));
             parameter.Add(new SqlParameter("@registeredAddress", registeredSociety.registeredAddress));
-            parameter.Add(new SqlParameter("@email", registeredSociety.email));
             parameter.Add(new SqlParameter("@societyDevelopmentTypeId", registeredSociety.societyDevelopmentTypeId));
             parameter.Add(new SqlParameter("@societyDevelopmentSubType", registeredSociety.societyDevelopmentSubType));
             parameter.Add(new SqlParameter("@existingMemberCount", registeredSociety.existingMemberCount));
@@ -84,7 +98,9 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@updatedDate", registeredSociety.updatedDate));
 
             var result = await Task.Run(() => _dbContext.Database
-           .ExecuteSqlRawAsync(@"exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,@registeredAddress,@email,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,@age,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+           .ExecuteSqlRawAsync(@"Exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,@registeredAddress,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,@age,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+
+
 
             return result;
         }
@@ -116,5 +132,24 @@ namespace castlers.Repository
 
             return result;
         }
+
+        public async Task<RegisteredSociety> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
+        {
+            string sql = "SELECT rs.registeredSocietyId,rs.societyDevelopmentTypeId, rs.societyDevelopmentSubType," +
+                         " rs.societyRegistrationNumber, rs.societyName,rs.registeredAddress, rs.email," +
+                         " rs.existingMemberCount, rs.age, rs.societyRegisteredCode,rs.createdBy,rs.createdDate," +
+                         "rs.updatedBy,rs.updatedDate FROM dbo.RegisteredSociety rs where societyRegisteredCode = @registeredSocietyCode";
+
+
+            var param = new SqlParameter("@registeredSocietyCode", registeredSocietyCode);
+            // string sql = "exec GetRegisteredSocietyByCode @registeredsocietyCode = " + registeredSocietyCode +"";
+            // "@registeredsocietyCode = '" + registeredSocietyCode + "'";
+            var registeredSociety = await Task.Run(() => _dbContext.RegisteredSociety
+                          .FromSqlRaw(sql, param).FirstOrDefaultAsync());
+
+
+            return registeredSociety;
+        }
+
     }
 }

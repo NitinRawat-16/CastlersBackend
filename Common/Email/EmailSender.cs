@@ -17,7 +17,6 @@ namespace castlers.Common.Email
             Send(emailMessage);
             return Task.FromResult(status);
         }
-
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
@@ -27,22 +26,19 @@ namespace castlers.Common.Email
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
             return emailMessage;
         }
-
         private void Send(MimeMessage mailMessage)
         {
             using (var client  = new SmtpClient())
             {
                 try
                 {
-                    client.ServerCertificateValidationCallback = () => true
                     client.ConnectAsync(_emailconfiguration.SmtpServer, _emailconfiguration.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.AuthenticateAsync(_emailconfiguration.UserName, _emailconfiguration.Password);
                     client.SendAsync(mailMessage);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
                     throw;
                 }
                 finally
@@ -50,9 +46,7 @@ namespace castlers.Common.Email
                     client.DisconnectAsync(true);
                     client.Dispose();
                 }
-
             }
-
         }
     }
 }

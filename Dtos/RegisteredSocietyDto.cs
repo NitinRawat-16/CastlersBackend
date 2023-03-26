@@ -2,6 +2,8 @@
 {
     public class RegisteredSocietyDto
     {
+
+        public RegisteredSocietyDto() { }
         public RegisteredSocietyDto(List<SocietyMemberDetailsDto> societyMemberDetails) {
 
             this.societyMemberDetails = societyMemberDetails;

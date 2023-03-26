@@ -2,8 +2,10 @@
 {
     public class UpdateSocietyMemberDto
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public int societyMemberDetailsId { get; set; }
+        public string memberName { get; set; }
+        public string mobileNumber { get; set; }
+        public string email { get; set; }
     }
+
 }

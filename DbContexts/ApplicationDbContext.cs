@@ -15,14 +15,13 @@ namespace castlers.DbContexts
         {
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
-
         public DbSet<RegisteredSociety> RegisteredSociety { get; set; }
         public DbSet<Developer> Developer { get; set; }
         public DbSet<DeveloperKYC> DeveloperKYC { get; set; }
         public DbSet<PartnerKYC> PartnerKYC { get; set; }
         public DbSet<SocietyDevelopmentType> SocietyDevelopmentType { get; set; }
         public DbSet<SocietyMemberDetails> SocietyMemberDetails { get; set; }
-        public DbSet<NewMemberDetails> NewMemberDetails { get; set; }
+        public DbSet<SocietyMemberDesignation> SocietyMemberDesignations { get; set; }
 
     }
 }

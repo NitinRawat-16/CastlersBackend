@@ -11,6 +11,10 @@ namespace castlers.Profiles
             CreateMap<SocietyMemberDetailsDto, SocietyMemberDetails>();
 
             CreateMap<SocietyMemberDetails, SocietyMemberDetailsDto>();
+
+            CreateMap<UpdateSocietyMemberDto, SocietyMemberDetails>();
+
+            CreateMap<SocietyMemberDetails, UpdateSocietyMemberDto>();
         }
     }
 }

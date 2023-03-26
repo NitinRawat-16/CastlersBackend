@@ -13,6 +13,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using castlers.Dtos;
 using castlers.Common.Email;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 
 namespace castlers.Repository
 {
@@ -35,7 +36,7 @@ namespace castlers.Repository
             socMemberDetailsTable.Columns.Remove("updatedDate");
             socMemberDetailsTable.Columns.Remove("societyMemberDetailsId");
             //int i = 0;
-            //foreach (var scocietyMember in societyMemberDetails)
+            //foreach (var scocietyMember in societyNewMemberDetails)
             //{
             //    socMemberDetailsTable.Rows[i]["societyMemberDetailsId"] = 0;
             ////    socMemberDetailsTable.Rows[i]["createdDate"] = DateTime.Now;
@@ -53,52 +54,92 @@ namespace castlers.Repository
             return result;
         }
 
-        public async Task<int> AddRegisteredSocietyMemberAsync(NewMemberDetails memberDetails)
-        //(List<SocietyMemberDetails> societyMemberDetails, [FromForm] IFormFile file)
+        public async Task<int> AddRegisteredSocietyNewMembersAsync(SocietyNewMemberDetails memberDetails)
+        //(List<SocietyMemberDetails> societyNewMemberDetails, [FromForm] IFormFile societyNewMemberDetails)
         {
-            DataTable details = DataTableConverter.ConvertToDataTable<SocietyMemberDetails>(memberDetails.societyMemberDetails);
-            details.Columns.Remove("createdBy");
-            details.Columns.Remove("updatedBy");
-            details.Columns.Remove("societyMemberDetailsId");
-            details.Columns.Remove("societyMemberDesignationId");
+            DataTable memberDatatable = DataTableConverter.ConvertToDataTable<SocietyMemberDetails>(memberDetails.societyNewMemberDetails);
+            memberDatatable.Columns.Remove("createdDate");
+            memberDatatable.Columns.Remove("updatedDate");
+            memberDatatable.Columns.Remove("societyMemberDetailsId");
 
             SqlParameter Parameter = new SqlParameter("@MembersData", SqlDbType.Structured);
             Parameter.Direction = ParameterDirection.Input;
-            Parameter.Value = details;
-            //Parameter.TypeName = "dbo.Edit_Member";
-            Parameter.TypeName = "dbo.Update_MemberDetails";
-
-            SqlParameter Parameter1 = new SqlParameter("@RowsCount", SqlDbType.Int);
-            Parameter1.Direction = ParameterDirection.Output;
-            Parameter1.Value = null;
-
-            SqlParameter[] sqlParameters = {Parameter, Parameter1};
+            Parameter.Value = memberDatatable;
+            Parameter.TypeName = "dbo.udt_MemberDetails";
 
             var result = await Task.Run(() => _dbContext
-            //.Database.ExecuteSqlRawAsync("exec [dbo].[AddMembers]" + "@MembersData, " + "@RowsCount OUT", sqlParameters).IsCompleted);
-            .Database.ExecuteSqlRawAsync(@"exec [dbo].[AddSocietyMembers]" + "@MembersData", Parameter));
+            .Database.ExecuteSqlRawAsync(@"exec [dbo].[AddRegisteredSocietyNewMembersList]" + "@MembersData", Parameter));
 
+            // Send email to the newly registered members
             var message = new Message(new string[] { "nitinrawatsmartboy@gmail.com" }, "Test email", "This is the content from our email.");
             var status = _emailSender.SendEmailAsync(message);
 
-            return Convert.ToInt16(result);
+            return result;
+        }
+        public async Task<List<SocietyMemberDetails>> GetAllRegisteredSocietyMembersAsync()
+        {
+            try
+            {
+                return await _dbContext.SocietyMemberDetails
+                .FromSqlRaw<SocietyMemberDetails>("GetAllRegisteredSocietyMembersList")
+                .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Task<List<SocietyMemberDetails>> GetAllRegisteredSocietyMembersAsync()
+        public async Task<int> UpdateRegisteredSocietyMemberAsync(SocietyMemberDetails societyMemberDetails)
         {
-            throw new NotImplementedException();
-        }
+            List<SocietyMemberDetails> updateSocietyMembers = new List<SocietyMemberDetails>{societyMemberDetails};
 
-        public Task<int> UpdateRegisteredSocietyMembersAsync(SocietyMemberDetails societyMemberDetails)
-        {
+            DataTable updateMemberDetail = DataTableConverter.ConvertToDataTable<SocietyMemberDetails>(updateSocietyMembers);
+            updateMemberDetail.Columns.Remove("createdBy");
+            updateMemberDetail.Columns.Remove("updatedBy");
+            updateMemberDetail.Columns.Remove("registeredSocietyId");
+            updateMemberDetail.Columns.Remove("societyMemberDesignationId");
 
-            throw new NotImplementedException();
+            SqlParameter sqlParameter = new SqlParameter("@MemberDetail", SqlDbType.Structured);
+            sqlParameter.Direction = ParameterDirection.Input;
+            sqlParameter.Value = updateMemberDetail;
+            sqlParameter.TypeName = "dbo.Update_SocietyMember";
+
+            return await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"Exec [dbo].[UpdateMember]" + "@MemberDetail", sqlParameter));
         }
 
         public Task<List<SocietyMemberDetails>> DeleteRegisteredSocietyMembersAsync(SocietyMemberDetails societyMemberDetails)
         {
             throw new NotImplementedException();
         }
+
+        public async Task<int> DeleteRegisteredSocietyMemberByIdAsync(int societyMemberid, int societyId)
+        {
+
+            List<SqlParameter> parameter = new List<SqlParameter>();
+            parameter.Add(new SqlParameter("@societyMemberId", societyMemberid));
+            parameter.Add(new SqlParameter("@societyId", societyId));
+            
+            
+            return await Task.Run(() => _dbContext
+            .Database.ExecuteSqlRawAsync(@"Exec  [dbo].[DeleteRegisteredSocietyMemberById] " + "@societyMemberId, " + "@societyId", parameter.ToArray()));
+        }
+
+        public async Task<List<SocietyMemberDetails>> GetSocietyCommitteeMembersAsync(int registeredSocietyId)
+        {
+            string sql = "SELECT societyMemberDetailsId,registeredSocietyId,memberName," +
+                        " mobileNumber,email,societyMemberDesignationId,createdBy,createdDate,updatedBy," +
+                        "updatedDate FROM dbo.SocietyMemberDetails where registeredSocietyId = @registeredSocietyId";
+
+
+            var param = new SqlParameter("@registeredSocietyId", registeredSocietyId);
+            var societyMemberDetails = await Task.Run(() => _dbContext.SocietyMemberDetails
+                          .FromSqlRaw(sql, param).ToList());
+
+
+            return societyMemberDetails;
+        }
+
     }
 }
 

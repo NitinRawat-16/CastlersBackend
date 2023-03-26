@@ -12,7 +12,7 @@ namespace castlers.Models
         public string registeredAddress { get; set; }
         public string email { get; set; }
         public int existingMemberCount { get; set; }
-        public float age { get; set; }
+        public double age { get; set; }
         public string societyRegisteredCode { get; set; }
         public Guid createdBy { get; set; }
         public DateTime createdDate { get; set; }

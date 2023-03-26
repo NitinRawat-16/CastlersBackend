@@ -44,9 +44,39 @@ namespace castlers.Controllers
             }
         }
 
+        [HttpGet("getSocietyMemberDesignationList")]
+        public async Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationsAsync()
+        {
+            try
+            {
+                return await _registeredSocietyService.GetSocietyMemberDesignationList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("getRegisteredSocietyInfo")]
+        public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
+        {
+            if (string.IsNullOrEmpty(registeredSocietyCode))
+            {
+                return BadRequest("Registered society code can not be blank");
+            }
+            try
+            {
+                return await _registeredSocietyService.GetRegisteredSocietyInfoAsync(registeredSocietyCode);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
         [HttpPost("registerSociety")]
         [AllowAnonymous]
-        public async Task<IActionResult> AddSocietyAsync ([FromBody] RegisteredSocietyDto registeredSocietyDto)
+        public async Task<IActionResult> AddSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
             if (registeredSocietyDto == null)
             {
@@ -104,5 +134,7 @@ namespace castlers.Controllers
                 throw;
             }
         }
+
+       
     }
 }

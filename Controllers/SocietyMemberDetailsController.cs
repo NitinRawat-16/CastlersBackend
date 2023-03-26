@@ -1,6 +1,5 @@
 ﻿using castlers.Dtos;
 using castlers.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -16,12 +15,27 @@ namespace castlers.Controllers
             _societyMemberDetailsService = societyMemberDetailsService;
         }
 
-        [HttpPost("AddNewMembers")]
-        public async Task<int> AddMembers([FromForm] NewMemberDetailsDto memberDetails)
+        [HttpGet("GetAllRegisteredSocietyMembers")]
+        public async Task<List<SocietyMemberDetailsDto>> GetAllRegisteredSocietyMembers()
         {
             try
             {
-               return await _societyMemberDetailsService.AddRegisteredSocietyMemberAsync(memberDetails);
+                return await _societyMemberDetailsService.GetAllRegisteredSocietyMembersListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        [HttpPost("AddRegisteredSocietyNewMembers")]
+        public async Task<int> AddMembers([FromForm] SocietyNewMemberDetailsDto memberDetails)
+        {
+            try
+            {
+               return await _societyMemberDetailsService.AddRegisteredSocietyNewMembersAsync(memberDetails);
 
             }
             catch (Exception)
@@ -32,19 +46,32 @@ namespace castlers.Controllers
 
         }
 
-        [HttpPut()]
-        public async Task<int> UpdateMember([FromForm] UpdateSocietyMemberDto updateSocietyMemberDto )
+        [HttpPut("UpdateRegisteredSocietyMember")]
+        public async Task<int> UpdateMember([FromBody] UpdateSocietyMemberDto updateSocietyMemberDto )
         {
             try
             {
-                //return await _societyMemberDetailsService;
+                return await _societyMemberDetailsService.UpdateRegisteredSocietyMemberAsync(updateSocietyMemberDto);
             }
             catch (Exception)
             {
 
                 throw;
             }
-            return 0;
+           
+        }
+
+        [HttpDelete("DeleteRegisteredSocietyMemberById")]
+        public async Task<int> DeleteMember([FromForm] DeleteSocietyMemberDto deleteSocietyMemberDto )
+        {
+            try
+            {
+                return await _societyMemberDetailsService.DeleteRegisteredSocietyMemberByIdAsync(deleteSocietyMemberDto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         
     }
