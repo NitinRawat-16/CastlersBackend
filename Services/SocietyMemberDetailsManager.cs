@@ -33,35 +33,25 @@ namespace castlers.Services
                 societyId = memberDetailsDto.societyId,
                 societyNewMemberDetails = members
             };
-            //var newMembers = _mapper.Map<NewMemberDetailsDto, NewMemberDetails>(memberDetails);
-
             return _societyMemberDetailsRepository.AddRegisteredSocietyNewMembersAsync(newMemberDetails);
         }
 
-        public async Task<int> UpdateRegisteredSocietyMemberAsync(UpdateSocietyMemberDto updateSocietyMemberDto)
+        public async Task<int> UpdateRegisteredSocietyMemberAsync(List<SocietyMemberDetailsDto> societyMemberDetails)
         {
-            //var updateMember = _mapper.Map<SocietyMemberDetailsDto, SocietyMemberDetails>(updateSocietyMemberDto);
-            var societyMemberDetails = new SocietyMemberDetails
-            {
-                societyMemberDetailsId = updateSocietyMemberDto.societyMemberDetailsId,
-                memberName = updateSocietyMemberDto.memberName,
-                mobileNumber = updateSocietyMemberDto.mobileNumber,
-                email = updateSocietyMemberDto.email,
-                createdDate = DateTime.Now,
-                updatedDate = DateTime.Now
-            };
-            return await _societyMemberDetailsRepository.UpdateRegisteredSocietyMemberAsync(societyMemberDetails);  
+            var newMembers = _mapper.Map<List<SocietyMemberDetails>>(societyMemberDetails);
+            return await _societyMemberDetailsRepository.UpdateRegisteredSocietyMembersAsync(newMembers);  
         }
 
-        public async Task<List<SocietyMemberDetailsDto>> GetAllRegisteredSocietyMembersListAsync()
+        public async Task<List<SocietyMemberDetailsDto>> GetRegisteredSocietyMembersBySocietyIdAsync(int registeredSocietyId)
         {
-            var societyMemberDetails = await _societyMemberDetailsRepository.GetAllRegisteredSocietyMembersAsync();
+            var societyMemberDetails = await _societyMemberDetailsRepository.GetRegisteredSocietyMembersBySocietyIdAsync(registeredSocietyId);
             return _mapper.Map<List<SocietyMemberDetailsDto>>(societyMemberDetails);          
         }
 
         public Task<int> DeleteRegisteredSocietyMemberByIdAsync(DeleteSocietyMemberDto deleteSocietyMemberDto)
         {
-            return _societyMemberDetailsRepository.DeleteRegisteredSocietyMemberByIdAsync(deleteSocietyMemberDto.societyMemberId, deleteSocietyMemberDto.societyId);
+            return _societyMemberDetailsRepository
+                .DeleteRegisteredSocietyMemberByIdAsync(deleteSocietyMemberDto.societyMemberDetailsId, deleteSocietyMemberDto.registeredSocietyId);
             
         }
     }

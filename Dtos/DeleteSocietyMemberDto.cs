@@ -2,7 +2,7 @@
 {
     public class DeleteSocietyMemberDto
     {
-        public int societyMemberId { get; set; }
-        public int societyId { get; set; }
+        public int registeredSocietyId { get; set; }
+        public int societyMemberDetailsId { get; set; }
     }
 }

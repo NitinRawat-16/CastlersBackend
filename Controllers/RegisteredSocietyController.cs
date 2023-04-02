@@ -19,7 +19,7 @@ namespace castlers.Controllers
         }
 
         [HttpGet("getRegisteredSocietylist")]
-        public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyAsync()
+        public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyListAsync()
         {
             try
             {
@@ -31,7 +31,7 @@ namespace castlers.Controllers
             }
         }
 
-        [HttpGet("getRegisteredSociety")]
+        [HttpGet("getRegisteredSocietyById")]
         public async Task<RegisteredSocietyDto> GetRegisteredSocietyAsync(int registeredSocietyId)
         {
             try
@@ -57,7 +57,7 @@ namespace castlers.Controllers
             }
         }
 
-        [HttpGet("getRegisteredSocietyInfo")]
+        [HttpGet("getRegisteredSocietyInfo/{registeredSocietyCode}")]
         public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
         {
             if (string.IsNullOrEmpty(registeredSocietyCode))
@@ -117,7 +117,7 @@ namespace castlers.Controllers
         }
 
         [HttpPut("UpdateRegisteredSociety")]
-        public async Task<IActionResult> UpdateRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
+        public async Task<IActionResult> UpdateRegisteredSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
             if (registeredSocietyDto == null)
             {
@@ -135,6 +135,6 @@ namespace castlers.Controllers
             }
         }
 
-       
+
     }
 }

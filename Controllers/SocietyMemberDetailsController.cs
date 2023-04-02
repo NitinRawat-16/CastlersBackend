@@ -15,12 +15,12 @@ namespace castlers.Controllers
             _societyMemberDetailsService = societyMemberDetailsService;
         }
 
-        [HttpGet("GetAllRegisteredSocietyMembers")]
-        public async Task<List<SocietyMemberDetailsDto>> GetAllRegisteredSocietyMembers()
+        [HttpGet("GetRegisteredSocietyMembersBySocietyId/{registeredSocietyId}")]
+        public async Task<List<SocietyMemberDetailsDto>> GetRegisteredSocietyMembers(int registeredSocietyId)
         {
             try
             {
-                return await _societyMemberDetailsService.GetAllRegisteredSocietyMembersListAsync();
+                return await _societyMemberDetailsService.GetRegisteredSocietyMembersBySocietyIdAsync(registeredSocietyId);
             }
             catch (Exception)
             {
@@ -30,12 +30,17 @@ namespace castlers.Controllers
 
         }
 
-        [HttpPost("AddRegisteredSocietyNewMembers")]
-        public async Task<int> AddMembers([FromForm] SocietyNewMemberDetailsDto memberDetails)
+        [HttpPost("AddRegisteredSocietyNewMembers/{registeredSocietyId}")]
+        public async Task<int> AddRegisteredSocietyNewMembers(int registeredSocietyId, IFormFile memberDetails)
         {
             try
             {
-               return await _societyMemberDetailsService.AddRegisteredSocietyNewMembersAsync(memberDetails);
+                SocietyNewMemberDetailsDto societyNewMemberDetailsDto = new SocietyNewMemberDetailsDto
+                {
+                    societyId = registeredSocietyId,
+                    societyNewMemberDetails = memberDetails
+                };
+               return await _societyMemberDetailsService.AddRegisteredSocietyNewMembersAsync(societyNewMemberDetailsDto);
 
             }
             catch (Exception)
@@ -46,12 +51,12 @@ namespace castlers.Controllers
 
         }
 
-        [HttpPut("UpdateRegisteredSocietyMember")]
-        public async Task<int> UpdateMember([FromBody] UpdateSocietyMemberDto updateSocietyMemberDto )
+        [HttpPut("UpdateRegisteredSocietyMembers")]
+        public async Task<int> UpdateRegisteredSocietyMembers([FromBody] List<SocietyMemberDetailsDto> societyMemberDetails )
         {
             try
             {
-                return await _societyMemberDetailsService.UpdateRegisteredSocietyMemberAsync(updateSocietyMemberDto);
+                return await _societyMemberDetailsService.UpdateRegisteredSocietyMemberAsync(societyMemberDetails);
             }
             catch (Exception)
             {
@@ -61,8 +66,8 @@ namespace castlers.Controllers
            
         }
 
-        [HttpDelete("DeleteRegisteredSocietyMemberById")]
-        public async Task<int> DeleteMember([FromForm] DeleteSocietyMemberDto deleteSocietyMemberDto )
+        [HttpPost("DeleteRegisteredSocietyMemberById")]
+        public async Task<int> DeleteMember([FromBody] DeleteSocietyMemberDto deleteSocietyMemberDto )
         {
             try
             {

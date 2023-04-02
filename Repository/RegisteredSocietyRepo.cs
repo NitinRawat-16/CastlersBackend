@@ -1,9 +1,9 @@
-﻿using castlers.DbContexts;
+﻿using System.Data;
 using castlers.Dtos;
 using castlers.Models;
+using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace castlers.Repository
 {
@@ -32,14 +32,15 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@createdDate", registeredSociety.createdDate));
             parameter.Add(new SqlParameter("@updatedBy", registeredSociety.updatedBy));
             parameter.Add(new SqlParameter("@updatedDate", registeredSociety.updatedDate));
+            parameter.Add(new SqlParameter("@city", registeredSociety.city));
             parameter.Add(new SqlParameter("@registeredSocietyId", registeredSociety.registeredSocietyId));
 
-            parameter[13].Direction = ParameterDirection.Output;
+            parameter[14].Direction = ParameterDirection.Output;
 
             try
             {
                 int result = await Task.Run(() => _dbContext.Database
-               .ExecuteSqlRawAsync(@"exec [dbo].[uspAddNewSociety] @societyRegistrationNumber,@societyName,@registeredAddress,@existingMemberCount,@age,@email,@societyRegisteredCode,@societyDevelopmentTypeId,@societyDevelopmentSubType,@createdBy,@createdDate,@updatedBy,@updatedDate,@registeredSocietyId out", parameter.ToArray()));
+               .ExecuteSqlRawAsync(@"exec [dbo].[uspAddNewSociety] @societyRegistrationNumber,@societyName,@registeredAddress,@existingMemberCount,@age,@email,@societyRegisteredCode,@societyDevelopmentTypeId,@societyDevelopmentSubType,@createdBy,@createdDate,@updatedBy,@updatedDate,@city,@registeredSocietyId out", parameter.ToArray()));
 
             }
             catch (Exception ex)
@@ -47,7 +48,7 @@ namespace castlers.Repository
 
                 throw;
             }
-            int registerId = Convert.ToInt32(parameter[13].Value);
+            int registerId = Convert.ToInt32(parameter[14].Value);
 
             return registerId;
         }
@@ -96,9 +97,20 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@createdDate", registeredSociety.createdDate));
             parameter.Add(new SqlParameter("@updatedBy", registeredSociety.updatedBy));
             parameter.Add(new SqlParameter("@updatedDate", registeredSociety.updatedDate));
+            parameter.Add(new SqlParameter("@city", registeredSociety.city));
 
-            var result = await Task.Run(() => _dbContext.Database
-           .ExecuteSqlRawAsync(@"Exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,@registeredAddress,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,@age,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+            int result;
+            try
+            {
+                result = await Task.Run(() => _dbContext.Database
+               .ExecuteSqlRawAsync(@"Exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,@registeredAddress,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,@age,@createdBy,@createdDate,@updatedBy,@updatedDate, @city", parameter.ToArray()));
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
 
 

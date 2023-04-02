@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace castlers.Dtos
+﻿namespace castlers.Dtos
 {
     public class SocietyMemberDetailsDto
     {

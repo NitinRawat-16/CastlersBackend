@@ -18,6 +18,7 @@
         public int existingMemberCount { get; set; }
         public float age { get; set; }
         public string societyRegisteredCode { get; set; }
+        public string city { get; set; }
         public List<SocietyMemberDetailsDto> societyMemberDetails { get; set; }
               
     }

@@ -18,6 +18,7 @@ namespace castlers.Models
         public DateTime createdDate { get; set; }
         public Guid updatedBy { get; set; }
         public DateTime updatedDate { get; set; }
+        public string city { get; set; }
 
     }
 }
