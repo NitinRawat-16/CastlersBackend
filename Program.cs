@@ -1,7 +1,14 @@
 using castlers.Common.Email;
+using castlers.Common.SMS;
 using castlers.DbContexts;
 using castlers.Repository;
+using castlers.Repository.Authentication;
 using castlers.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Graph;
+using Microsoft.Graph.Models.ExternalConnectors;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +26,17 @@ builder.Services.AddTransient<ISocietyMemberDetailsRepository, SocietyMemberDeta
 builder.Services.AddTransient<ISocietyDevelopmentTypeRepository, SocietyDevelopmentTypeRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeService, SocietyDevelopmentTypeManager>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<ISMSSender, SMSSender>();
+builder.Services.AddTransient<ISocietyDocumentsService, SocietyDocumentsManager>();
+builder.Services.AddTransient<ILoginService, LoginManager>();
+builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
 
+//builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
+//    .AddMicrosoftGraph( x=>
+//    string tenantId = Configuration.GeT
+    
+//    )
+//    .AddInMemoryTokenCaches();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>();
@@ -35,7 +52,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+//builder.Services.AddCors(opt =>
+//{
+//    opt.AddPolicy(name: "CorsPolicy", builder =>
+//    {
+//        builder.WithOrigins("http://localhost:4200")
+//        .AllowAnyHeader()
+//        .AllowAnyMethod();
+//    });
+//});
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -43,6 +73,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+
 app.UseCors(builder => builder
     .AllowAnyOrigin()
     .AllowAnyMethod()
@@ -51,6 +84,7 @@ app.UseCors(builder => builder
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

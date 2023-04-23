@@ -60,12 +60,7 @@ namespace castlers.Services
                 var societyMemberDetails = _mapper.Map<List<SocietyMemberDetails>>(registeredSocietyDto.societyMemberDetails);
                isMembersUpdated = Convert.ToInt32(await _societyMemberDetailsRepository.UpdateRegisteredSocietyMembersAsync(societyMemberDetails));
             }
-
-            return isMembersUpdated;
-
-
-            //return _registeredSocietyRepository.UpdateRegisteredSocietyAsync(registeredSociety);
-         
+            return isMembersUpdated;   
         }
         public Task<int> DeleteRegisteredSocietyAsync(int Id)
         {

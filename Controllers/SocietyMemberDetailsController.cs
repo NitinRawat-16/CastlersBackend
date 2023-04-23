@@ -30,29 +30,22 @@ namespace castlers.Controllers
 
         }
 
-        [HttpPost("AddRegisteredSocietyNewMembers/{registeredSocietyId}")]
-        public async Task<int> AddRegisteredSocietyNewMembers(int registeredSocietyId, IFormFile memberDetails)
+        [HttpPost("AddRegisteredSocietyNewMembers")]
+        public async Task<int> AddRegisteredSocietyNewMembers([FromForm] SocietyNewMemberDetailsDto societyNewMemberDetailsDto)
         {
             try
             {
-                SocietyNewMemberDetailsDto societyNewMemberDetailsDto = new SocietyNewMemberDetailsDto
-                {
-                    societyId = registeredSocietyId,
-                    societyNewMemberDetails = memberDetails
-                };
-               return await _societyMemberDetailsService.AddRegisteredSocietyNewMembersAsync(societyNewMemberDetailsDto);
-
+                return await _societyMemberDetailsService.AddRegisteredSocietyNewMembersAsync(societyNewMemberDetailsDto);
             }
             catch (Exception)
             {
-
                 throw;
             }
 
         }
 
         [HttpPut("UpdateRegisteredSocietyMembers")]
-        public async Task<int> UpdateRegisteredSocietyMembers([FromBody] List<SocietyMemberDetailsDto> societyMemberDetails )
+        public async Task<int> UpdateRegisteredSocietyMembers([FromBody] List<SocietyMemberDetailsDto> societyMemberDetails)
         {
             try
             {
@@ -63,11 +56,11 @@ namespace castlers.Controllers
 
                 throw;
             }
-           
+
         }
 
         [HttpPost("DeleteRegisteredSocietyMemberById")]
-        public async Task<int> DeleteMember([FromBody] DeleteSocietyMemberDto deleteSocietyMemberDto )
+        public async Task<int> DeleteMember([FromBody] DeleteSocietyMemberDto deleteSocietyMemberDto)
         {
             try
             {
@@ -78,6 +71,6 @@ namespace castlers.Controllers
                 throw;
             }
         }
-        
+
     }
 }

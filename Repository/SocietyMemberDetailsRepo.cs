@@ -5,6 +5,7 @@ using castlers.DbContexts;
 using castlers.Common.Email;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using castlers.Common.SMS;
 
 namespace castlers.Repository
 {
@@ -12,11 +13,13 @@ namespace castlers.Repository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IEmailSender _emailSender;
+        private readonly ISMSSender _smsSender;
 
-        public SocietyMemberDetailsRepo(ApplicationDbContext dbContext, IEmailSender emailSender)
+        public SocietyMemberDetailsRepo(ApplicationDbContext dbContext, IEmailSender emailSender, ISMSSender smsSender)
         {
             _dbContext = dbContext;
             _emailSender = emailSender;
+            _smsSender = smsSender;
         }
 
         public async Task<int> AddRegisteredSocietyMemberListAsync(List<SocietyMemberDetails> societyMemberDetails)
@@ -59,11 +62,17 @@ namespace castlers.Repository
             Parameter.TypeName = "dbo.udt_MemberDetails";
 
             var result = await Task.Run(() => _dbContext
-            .Database.ExecuteSqlRawAsync(@"exec [dbo].[AddRegisteredSocietyNewMembersList]" + "@MembersData", Parameter));
+            .Database
+            .ExecuteSqlRawAsync(@"exec [dbo].[AddRegisteredSocietyNewMembersList]" + "@MembersData", Parameter));
 
             // Send email to the newly registered members
             var message = new Message(new string[] { "nitinrawatsmartboy@gmail.com" }, "Test email", "This is the content from our email.");
             var status = _emailSender.SendEmailAsync(message);
+
+            // Send SMS to the newly registered members
+            var membersPhone = memberDatatable.AsEnumerable().Select(x => x[2].ToString()).ToList();
+            string text = "Member Registered Successfully";
+            var response = _smsSender.SocietyMembersRegistation(text, membersPhone);
 
             return result;
         }

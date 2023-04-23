@@ -150,7 +150,7 @@ namespace castlers.Repository
             string sql = "SELECT rs.registeredSocietyId,rs.societyDevelopmentTypeId, rs.societyDevelopmentSubType," +
                          " rs.societyRegistrationNumber, rs.societyName,rs.registeredAddress, rs.email," +
                          " rs.existingMemberCount, rs.age, rs.societyRegisteredCode,rs.createdBy,rs.createdDate," +
-                         "rs.updatedBy,rs.updatedDate FROM dbo.RegisteredSociety rs where societyRegisteredCode = @registeredSocietyCode";
+                         "rs.updatedBy,rs.updatedDate, rs.city FROM dbo.RegisteredSociety rs where societyRegisteredCode = @registeredSocietyCode";
 
 
             var param = new SqlParameter("@registeredSocietyCode", registeredSocietyCode);
