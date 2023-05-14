@@ -30,6 +30,7 @@ builder.Services.AddTransient<ISMSSender, SMSSender>();
 builder.Services.AddTransient<ISocietyDocumentsService, SocietyDocumentsManager>();
 builder.Services.AddTransient<ILoginService, LoginManager>();
 builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
+builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
 
 //builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
 //    .AddMicrosoftGraph( x=>

@@ -13,7 +13,7 @@ namespace castlers.DbContexts
         }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer(Configuration.GetConnectionString("ProdConnection"));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
         public DbSet<RegisteredSociety> RegisteredSociety { get; set; }
         public DbSet<Developer> Developer { get; set; }

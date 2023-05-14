@@ -1,9 +1,7 @@
 ﻿using castlers.Dtos;
-using castlers.Models;
 using castlers.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace castlers.Controllers
 {
@@ -12,7 +10,6 @@ namespace castlers.Controllers
     public class RegisteredSocietyController : ControllerBase
     {
         private readonly IRegisteredSocietyService _registeredSocietyService;
-
         public RegisteredSocietyController(IRegisteredSocietyService registeredSocietyService)
         {
             this._registeredSocietyService = registeredSocietyService;
@@ -103,11 +100,9 @@ namespace castlers.Controllers
             {
                 return BadRequest();
             }
-
             try
             {
                 var response = await _registeredSocietyService.UpdateTechnicalDetailsSocietyAsync(updateTechnicalDetailsRegisteredSocietyDto);
-
                 return Ok(response);
             }
             catch

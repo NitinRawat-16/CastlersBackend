@@ -41,13 +41,13 @@ namespace castlers.Services
                     memberDetails.societyMemberDetailsId = 0;
                 }
                 var societyMemberDetails = _mapper.Map<List<SocietyMemberDetailsDto>, List<SocietyMemberDetails>>(registeredSocietyDto.societyMemberDetails);
-              int result = Convert.ToInt32(await _societyMemberDetailsRepository.AddRegisteredSocietyMemberListAsync(societyMemberDetails));
+                int result = Convert.ToInt32(await _societyMemberDetailsRepository.AddRegisteredSocietyMemberListAsync(societyMemberDetails));
             }
             return Convert.ToInt32(registeredSocietyId);
         }
         public async Task<int> UpdateRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
         {
-            var registeredSociety = _mapper.Map<RegisteredSocietyDto, RegisteredSociety>(registeredSocietyDto);  
+            var registeredSociety = _mapper.Map<RegisteredSocietyDto, RegisteredSociety>(registeredSocietyDto);
             registeredSociety.createdBy = Guid.NewGuid();
             registeredSociety.createdDate = DateTime.Now;
             registeredSociety.updatedBy = Guid.NewGuid();
@@ -55,42 +55,28 @@ namespace castlers.Services
 
             var isSocietyUpdated = await _registeredSocietyRepository.UpdateRegisteredSocietyAsync(registeredSociety);
             int isMembersUpdated = 0;
-            if(isSocietyUpdated > 0)
+            if (isSocietyUpdated > 0)
             {
                 var societyMemberDetails = _mapper.Map<List<SocietyMemberDetails>>(registeredSocietyDto.societyMemberDetails);
-               isMembersUpdated = Convert.ToInt32(await _societyMemberDetailsRepository.UpdateRegisteredSocietyMembersAsync(societyMemberDetails));
+                isMembersUpdated = Convert.ToInt32(await _societyMemberDetailsRepository.UpdateRegisteredSocietyMembersAsync(societyMemberDetails));
             }
-            return isMembersUpdated;   
+            return isMembersUpdated;
         }
-        public Task<int> DeleteRegisteredSocietyAsync(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyAsync()
         {
             var registerdSocietyList = await _registeredSocietyRepository.GetAllRegisteredSocietyAsync();
             return _mapper.Map<List<RegisteredSocietyDto>>(registerdSocietyList);
         }
-
         public async Task<RegisteredSocietyDto> GetRegisteredSocietyByIdAsync(int Id)
         {
             var registerdSociety = await _registeredSocietyRepository.GetRegisteredSocietyByIdAsync(Id);
             return _mapper.Map<RegisteredSocietyDto>(registerdSociety);
         }
-
-        public Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto technicalDetailsRegisteredSocietyDto)
-        {
-            var registeredSociety = _mapper.Map<UpdateTechnicalDetailsRegisteredSocietyDto, RegisteredSociety>(technicalDetailsRegisteredSocietyDto);
-            return _registeredSocietyRepository.UpdateRegisteredSocietyAsync(registeredSociety);
-        }
-
         public async Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationList()
         {
             var societyMemberDesignation = await _registeredSocietyRepository.GetSocietyMemberDesignationsAsync();
             return _mapper.Map<List<SocietyMemberDesignationDto>>(societyMemberDesignation);
         }
-
         public async Task<RegisteredSocietyDto> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
         {
             RegisteredSociety registerdSociety = await _registeredSocietyRepository.GetRegisteredSocietyInfoAsync(registeredSocietyCode);
@@ -99,6 +85,27 @@ namespace castlers.Services
             registeredSocietyDto.societyMemberDetails = _mapper.Map<List<SocietyMemberDetails>, List<SocietyMemberDetailsDto>>(societyMemberDetails);
             return registeredSocietyDto;
         }
+        public async Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto technicalDetailsRegisteredSocietyDto)
+        {
+            //var registeredSociety = _mapper.Map<UpdateTechnicalDetailsRegisteredSocietyDto, RegisteredSociety>(technicalDetailsRegisteredSocietyDto);
+            try
+            {
+                return await _registeredSocietyRepository.UpdateTechnicalDetailsSocietyAsync(technicalDetailsRegisteredSocietyDto);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+        }
+        public Task<int> DeleteRegisteredSocietyAsync(int Id)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+
 
     }
 }

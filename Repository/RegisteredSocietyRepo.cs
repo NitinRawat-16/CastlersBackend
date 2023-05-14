@@ -52,36 +52,34 @@ namespace castlers.Repository
 
             return registerId;
         }
-
-        public Task<int> DeleteRegisteredSocietyAsync(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<RegisteredSociety>> GetAllRegisteredSocietyAsync()
         {
             return await _dbContext.RegisteredSociety
                 .FromSqlRaw<RegisteredSociety>("GetRegisteredSocietyList")
                 .ToListAsync();
         }
-
         public async Task<RegisteredSociety> GetRegisteredSocietyByIdAsync(int Id)
         {
             var param = new SqlParameter("@registeredSocietyId", Id);
 
-            RegisteredSociety registeredSociety = await Task.Run(() => _dbContext
-            .RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).FirstOrDefault());
+            RegisteredSociety? registeredSociety = await Task.Run(() =>
+                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).FirstOrDefault());
 
             return registeredSociety;
         }
-
         public async Task<List<SocietyMemberDesignation>> GetSocietyMemberDesignationsAsync()
         {
-            return await _dbContext.SocietyMemberDesignations
-                .FromSqlRaw<SocietyMemberDesignation>("GetSocietyMemberDesignations").ToListAsync();
-            //throw new NotImplementedException();
-        }
+            try
+            {
+                return await _dbContext.SocietyMemberDesignations
+                    .FromSqlRaw<SocietyMemberDesignation>("GetSocietyMemberDesignations").ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
+        }
         public async Task<int> UpdateRegisteredSocietyAsync(RegisteredSociety registeredSociety)
         {
             var parameter = new List<SqlParameter>();
@@ -103,20 +101,15 @@ namespace castlers.Repository
             try
             {
                 result = await Task.Run(() => _dbContext.Database
-               .ExecuteSqlRawAsync(@"Exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,@registeredAddress,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,@age,@createdBy,@createdDate,@updatedBy,@updatedDate, @city", parameter.ToArray()));
-
+               .ExecuteSqlRawAsync(@"Exec [dbo].[uspUpdateSociety] @registeredSocietyId,@societyRegistrationNumber,@societyName,                      @registeredAddress,@societyDevelopmentTypeId,@societyDevelopmentSubType,@existingMemberCount,
+                 @age,@createdBy,@createdDate,@updatedBy,@updatedDate, @city", parameter.ToArray()));
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-
                 throw;
             }
-
-
-
             return result;
         }
-
         public async Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto registeredSociety)
         {
             var parameter = new List<SqlParameter>();
@@ -136,15 +129,14 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@createdBy", registeredSociety.createdBy));
             parameter.Add(new SqlParameter("@updatedBy", registeredSociety.updatedBy));
 
-            var result = await Task.Run(() => _dbContext.Database
-           .ExecuteSqlRawAsync(@"exec [dbo].[uspUpdateTechnicalDetailsSociety] @registeredSocietyId,@sizeOfPlot,@plotDimensions
-                              ,@residentialUse,@commercialUse,@numberOfWings,@numberOfCommercialTenaments,@numberOfResidentialTenaments,
-                               @totalCommercialBuiltUpBldgArea,@totalResidentialBuiltUpBldgArea,@totalBuiltUpArea,@approchRoadWidth,
-                               @createdBy,updatedBy", parameter.ToArray()));
+            var isUpdated = await Task.Run(() => _dbContext.Database
+           .ExecuteSqlRawAsync(@"EXEC [dbo].[uspUpdateTechnicalDetailsSociety] @registeredSocietyId, @sizeOfPlot, @plotDimensions,
+                               @residentialUse, @commercialUse, @mixedUse, @numberOfWings, @numberOfCommercialTenaments, @numberOfResidentialTenaments,
+                               @totalCommercialBuiltUpBldgArea, @totalResidentialBuiltUpBldgArea, @totalBuiltUpArea, @approchRoadWidth,
+                               @createdBy, @updatedBy", parameter.ToArray()));
 
-            return result;
+            return isUpdated;
         }
-
         public async Task<RegisteredSociety> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
         {
             string sql = "SELECT rs.registeredSocietyId,rs.societyDevelopmentTypeId, rs.societyDevelopmentSubType," +
@@ -162,6 +154,9 @@ namespace castlers.Repository
 
             return registeredSociety;
         }
-
+        public Task<int> DeleteRegisteredSocietyAsync(int Id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

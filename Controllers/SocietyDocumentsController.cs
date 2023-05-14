@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -7,10 +8,24 @@ namespace castlers.Controllers
     [ApiController]
     public class SocietyDocumentsController : ControllerBase
     {
-        [HttpPost("SocietyDocumentUpload")]
-        public Task<bool> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
+        private readonly ISocietyDocumentsService _societyDocumentsService;
+        public SocietyDocumentsController(ISocietyDocumentsService societyDocumentsService)
         {
-            return Task.FromResult(true);
+            _societyDocumentsService = societyDocumentsService;
+        }
+
+
+        [HttpPost("SocietyDocumentUpload")]
+        public async Task<bool> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
+        {
+            try
+            {
+                return await _societyDocumentsService.SocietyDocumentsUpload(documentDto);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
         }
 
     }
