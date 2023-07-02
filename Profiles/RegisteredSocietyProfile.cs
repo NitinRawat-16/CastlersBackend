@@ -12,6 +12,8 @@ namespace castlers.Profiles
             CreateMap<RegisteredSociety, RegisteredSocietyDto>();
             CreateMap<RegisteredSociety, UpdateTechnicalDetailsRegisteredSocietyDto>();
             CreateMap<UpdateTechnicalDetailsRegisteredSocietyDto, RegisteredSociety>();
+            CreateMap<RegisteredSocietyWithTechnicalDetails, RegSocietyWithTechDetailsDto>();
+            CreateMap<RegSocietyWithTechDetailsDto, RegisteredSocietyWithTechnicalDetails>();
         }
     }
 }

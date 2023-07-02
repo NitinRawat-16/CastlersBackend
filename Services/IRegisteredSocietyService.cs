@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Models;
 
 namespace castlers.Services
 {
@@ -12,5 +13,7 @@ namespace castlers.Services
         public Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationList();
         public Task<RegisteredSocietyDto> GetRegisteredSocietyInfoAsync(string registeredSocietyId);
         public Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto technicalDetailsRegisteredSocietyDto);
+        public Task<SocietyInfoViewDto> GetRegSocietyInfoWithDocDetailsAsync(int registeredSocietyId);
+        public Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId);
     }
 }

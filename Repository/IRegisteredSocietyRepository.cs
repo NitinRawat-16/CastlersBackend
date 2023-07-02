@@ -13,7 +13,10 @@ namespace castlers.Repository
         public Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto registeredSociety);
         public Task<List<SocietyMemberDesignation>> GetSocietyMemberDesignationsAsync();
         public Task<RegisteredSociety> GetRegisteredSocietyInfoAsync(string registeredSocietyCode);
+        public Task<RegisteredSocietyWithTechnicalDetails> GetRegisteredSocietyWithTechnicalDetails(int registeredSocietyId);
+        public Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId);
+        public Task<List<SocietyTenderDetails>> GetRegSocietyTenderDetails(int regSocietyId);
 
-
+        public Task<List<DeveloperTendersDetails>> GetDeveloperTendersBySocietyId(int regSocietyId);
     }
 }

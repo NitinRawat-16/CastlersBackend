@@ -1,17 +1,55 @@
-﻿namespace castlers.Repository.Authentication
+﻿using castlers.DbContexts;
+using castlers.Dtos;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+
+namespace castlers.Repository.Authentication
 {
     public class AuthenticationRepo : IAuthenticationRepository
     {
-        public bool UserExists(string username, string password)
+        private readonly ApplicationDbContext _dbContext;
+        public AuthenticationRepo(ApplicationDbContext dbContext)
         {
-            if ((username == "prathamesh@castlers.co.in" || username =="darshanavaravadekar@gmail.com") 
-                && password == "castlers@Jan2023")
+            _dbContext = dbContext;
+        }
+        public LoginResponseDto UserExists(string username, string password, string userRole)
+        {
+            LoginResponseDto loginResponseDto = new LoginResponseDto();
+            if (userRole == "Admin")
             {
-                return Convert.ToBoolean(1);
+                if ((username == "prathamesh@castlers.co.in" || username == "darshanavaravadekar@gmail.com")
+                    && password == "castlers@Jan2023")
+                {
+                    loginResponseDto.message = "Admin Exist!";
+                    loginResponseDto.role = "Admin";
+                    loginResponseDto.status = "Successfully";
+
+                    return loginResponseDto;
+                }
+            }
+            else
+            {
+                SqlParameter para = new SqlParameter("@SocietyEmail", username);
+
+                var isExist = Task.Run(() =>  _dbContext.Database.ExecuteSqlRawAsync(@"EXEC VerifyIsSocietyExist @SocietyEmail", para));
+
+                if(isExist.Result == 3) {
+                    loginResponseDto.message = "Society and Member exist";
+                    loginResponseDto.role = "User";
+                    loginResponseDto.status = "Successfully";
+                }
+                else if(isExist.Result == 2)
+                {
+                    //return "Society Email Address is wrong.";
+                }
+                else
+                {
+                    //return "Member Phone Number is wrong or not exist.";
+                }
 
             }
-            return Convert.ToBoolean(0);
-                        
+            return loginResponseDto;
+
         }
 
     }

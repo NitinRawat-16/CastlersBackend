@@ -1,5 +1,4 @@
-﻿using MailKit.Net.Smtp;
-using Twilio;
+﻿using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 
@@ -33,7 +32,7 @@ namespace castlers.Common.SMS
             return "true";
 
         }
-        public SMSResponse OTPVerification(string otp, string mobileNumber)
+        public SMSResponse SendOTP(string otp, string mobileNumber)
         {
             SMSResponse smsResponse = new SMSResponse()
             {
@@ -50,7 +49,7 @@ namespace castlers.Common.SMS
             }
             return smsResponse;
         }
-        public SMSResponse SocietyMembersRegistation(string text, List<string?> societyMembersNumber)
+        public SMSResponse SendBlukSMS(string text, List<string?> societyMembersNumber)
         {
             SMSResponse smsResponse = new SMSResponse()
             {
@@ -59,7 +58,7 @@ namespace castlers.Common.SMS
                 message = "Something Went Wrong"
             };
 
-            foreach (string number in societyMembersNumber)
+            foreach (string? number in societyMembersNumber)
             {
                 try
                 {
@@ -71,9 +70,9 @@ namespace castlers.Common.SMS
                         smsResponse.message = "Registered Successfully";
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    throw ex;
+                    throw;
                 }  
             }
             return smsResponse;

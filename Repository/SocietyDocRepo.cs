@@ -1,75 +1,74 @@
 ﻿using castlers.Dtos;
-using Azure.Storage.Blobs;
+using castlers.Models;
 using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using castlers.Common.AzureStorage;
 
 namespace castlers.Repository
 {
     public class SocietyDocRepo : ISocietyDocRepository
     {
-
         private readonly ApplicationDbContext _dbContext;
-        private readonly string _storageConnectionString;
-        private readonly string _storageContainerName;
-        public SocietyDocRepo(ApplicationDbContext dbContext, IConfiguration configuration)
+        private readonly IUploadFile _uploadFile;
+        public SocietyDocRepo(ApplicationDbContext dbContext, IUploadFile uploadFile)
         {
             _dbContext = dbContext;
-            _storageConnectionString = configuration.GetValue<string>("AzureStorageConnectionString");
-            _storageContainerName = configuration.GetValue<string>("AzureStorageContainerName");
+            _uploadFile = uploadFile;
         }
-        public async Task<bool> UploadSocietyDoc(SocietyDocumentDto documentDto)
+        public async Task<SaveDocResponseDto> UploadSocietyDoc(SocietyDocumentDto documentDto)
         {
+            SaveDocResponseDto saveDocResponseDto = new SaveDocResponseDto();
             IFormFile? file = documentDto.documentFile;
-            var filePath = string.Format("{0}/{1}", documentDto.societyName, documentDto.type);
-            var fileUrl = await SaveDocument(filePath, file);
+            var filePath = string.Format("{0}/{1}/{2}", documentDto.societyName, documentDto.subType, documentDto.typeOfdocumentName + ".pdf");
+            var responseDto = await _uploadFile.SaveDoc(file, filePath, documentDto.isUpdate);
             int isUpload;
 
-            List<SqlParameter> parameters = new List<SqlParameter>();
-            parameters.Add(new SqlParameter("@RegisteredSocietyName", documentDto.societyName));
-            parameters.Add(new SqlParameter("@DocumentName", documentDto.documentName));
-            parameters.Add(new SqlParameter("@DocPath", fileUrl));
+            if (responseDto.Status == "Successfully")
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>();
+                parameters.Add(new SqlParameter("@RegisteredSocietyName", documentDto.societyName));
+                parameters.Add(new SqlParameter("@DocumentName", documentDto.typeOfdocumentName));
+                parameters.Add(new SqlParameter("@DocPath", responseDto.DocURL));
 
-            try
-            {
-                isUpload = await Task.Run(() =>
-                  _dbContext.Database.ExecuteSqlRawAsync(@"EXEC [dbo].[SaveSocietyDocument] @RegisteredSocietyName, @DocumentName, @DocPath", parameters.ToArray()));
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-            return Convert.ToBoolean(isUpload);
-        }
-        public async Task<string> SaveDocument(string path, IFormFile file)
-        {
-            BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
-            var fileName = file.FileName;
-            var filePath = string.Format(path + "/{0}", fileName);
-            try
-            {
-                BlobClient client = container.GetBlobClient(filePath);
-                await using (Stream? data = file.OpenReadStream())
+                try
                 {
-                    await client.UploadAsync(data);
+                    isUpload = await Task.Run(() =>
+                      _dbContext.Database
+                      .ExecuteSqlRawAsync(@"EXEC [dbo].[SaveSocietyDocument] @RegisteredSocietyName, @DocumentName, @DocPath", parameters.ToArray()));
                 }
-                var fileUrl = client.Uri.AbsoluteUri;
-                return fileUrl;
+                catch (Exception e)
+                {
+                    saveDocResponseDto.Error = "Error occurred while saving in the database!";
+                    saveDocResponseDto.Status = "Failed";
+                    saveDocResponseDto.DocURL = "";
+                    saveDocResponseDto.Message = e.Message;
+                    return saveDocResponseDto;
+                }
+                responseDto.DocURL = "";
+                responseDto.Message = "File uploaded and database changes saved successfully.";
             }
-            catch (Exception e)
+            return responseDto;
+        }
+        public async Task<List<SocietyDocumentsDetails>> GetSocietyDocs(int registeredSocietyId)
+        {
+            try
+            {
+                SqlParameter para = new SqlParameter("@RegisteredSocietyId", registeredSocietyId);
+
+                var documentList = await Task.Run(() => _dbContext.SocietyDocumentsDetails
+                    .FromSqlRaw<SocietyDocumentsDetails>(@"EXEC GetRegisteredSocietyDocDetails @RegisteredSocietyId", para).ToListAsync());
+
+                return documentList;
+            }
+            catch (Exception)
             {
                 throw;
             }
-
         }
-        public Task<string> DeleteSocietyDoc(string filePath)
+        public Task<SaveDocResponseDto> DeleteSocietyDoc(string filePath)
         {
             throw new NotImplementedException();
         }
-        public Task<IFormFile> DownloadSocietyDoc(string filePath)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

@@ -3,6 +3,6 @@ namespace castlers.Services
 {
     public interface ISocietyDocumentsService
     {
-        public Task<bool> SocietyDocumentsUpload(SocietyDocumentDto societyDocumentDto);
+        public Task<SaveDocResponseDto> SocietyDocumentsUpload(SocietyDocumentDto societyDocumentDto);
     }
 }

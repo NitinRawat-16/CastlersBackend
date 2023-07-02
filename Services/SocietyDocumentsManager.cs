@@ -10,7 +10,7 @@ namespace castlers.Services
         {
             _societyDocRepository = societyDocRepository;
         }
-        public async Task<bool> SocietyDocumentsUpload(SocietyDocumentDto societyDocumentDto)
+        public async Task<SaveDocResponseDto> SocietyDocumentsUpload(SocietyDocumentDto societyDocumentDto)
         {
             try
             {

@@ -1,10 +1,6 @@
-﻿using Azure.Identity;
-using castlers.Dtos;
-using castlers.Services;
-using Microsoft.AspNetCore.Http;
+﻿using castlers.Dtos;
+using castlers.Services.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Microsoft.Kiota.Abstractions;
 
 namespace castlers.Controllers
 {
@@ -32,17 +28,13 @@ namespace castlers.Controllers
             bool response = true ;
             try
             {
-                response =  _loginService.IsUserExists(dto.username, dto.password);                     
+                return _loginService.IsUserExists(dto.username, dto.password);                     
             }
             catch (Exception ex)
             {
                 response = false;
             }
-
-            if(response)
-            {
-               loginResponseDto.role = "Admin";
-            }
+           
             return loginResponseDto;
         }
     }

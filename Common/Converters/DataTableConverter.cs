@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Reflection;
 
-namespace castlers.Common
+namespace castlers.Common.Converters
 {
     public static class DataTableConverter
     {

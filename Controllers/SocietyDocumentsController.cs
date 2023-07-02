@@ -14,10 +14,20 @@ namespace castlers.Controllers
             _societyDocumentsService = societyDocumentsService;
         }
 
-
         [HttpPost("SocietyDocumentUpload")]
-        public async Task<bool> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
+        public async Task<SaveDocResponseDto> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
         {
+            if(documentDto.documentFile == null)
+            {
+                return new SaveDocResponseDto
+                {
+                    Error = "File Does Exist!",
+                    Status = "Failed",
+                    DocURL = "",
+                    Message = "Please Add File While Saving the Document."
+                };
+            }
+            
             try
             {
                 return await _societyDocumentsService.SocietyDocumentsUpload(documentDto);
@@ -27,6 +37,5 @@ namespace castlers.Controllers
                 throw;
             }
         }
-
     }
 }

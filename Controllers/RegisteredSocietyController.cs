@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Models;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -29,11 +30,16 @@ namespace castlers.Controllers
         }
 
         [HttpGet("getRegisteredSocietyById")]
-        public async Task<RegisteredSocietyDto> GetRegisteredSocietyAsync(int registeredSocietyId)
+        public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyAsync(int registeredSocietyId)
         {
+            if(registeredSocietyId <= 0)
+            {
+                return BadRequest("Registered Society Id is not valid.");
+            }
             try
             {
-                return await _registeredSocietyService.GetRegisteredSocietyByIdAsync(registeredSocietyId);
+                var response = await _registeredSocietyService.GetRegisteredSocietyByIdAsync(registeredSocietyId);
+                return Ok(response);
             }
             catch
             {
@@ -94,7 +100,8 @@ namespace castlers.Controllers
 
         [HttpPost("UpdateTechnicalDetailsSocietyAsync")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdateTechnicalDetailsSocietyAsync([FromBody] UpdateTechnicalDetailsRegisteredSocietyDto updateTechnicalDetailsRegisteredSocietyDto)
+        public async Task<IActionResult> UpdateTechnicalDetailsSocietyAsync
+            ([FromBody] UpdateTechnicalDetailsRegisteredSocietyDto updateTechnicalDetailsRegisteredSocietyDto)
         {
             if (updateTechnicalDetailsRegisteredSocietyDto == null)
             {
@@ -103,7 +110,7 @@ namespace castlers.Controllers
             try
             {
                 var response = await _registeredSocietyService.UpdateTechnicalDetailsSocietyAsync(updateTechnicalDetailsRegisteredSocietyDto);
-                return Ok(response);
+                return Ok(Convert.ToBoolean(response));
             }
             catch
             {
@@ -130,6 +137,39 @@ namespace castlers.Controllers
             }
         }
 
+
+        // After login this method will called.
+        [HttpGet("GetRegSocietyInfoViewById/{registeredSocietyId}")]
+        public async Task<ActionResult<SocietyInfoViewDto>> GetRegisteredSocietyInfoViewAsync(int registeredSocietyId)
+        {
+            if (registeredSocietyId <= 0)
+                return BadRequest("Incorrect Registered Society Id.");
+
+            try
+            {
+                return await _registeredSocietyService.GetRegSocietyInfoWithDocDetailsAsync(registeredSocietyId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        [HttpGet("GetRegisterdSocietyTechnicalDetailsById/{registeredSocietyId}")]
+        public async Task<ActionResult<RegisteredSocietyTechnicalDetails>> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
+        {
+            try
+            {
+                return await _registeredSocietyService.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
     }
 }

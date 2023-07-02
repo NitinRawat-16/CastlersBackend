@@ -3,7 +3,7 @@ using castlers.Models;
 using ExcelDataReader;
 using System.Text;
 
-namespace castlers.Common
+namespace castlers.Common.Converters
 {
     public static class ExcelFileConverter
     {
@@ -25,7 +25,7 @@ namespace castlers.Common
                             {
                                 registeredSocietyId = societyId,
                                 memberName = reader.GetValue(0).ToString(),
-                                mobileNumber =reader.GetValue(1).ToString(),
+                                mobileNumber = reader.GetValue(1).ToString(),
                                 email = reader.GetValue(2).ToString(),
                                 societyMemberDesignationId = 0,
                                 createdBy = Guid.NewGuid(),

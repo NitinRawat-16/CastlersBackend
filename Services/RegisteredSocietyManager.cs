@@ -9,19 +9,28 @@ namespace castlers.Services
 {
     public class RegisteredSocietyManager : IRegisteredSocietyService
     {
+        #region Variables & Construction
         private readonly ApplicationDbContext _dbContext;
         private readonly IRegisteredSocietyRepository _registeredSocietyRepository;
         private readonly ISocietyMemberDetailsRepository _societyMemberDetailsRepository;
+        private readonly ISocietyDocRepository _societyDocRepository;
+        private readonly ITenderRepository _tenderRepo;
         private readonly IMapper _mapper;
 
-        public RegisteredSocietyManager(ApplicationDbContext dbContext, IRegisteredSocietyRepository registeredSocietyRepository,
-                                        IMapper mapper, ISocietyMemberDetailsRepository societyMemberDetailsRepository)
+        public RegisteredSocietyManager(ApplicationDbContext dbContext, IRegisteredSocietyRepository registeredSocietyRepository, IMapper mapper,
+            ISocietyMemberDetailsRepository societyMemberDetailsRepository, ISocietyDocRepository societyDocRepository, ITenderRepository tenderRepo)
         {
             _dbContext = dbContext;
             _registeredSocietyRepository = registeredSocietyRepository;
             _societyMemberDetailsRepository = societyMemberDetailsRepository;
+            _societyDocRepository = societyDocRepository;
+            _tenderRepo = tenderRepo;
             _mapper = mapper;
         }
+        #endregion
+
+        #region User Defined Method
+
         public async Task<int> AddRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
         {
             var registeredSociety = _mapper.Map<RegisteredSocietyDto, RegisteredSociety>(registeredSocietyDto);
@@ -97,15 +106,57 @@ namespace castlers.Services
                 throw;
             }
         }
+        public async Task<SocietyInfoViewDto> GetRegSocietyInfoWithDocDetailsAsync(int registeredSocietyId)
+        {
+            try
+            {
+                var societyDetails = _mapper.Map<RegSocietyWithTechDetailsDto>
+                    (await _registeredSocietyRepository.GetRegisteredSocietyWithTechnicalDetails(registeredSocietyId));
+
+                var documentList = await _societyDocRepository.GetSocietyDocs(registeredSocietyId);
+
+                var societyCommitteeMemberList = _mapper.Map<List<SocietyMemberDetailsDto>>
+                    (await _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId));
+
+                var societyTenderDetailsList = _mapper.Map<List<SocietyTenderDetailsDto>>(await _tenderRepo.GetTenderDetailsByIdAsync(registeredSocietyId));
+
+                //var societyTenderDetailList = _mapper.Map<List<TenderDetailsDto>>(await _registeredSocietyRepository.GetRegSocietyTenderDetails(registeredSocietyId));
+
+                var developerTenderList = await _registeredSocietyRepository.GetDeveloperTendersBySocietyId(registeredSocietyId);
+
+                SocietyInfoViewDto societyInfoViewDto = new SocietyInfoViewDto
+                {
+                    regSocietyWithTechDetailsDto = societyDetails,
+                    allDocuments = documentList,
+                    committeeMembers = societyCommitteeMemberList,
+                    developerTendersList = developerTenderList,
+                    societyTenderList = societyTenderDetailsList
+                };
+
+                return societyInfoViewDto;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
+        {
+            try
+            {
+                return await _registeredSocietyRepository.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public Task<int> DeleteRegisteredSocietyAsync(int Id)
         {
             throw new NotImplementedException();
         }
 
-
-
-
-
-
+        #endregion
     }
 }

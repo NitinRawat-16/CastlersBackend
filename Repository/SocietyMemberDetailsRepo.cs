@@ -1,11 +1,11 @@
 ﻿using System.Data;
 using castlers.Models;
-using castlers.Common;
+using castlers.Common.SMS;
 using castlers.DbContexts;
 using castlers.Common.Email;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using castlers.Common.SMS;
+using castlers.Common.Converters;
 
 namespace castlers.Repository
 {
@@ -15,11 +15,11 @@ namespace castlers.Repository
         private readonly IEmailSender _emailSender;
         private readonly ISMSSender _smsSender;
 
-        public SocietyMemberDetailsRepo(ApplicationDbContext dbContext, IEmailSender emailSender, ISMSSender smsSender)
+        public SocietyMemberDetailsRepo(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _emailSender = emailSender;
-            _smsSender = smsSender;
+            //_emailSender = emailSender;
+            //_smsSender = smsSender;
         }
 
         public async Task<int> AddRegisteredSocietyMemberListAsync(List<SocietyMemberDetails> societyMemberDetails)
@@ -49,8 +49,8 @@ namespace castlers.Repository
         }
 
         public async Task<int> AddRegisteredSocietyNewMembersAsync(SocietyNewMemberDetails memberDetails)
-        //(List<SocietyMemberDetails> societyNewMemberDetails, [FromForm] IFormFile societyNewMemberDetails)
         {
+            int result;
             DataTable memberDatatable = DataTableConverter.ConvertToDataTable<SocietyMemberDetails>(memberDetails.societyNewMemberDetails);
             memberDatatable.Columns.Remove("createdDate");
             memberDatatable.Columns.Remove("updatedDate");
@@ -61,18 +61,20 @@ namespace castlers.Repository
             Parameter.Value = memberDatatable;
             Parameter.TypeName = "dbo.udt_MemberDetails";
 
-            var result = await Task.Run(() => _dbContext
-            .Database
-            .ExecuteSqlRawAsync(@"exec [dbo].[AddRegisteredSocietyNewMembersList]" + "@MembersData", Parameter));
-
-            // Send email to the newly registered members
-            var message = new Message(new string[] { "nitinrawatsmartboy@gmail.com" }, "Test email", "This is the content from our email.");
-            var status = _emailSender.SendEmailAsync(message);
+            try
+            {
+                result = await Task.Run(() => _dbContext
+                .Database.ExecuteSqlRawAsync(@"exec [dbo].[AddRegisteredSocietyNewMembersList]" + "@MembersData", Parameter));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             // Send SMS to the newly registered members
             var membersPhone = memberDatatable.AsEnumerable().Select(x => x[2].ToString()).ToList();
             string text = "Member Registered Successfully";
-            var response = _smsSender.SocietyMembersRegistation(text, membersPhone);
+            //var response = _smsSender.SendBlukSMS(text, membersPhone);
 
             return result;
         }
@@ -83,12 +85,12 @@ namespace castlers.Repository
                 string sql = "SELECT societyMemberDetailsId,registeredSocietyId,memberName," +
                         " mobileNumber,email,societyMemberDesignationId,createdBy,createdDate,updatedBy," +
                         "updatedDate FROM dbo.SocietyMemberDetails where registeredSocietyId = @registeredSocietyId "
-                        +" AND societyMemberdesignationId IS NULL";
+                        + " AND societyMemberdesignationId IS NULL";
 
                 var param = new SqlParameter("@registeredSocietyId", registeredSocietyId);
                 var societyMemberDetails = await Task.Run(() => _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToList());
                 return societyMemberDetails;
-               
+
             }
             catch (Exception)
             {
@@ -110,8 +112,14 @@ namespace castlers.Repository
             sqlParameter.Direction = ParameterDirection.Input;
             sqlParameter.Value = updateMemberDetail;
             sqlParameter.TypeName = "dbo.Update_SocietyMemberNew2";
-
-            return await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"Exec [dbo].[UpdateMember]" + "@MemberDetail", sqlParameter));
+            try
+            {
+                return await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"Exec [dbo].[UpdateMember]" + "@MemberDetail", sqlParameter));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<List<SocietyMemberDetails>> DeleteRegisteredSocietyMembersAsync(SocietyMemberDetails societyMemberDetails)
@@ -124,9 +132,16 @@ namespace castlers.Repository
             List<SqlParameter> parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@societyMemberId", societyMemberid));
             parameter.Add(new SqlParameter("@societyId", societyId));
-            
-            return await Task.Run(() => _dbContext
-            .Database.ExecuteSqlRawAsync(@"Exec [dbo].[DeleteRegisteredSocietyMemberById] " + "@societyMemberId, " + "@societyId", parameter.ToArray()));
+
+            try
+            {
+                return await Task.Run(() => _dbContext
+                .Database.ExecuteSqlRawAsync(@"Exec [dbo].[DeleteRegisteredSocietyMemberById] " + "@societyMemberId, " + "@societyId", parameter.ToArray()));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<List<SocietyMemberDetails>> GetSocietyCommitteeMembersAsync(int registeredSocietyId)
