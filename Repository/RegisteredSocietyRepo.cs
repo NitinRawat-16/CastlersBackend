@@ -14,6 +14,26 @@ namespace castlers.Repository
         {
             _dbContext = dbContext;
         }
+        #region User define method
+        public Task<int> DeleteRegisteredSocietyAsync(int Id)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<List<RegisteredSociety>> GetAllRegisteredSocietyAsync()
+        {
+            return await _dbContext.RegisteredSociety
+                .FromSqlRaw<RegisteredSociety>("GetRegisteredSocietyList")
+                .ToListAsync();
+        }
+        public async Task<RegisteredSociety> GetRegisteredSocietyByIdAsync(int Id)
+        {
+            var param = new SqlParameter("@registeredSocietyId", Id);
+
+            RegisteredSociety? registeredSociety = await Task.Run(() =>
+                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).AsEnumerable().FirstOrDefault());
+
+            return registeredSociety;
+        }
         public async Task<int> AddRegisteredSocietyAsync(RegisteredSociety registeredSociety)
         {
             List<SqlParameter> parameter = new List<SqlParameter>();
@@ -50,21 +70,6 @@ namespace castlers.Repository
             int registerId = Convert.ToInt32(parameter[14].Value);
 
             return registerId;
-        }
-        public async Task<List<RegisteredSociety>> GetAllRegisteredSocietyAsync()
-        {
-            return await _dbContext.RegisteredSociety
-                .FromSqlRaw<RegisteredSociety>("GetRegisteredSocietyList")
-                .ToListAsync();
-        }
-        public async Task<RegisteredSociety> GetRegisteredSocietyByIdAsync(int Id)
-        {
-            var param = new SqlParameter("@registeredSocietyId", Id);
-
-            RegisteredSociety? registeredSociety = await Task.Run(() =>
-                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).FirstOrDefault());
-
-            return registeredSociety;
         }
         public async Task<List<SocietyMemberDesignation>> GetSocietyMemberDesignationsAsync()
         {
@@ -109,6 +114,61 @@ namespace castlers.Repository
             }
             return result;
         }
+        public async Task<List<SocietyTenderDetails>> GetRegSocietyTenderDetails(int regSocietyId)
+        {
+            try
+            {
+                SqlParameter societyId = new SqlParameter("@regSocietyId", regSocietyId);
+                var tenderDetailsList = await Task.Run(() => _dbContext.SocietyTenderDetails.FromSqlRaw<SocietyTenderDetails>(@"EXEC  GetSocietyTendersDetails @regSocietyId", societyId).ToList());
+                return tenderDetailsList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public async Task<RegisteredSociety> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
+        {
+            string sql = "SELECT rs.registeredSocietyId,rs.societyDevelopmentTypeId, rs.societyDevelopmentSubType," +
+                         " rs.societyRegistrationNumber, rs.societyName,rs.registeredAddress, rs.email," +
+                         " rs.existingMemberCount, rs.age, rs.societyRegisteredCode,rs.createdBy,rs.createdDate," +
+                         "rs.updatedBy,rs.updatedDate, rs.city FROM dbo.RegisteredSociety rs where societyRegisteredCode = @registeredSocietyCode";
+
+
+            var param = new SqlParameter("@registeredSocietyCode", registeredSocietyCode);
+            // string sql = "exec GetRegisteredSocietyByCode @registeredsocietyCode = " + registeredSocietyCode +"";
+            // "@registeredsocietyCode = '" + registeredSocietyCode + "'";
+            var registeredSociety = await Task.Run(() => _dbContext.RegisteredSociety
+                          .FromSqlRaw(sql, param).FirstOrDefaultAsync());
+
+
+            return registeredSociety;
+        }
+        public async Task<List<DeveloperTendersDetails>> GetDeveloperTendersBySocietyId(int regSocietyId)
+        {
+            try
+            {
+                SqlParameter parameter = new SqlParameter("@regSocietyId", regSocietyId);
+                var tenderdetails = await Task.Run(() => _dbContext.DeveloperTendersDetails.FromSqlRaw(@"EXEC GetDeveloperTenderBySocietyId @regSocietyId", parameter).ToList());
+                return tenderdetails;
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
+        {
+            try
+            {
+                SqlParameter para = new SqlParameter("@RegisteredSocietyId", registeredSocietyId);
+                RegisteredSocietyTechnicalDetails? registeredSocietyTechnicalDetails = new RegisteredSocietyTechnicalDetails();
+                registeredSocietyTechnicalDetails = await Task.Run(() =>
+                _dbContext.RegisteredSocietyTechnicalDetails
+                .FromSqlRaw(@"EXEC GetRegisterdSocietyTechnicalDetails @RegisteredSocietyId", para)
+                .AsEnumerable().FirstOrDefault());
+
+                return registeredSocietyTechnicalDetails;
+            }
+            catch (Exception) { throw; }
+        }
         public async Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto registeredSociety)
         {
             var parameter = new List<SqlParameter>();
@@ -136,28 +196,6 @@ namespace castlers.Repository
 
             return isUpdated;
         }
-        public async Task<RegisteredSociety> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
-        {
-            string sql = "SELECT rs.registeredSocietyId,rs.societyDevelopmentTypeId, rs.societyDevelopmentSubType," +
-                         " rs.societyRegistrationNumber, rs.societyName,rs.registeredAddress, rs.email," +
-                         " rs.existingMemberCount, rs.age, rs.societyRegisteredCode,rs.createdBy,rs.createdDate," +
-                         "rs.updatedBy,rs.updatedDate, rs.city FROM dbo.RegisteredSociety rs where societyRegisteredCode = @registeredSocietyCode";
-
-
-            var param = new SqlParameter("@registeredSocietyCode", registeredSocietyCode);
-            // string sql = "exec GetRegisteredSocietyByCode @registeredsocietyCode = " + registeredSocietyCode +"";
-            // "@registeredsocietyCode = '" + registeredSocietyCode + "'";
-            var registeredSociety = await Task.Run(() => _dbContext.RegisteredSociety
-                          .FromSqlRaw(sql, param).FirstOrDefaultAsync());
-
-
-            return registeredSociety;
-        }
-        public Task<int> DeleteRegisteredSocietyAsync(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<RegisteredSocietyWithTechnicalDetails> GetRegisteredSocietyWithTechnicalDetails(int registeredSocietyId)
         {
             try
@@ -170,54 +208,8 @@ namespace castlers.Repository
 
                 return societyWithTechnicalDetails;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            catch (Exception) { throw; }
         }
-
-        public async Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
-        {
-            try
-            {
-                SqlParameter para = new SqlParameter("@RegisteredSocietyId", registeredSocietyId);
-                RegisteredSocietyTechnicalDetails? registeredSocietyTechnicalDetails = new RegisteredSocietyTechnicalDetails();
-                registeredSocietyTechnicalDetails = await Task.Run(() =>
-                _dbContext.RegisteredSocietyTechnicalDetails
-                .FromSqlRaw(@"EXEC GetRegisterdSocietyTechnicalDetails @RegisteredSocietyId", para)
-                .AsEnumerable().FirstOrDefault());
-
-                return registeredSocietyTechnicalDetails;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public async Task<List<SocietyTenderDetails>> GetRegSocietyTenderDetails(int regSocietyId)
-        {
-            try
-            {
-                SqlParameter societyId = new SqlParameter("@regSocietyId", regSocietyId);
-                var tenderDetailsList = await Task.Run(() => _dbContext.SocietyTenderDetails.FromSqlRaw<SocietyTenderDetails>(@"EXEC  GetSocietyTendersDetails @regSocietyId", societyId).ToList());
-                return tenderDetailsList;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public async Task<List<DeveloperTendersDetails>> GetDeveloperTendersBySocietyId(int regSocietyId)
-        {
-            SqlParameter parameter = new SqlParameter("@regSocietyId", regSocietyId);
-
-            var tenderdetails = await Task.Run(() => _dbContext.DeveloperTendersDetails.FromSqlRaw(@"EXEC GetDeveloperTenderBySocietyId @regSocietyId", parameter).ToList());
-
-            return tenderdetails;
-
-        }
+        #endregion
     }
 }

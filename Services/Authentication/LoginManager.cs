@@ -34,7 +34,6 @@ namespace castlers.Services.Authentication
 
             return _authenticationRepository.UserExists(username, password, userRole);
         }
-
         protected bool IsSocietyExist(string regSocietyEmail)
         {
             bool result = false;
@@ -49,7 +48,6 @@ namespace castlers.Services.Authentication
             return result;
 
         }
-
         protected bool IsMemberExistInSociety(string regSocietyEmail, string memberMobileNumber)
         {
             bool result = false;
@@ -63,5 +61,7 @@ namespace castlers.Services.Authentication
             return result;
 
         }
+        private int OTPForLogin(int min, int max) => new Random().Next(min, max);
+        
     }
 }

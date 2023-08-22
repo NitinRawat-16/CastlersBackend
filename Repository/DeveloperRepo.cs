@@ -75,7 +75,7 @@ namespace castlers.Repository
             var param = new SqlParameter("@developerId", Id);
 
             Developer? developer = await Task.Run(() => _dbContext.Developer
-                          .FromSqlRaw(@"exec GetDeveloperByID @developerId", param).FirstOrDefault());
+                          .FromSqlRaw(@"exec GetDeveloperByID @developerId", param).AsEnumerable().FirstOrDefault());
 
             return developer;
         }
@@ -109,5 +109,6 @@ namespace castlers.Repository
             SaveDocResponseDto response = await _uploadFile.SaveDoc(file, filePath);
             return response;
         }
+      
     }
 }

@@ -3,8 +3,6 @@ using castlers.Models;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 
-
-
 namespace castlers.Controllers
 {
     [Route("api/[controller]")]
@@ -12,7 +10,6 @@ namespace castlers.Controllers
     public class TenderController : ControllerBase
     {
         private readonly ITenderService _tenderService;
-        
         public TenderController(ITenderService tenderService)
         {
             _tenderService = tenderService;
@@ -55,7 +52,7 @@ namespace castlers.Controllers
             tenderResponseDto.status = (result == null || result == "0") ? "failed" : "success";
             return tenderResponseDto;
         }
-       
+
         [HttpGet("GetSocietyApprovedTenders")]
         public async Task<IActionResult> GetSocietyApprovedTenders()
         {
@@ -67,6 +64,54 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
 
             return Ok(societyTenderDetailsDto);
+        }
+
+        [HttpPost("IsTenderExists")]
+        public async Task<IActionResult> IsTenderExists([FromBody] TenderCodeDto tenderCodeDto)
+        {
+            if (tenderCodeDto.tenderCode == null)
+            {
+                return BadRequest("Tender code should not be empty!");
+            }
+            int result = 0;
+            try
+            {
+                result = await _tenderService.IsTenderExists(tenderCodeDto.tenderCode);
+            }
+            catch (Exception) { throw; }
+            return Ok(result);
+
+        }
+
+        [HttpGet("GetSocietyTenderDetailsByTenderId")]
+        public async Task<IActionResult> GetSocietyTenderDetailsByTenderId(int tenderId)
+        {
+            if (tenderId < 0) return BadRequest("Tender Id should not be null");
+            try
+            {
+                var tenderDetails = await _tenderService.GetSocietyTenderDetailsByTenderId(tenderId);
+                return Ok(tenderDetails);
+            }
+            catch (Exception) { throw; }
+        }
+
+        [HttpGet("GetSocietyActiveTenderIdBySocietyId")]
+        public async Task<IActionResult> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        {
+            if (societyId < 0) return BadRequest("Society Id should not be null!");
+            try
+            {
+                var tenderId = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
+                if (tenderId > 0)
+                {
+                    return Ok(tenderId);
+                }
+                else
+                {
+                    return Ok(0);
+                }
+            }
+            catch (Exception) { throw; }
         }
     }
 }

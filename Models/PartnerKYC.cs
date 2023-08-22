@@ -9,9 +9,9 @@
         public string contactNumber { get; set; }
         public string panCard { get; set; }
         public string aadharCard { get; set; }
-        public Guid createdBy { get; set; }
-        public DateTime createdDate { get; set; }
-        public Guid updatedBy { get; set; }
-        public DateTime updatedDate { get; set; }
+        public Guid createdBy { get; set; } = new Guid();
+        public DateTime createdDate { get; set; } = DateTime.Now;
+        public Guid updatedBy { get; set; } = new Guid();
+        public DateTime updatedDate { get; set; } = DateTime.Now;
     }
 }

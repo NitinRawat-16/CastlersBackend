@@ -47,18 +47,42 @@ namespace castlers.Services
         {
             try
             {
-                return  _mapper.Map<List<SocietyTenderDetailsDto>>(await _tenderRepo.GetTenderDetailsByIdAsync(regSocietyId))
+                return _mapper.Map<List<SocietyTenderDetailsDto>>(await _tenderRepo.GetTenderDetailsByIdAsync(regSocietyId))
                                .Where(x => x.isApprovedBySociety == true)
                                .ToList();
             }
             catch (Exception) { throw; }
         }
-
         public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
         {
             try
             {
                 return await _tenderRepo.GetSocietyApprovedTenders();
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<int> IsTenderExists(string tenderCode)
+        {
+            try
+            {
+                return await _tenderRepo.IsTenderExists(tenderCode);
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsByTenderId(int tenderId)
+        {
+            try
+            {
+                var societyTenderDetails = await _tenderRepo.GetSocietyTenderDetailsByTenderIdAsync(tenderId);
+                return _mapper.Map<SocietyTenderDetailsDto>(societyTenderDetails);
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        {
+            try
+            {
+                return await _tenderRepo.GetSocietyActiveTenderIdBySocietyId(societyId);
             }
             catch (Exception) { throw; }
         }

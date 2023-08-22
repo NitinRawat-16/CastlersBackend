@@ -1,5 +1,6 @@
-﻿using castlers.DbContexts;
-using castlers.Dtos;
+﻿using castlers.Dtos;
+using castlers.Models;
+using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,5 +53,22 @@ namespace castlers.Repository.Authentication
 
         }
 
+        public int IsSocietyExists(string regSocietyCode)
+        {
+            try
+            {
+                SqlParameter para = new SqlParameter("@regSocietyCode", regSocietyCode);
+                RegisteredSociety? societyDetails = _dbContext.RegisteredSociety
+                        .FromSqlRaw(@"SELECT * FROM RegisteredSociety WHERE societyRegisteredCode = {0}", para)
+                        .FirstOrDefault();
+
+                if (societyDetails != null)
+                {
+                    return societyDetails.registeredSocietyId;
+                }
+            }
+            catch (Exception) { throw; }
+            return 0;
+        }
     }
 }

@@ -8,5 +8,8 @@ namespace castlers.Repository
         public Task<string> AddDeveloperTenderAsync(DeveloperTenderDetails tenderDetails);
         public Task<List<SocietyTenderDetails>> GetTenderDetailsByIdAsync(int regSocietyId);
         public Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders();
+        public Task<int> IsTenderExists(string tenderCode);
+        public Task<SocietyTenderDetails> GetSocietyTenderDetailsByTenderIdAsync(int tenderId);
+        public Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId);
     }
 }

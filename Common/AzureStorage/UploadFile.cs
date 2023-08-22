@@ -36,7 +36,7 @@ namespace castlers.Common.AzureStorage
                 await using (Stream? data = file.OpenReadStream())
                 {
 
-                    await client.UploadAsync(data, new BlobHttpHeaders { ContentType = "application/pdf" });
+                    await client.UploadAsync(data, new BlobHttpHeaders { ContentType = file.ContentType });
                 }
 
                 //Fetching the URL of the file.

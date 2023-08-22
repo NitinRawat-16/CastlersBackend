@@ -81,9 +81,9 @@ namespace castlers.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
-            if (registeredSocietyDto == null)
+            if (registeredSocietyDto.societyName == null || registeredSocietyDto.societyName == "string")
             {
-                return BadRequest();
+                return BadRequest("Society name should not be empty.");
             }
 
             try
@@ -137,7 +137,6 @@ namespace castlers.Controllers
             }
         }
 
-
         // After login this method will called.
         [HttpGet("GetRegSocietyInfoViewById/{registeredSocietyId}")]
         public async Task<ActionResult<SocietyInfoViewDto>> GetRegisteredSocietyInfoViewAsync(int registeredSocietyId)
@@ -158,11 +157,12 @@ namespace castlers.Controllers
         }
 
         [HttpGet("GetRegisterdSocietyTechnicalDetailsById/{registeredSocietyId}")]
-        public async Task<ActionResult<RegisteredSocietyTechnicalDetails>> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
+        public async Task<IActionResult> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
         {
             try
             {
-                return await _registeredSocietyService.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
+               var societyDetails =  await _registeredSocietyService.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
+                return Ok(societyDetails);
             }
             catch (Exception)
             {
@@ -170,6 +170,28 @@ namespace castlers.Controllers
                 throw;
             }
         }
+        [HttpGet("GetRegisteredSocietyWithTechnicalDetails")]
+        public async Task<IActionResult> GetRegisteredSocietyWithTechnicalDetails(int registeredSocietyId)
+        {
+            if (registeredSocietyId < 0) return BadRequest("Registered society id should not be null!");
+            try
+            {
+                var societyDetails = await _registeredSocietyService.GetRegisteredSocietyWithTechnicalDetails(registeredSocietyId);
+                return Ok(societyDetails);
+            }
+            catch (Exception) { throw; }
+        }
 
+        [HttpGet("GetSocietyLetterOfInterestReceived")]
+        public async Task<IActionResult> GetSocietyLetterOfInterestReceived(int registeredSocietyId)
+        {
+            if (registeredSocietyId < 0) return BadRequest("Registered society id should not be empty!");
+            try
+            {
+                var letterOfInterestReceived = await _registeredSocietyService.GetSocietyLetterOfInterestReceived(registeredSocietyId);
+                return Ok(letterOfInterestReceived);
+            }
+            catch (Exception){throw;}
+        }
     }
 }

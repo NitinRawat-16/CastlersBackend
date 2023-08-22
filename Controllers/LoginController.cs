@@ -1,6 +1,8 @@
 ﻿using castlers.Dtos;
-using castlers.Services.Authentication;
+using castlers.Models;
+using castlers.Common.Email;
 using Microsoft.AspNetCore.Mvc;
+using castlers.Services.Authentication;
 
 namespace castlers.Controllers
 {
@@ -8,16 +10,24 @@ namespace castlers.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        //private readonly GraphServiceClient _graphServiceClient;
         private readonly ILoginService _loginService;
-        public LoginController(ILoginService loginService)
+        private readonly IEmailSender _emailSender;
+        public LoginController(ILoginService loginService, IEmailSender emailSender)
         {
             _loginService = loginService;
+            _emailSender = emailSender;
         }
 
         [HttpPost("SocietyLogin")]
         public async Task<bool> RegisteredSocietyLogin(string registeredSocietyCode)
-        {      
+        {
+            SendTo sendTo = new SendTo
+            {
+                Name = "Nitin Rawat",
+                Email = "nitinrawatsde@gmail.com",
+                EMailType = Common.Enums.EmailTypes.LetterOfInterest
+            };
+           await _emailSender.SendEmailAsync(sendTo);
             return await Task.FromResult(true);
         }
 
@@ -25,16 +35,15 @@ namespace castlers.Controllers
         public LoginResponseDto Login(loginDto dto)
         {
             LoginResponseDto loginResponseDto = new LoginResponseDto();
-            bool response = true ;
+            bool response = true;
             try
             {
-                return _loginService.IsUserExists(dto.username, dto.password);                     
+                return _loginService.IsUserExists(dto.username, dto.password);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 response = false;
             }
-           
             return loginResponseDto;
         }
     }

@@ -6,6 +6,7 @@ namespace castlers.Models
     public class RegisteredSocietyTechnicalDetails
     {
         public int? registeredSocietyId { get; set; }
+        public string? societyName { get; set; }
         public int? sizeOfPlot { get; set; }
         public string? plotDimensions { get; set; }
         public bool? residentialUse { get; set; }

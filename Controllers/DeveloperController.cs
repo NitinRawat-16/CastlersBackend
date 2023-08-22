@@ -1,6 +1,5 @@
 ﻿using castlers.Dtos;
 using castlers.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -23,10 +22,7 @@ namespace castlers.Controllers
             {
                 return await _developerService.GetDeveloperAsync();
             }
-            catch
-            {
-                throw;
-            }
+            catch { throw; }
         }
 
         [HttpGet("getDeveloper")]
@@ -36,14 +32,11 @@ namespace castlers.Controllers
             {
                 return await _developerService.GetDeveloperByIdAsync(developerId);
             }
-            catch
-            {
-                throw;
-            }
+            catch { throw; }
         }
 
         [HttpPost("addDeveloper")]
-        public async Task<IActionResult> AddDeveloperAsync([FromForm]DeveloperDto developerDto)
+        public async Task<IActionResult> AddDeveloperAsync([FromForm] DeveloperDto developerDto)
         {
             if (developerDto == null)
             {
@@ -56,14 +49,11 @@ namespace castlers.Controllers
 
                 return Ok(response);
             }
-            catch
-            {
-                throw;
-            }
+            catch { throw; }
         }
 
         [HttpPut("UpdateDeveloper")]
-        public async Task<IActionResult> UpdateDeveloperDtoAsync(DeveloperDto developerDto)
+        public async Task<IActionResult> UpdateDeveloperAsync(DeveloperDto developerDto)
         {
             if (developerDto == null)
             {
@@ -75,10 +65,7 @@ namespace castlers.Controllers
                 var result = await _developerService.UpdateDeveloperAsync(developerDto);
                 return Ok(result);
             }
-            catch
-            {
-                throw;
-            }
+            catch { throw; }
         }
     }
 }

@@ -128,7 +128,6 @@ namespace castlers.Repository
 
             return tenderDetails;
         }
-
         public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
         {
             List<SocietyApprovedTendersDetails>? societyApprovedTenderList = new List<SocietyApprovedTendersDetails>();
@@ -143,6 +142,50 @@ namespace castlers.Repository
             catch (Exception) { throw; }
 
             return societyApprovedTenderList;
+        }
+        public async Task<int> IsTenderExists(string tenderCode)
+        {
+            int result = 0;
+            try
+            {
+                result = Convert.ToInt32(await Task.Run(() => _dbContext.SocietyTenderDetails
+                    .FromSqlRaw(@"SELECT registeredSocietyId FROM TenderDetails WHERE tenderCode = {0}", tenderCode)
+                    .Select(t => t.registeredSocietyId)
+                    .FirstOrDefault()));
+            }
+            catch (Exception) { throw; }
+            return result;
+        }
+        public async Task<SocietyTenderDetails> GetSocietyTenderDetailsByTenderIdAsync(int tenderId)
+        {
+            try
+            {
+                SqlParameter paras = new SqlParameter("@TenderId", tenderId);
+                var tenderDetails = await Task.Run(() => _dbContext.SocietyTenderDetails.FromSqlRaw(@"EXEC GetSocietyTenderDetailsByTenderId @TenderId", paras).AsEnumerable().FirstOrDefault());
+                return tenderDetails;
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        {
+            int tenderId = 0;
+            try
+            {
+                List<SqlParameter> para = new List<SqlParameter>();
+                para.Add(new("@SocietyId", societyId));
+                para.Add(new("@TenderId", tenderId));
+                para[1].Direction = System.Data.ParameterDirection.Output;
+                tenderId = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC GetSocietyActiveTenderIdBySocietyId @SocietyId, @TenderId OUT", para));
+
+                if (para[1].Value is DBNull)
+                    return 0;
+                else
+                {
+                    tenderId = Convert.ToInt32(para[1].Value);
+                    return tenderId;
+                }
+            }
+            catch (Exception) { throw; }
         }
     }
 }

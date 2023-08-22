@@ -1,7 +1,4 @@
-﻿using Twilio;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
-
+﻿
 namespace castlers.Common.SMS
 {
     public class SMSSender : ISMSSender
@@ -13,17 +10,7 @@ namespace castlers.Common.SMS
 
             try
             {
-                string accountSid = _config.GetValue<string>("TwilioSMSAccountSid");
-                string authToken = _config.GetValue<string>("TwilioAuthToken");
-                PhoneNumber fromNumber = _config.GetValue<string>("TwilioSMSNumber");
-
-                TwilioClient.Init(accountSid, authToken);
-                var message = MessageResource.Create
-                (
-                    body: text,
-                    from: fromNumber,
-                    to: "+919074748651"
-                );
+                
             }
             catch (Exception ex)
             {

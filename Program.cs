@@ -10,26 +10,31 @@ using castlers.Services.Authentication;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddTransient<IUploadFile, UploadFile>();
+builder.Services.AddTransient<IAuthService,AuthManager>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<ILoginService, LoginManager>();
+builder.Services.AddTransient<IBlogsService, BlogsManager>();
+builder.Services.AddTransient<IBlogsRepository, BlogsRepo>();
 builder.Services.AddTransient<ITenderRepository, TenderRepo>();
 builder.Services.AddTransient<ITenderService, TenderManager>();
 builder.Services.AddTransient<IDeveloperRepository, DeveloperRepo>();
 builder.Services.AddTransient<IDeveloperService, DeveloperManager>();
+builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
 builder.Services.AddTransient<IPartnerKYCService, PartnerKYCManager>();
 builder.Services.AddTransient<IPartnerKYCRepository, PartnerKYCRepo>();
-builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
 builder.Services.AddTransient<IDeveloperKYCService, DeveloperKYCManager>();
 builder.Services.AddTransient<IDeveloperKYCRepository, DeveloperKYCRepo>();
-builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
+builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
 builder.Services.AddTransient<ISocietyDocumentsService, SocietyDocumentsManager>();
+builder.Services.AddTransient<ILetterOfInterestRepository, LetterOfInterestRepo>();
+builder.Services.AddTransient<ILetterOfInterestService, LetterOfInterestManager>();
 builder.Services.AddTransient<IRegisteredSocietyRepository, RegisteredSocietyRepo>();
 builder.Services.AddTransient<IRegisteredSocietyService, RegisteredSocietyManager>();
 builder.Services.AddTransient<ISocietyMemberDetailsService, SocietyMemberDetailsManager>();
 builder.Services.AddTransient<ISocietyMemberDetailsRepository, SocietyMemberDetailsRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeRepository, SocietyDevelopmentTypeRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeService, SocietyDevelopmentTypeManager>();
-builder.Services.AddTransient<IUploadFile, UploadFile>();
-//builder.Services.AddTransient<IEmailSender, EmailSender>();
 //builder.Services.AddTransient<ISMSSender, SMSSender>();
 
 

@@ -1,4 +1,5 @@
-﻿using castlers.Models;
+﻿using castlers.Dtos;
+using castlers.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace castlers.DbContexts
@@ -28,6 +29,9 @@ namespace castlers.DbContexts
         public DbSet<SocietyTenderDetails> SocietyTenderDetails { get; set; }
         public DbSet<DeveloperTendersDetails> DeveloperTendersDetails { get; set; }
         public DbSet<SocietyApprovedTendersDetails> SocietyApprovedTendersDetails { get; set; }
+        public DbSet<PreTenderCompliancesDto> PreTenderCompliances { get; set; }
+        public DbSet<ViewLetterOfInterestReceivedDto> LetterOfInterestReceived { get; set; }
+        public DbSet<Blogs> Blogs { get; set; }
 
     }
 }
