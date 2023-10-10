@@ -20,6 +20,7 @@ namespace castlers.Models
         public DateTime? SendTenderNoticePresentationDate { get; set; } = default;
         public string? SendTenderNoticeETenderFormAPI { get; set; } = default;
         public string? TenderCode { get; set; } = default;
+        public string? RegisteredSocietyCode { get; set; } = default;
         public RegisteredSocietyWithTechnicalDetails SocietyLetterOfInterestDetails { get; set; } = new RegisteredSocietyWithTechnicalDetails();
     }
 }

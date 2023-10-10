@@ -2,7 +2,8 @@
 {
     public class SocietyDocumentDto
     {
-        public string? societyName { get; set; }
+        public int SocietyId { get; set; }
+        //public string? societyName { get; set; }
         public string? type { get; set; }
         public string? subType { get; set; }
         public string? typeOfdocumentName { get; set; }

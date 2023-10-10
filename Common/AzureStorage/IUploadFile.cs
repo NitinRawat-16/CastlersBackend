@@ -1,4 +1,4 @@
-﻿using castlers.Dtos;
+﻿using castlers.ResponseDtos;
 
 namespace castlers.Common.AzureStorage
 {

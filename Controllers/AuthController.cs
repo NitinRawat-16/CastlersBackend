@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using castlers.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using castlers.Services.Authentication;
-using castlers.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace castlers.Controllers
 {
@@ -18,7 +19,7 @@ namespace castlers.Controllers
         public IActionResult IsSocietyExists([FromBody] RegSocietyCodeDto regSocietyCodeDto)
         {
             int result = 0;
-            if(regSocietyCodeDto.societyCode == null)
+            if (regSocietyCodeDto.societyCode == null)
             {
                 return BadRequest("regSocietyCode is null!");
             }
@@ -29,6 +30,17 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
 
             return Ok(result);
+        }
+
+        [HttpPost("VerifyOTP")]
+        public async Task<IActionResult> VerifyOTP([FromBody] VerifyOTPDto verifyOTP)
+        {
+            try
+            {
+                var result = await _authService.VerifyOTP(verifyOTP);
+                return Ok(result);
+            }
+            catch (Exception) { throw; }
         }
     }
 }

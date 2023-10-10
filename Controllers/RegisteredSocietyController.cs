@@ -1,5 +1,4 @@
 ﻿using castlers.Dtos;
-using castlers.Models;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +31,7 @@ namespace castlers.Controllers
         [HttpGet("getRegisteredSocietyById")]
         public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyAsync(int registeredSocietyId)
         {
-            if(registeredSocietyId <= 0)
+            if (registeredSocietyId <= 0)
             {
                 return BadRequest("Registered Society Id is not valid.");
             }
@@ -89,13 +88,9 @@ namespace castlers.Controllers
             try
             {
                 var response = await _registeredSocietyService.AddRegisteredSocietyAsync(registeredSocietyDto);
-
                 return Ok(response);
             }
-            catch
-            {
-                throw;
-            }
+            catch { throw; }
         }
 
         [HttpPost("UpdateTechnicalDetailsSocietyAsync")]
@@ -161,7 +156,7 @@ namespace castlers.Controllers
         {
             try
             {
-               var societyDetails =  await _registeredSocietyService.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
+                var societyDetails = await _registeredSocietyService.GetRegisteredSocietyTechnicalDetails(registeredSocietyId);
                 return Ok(societyDetails);
             }
             catch (Exception)
@@ -191,7 +186,7 @@ namespace castlers.Controllers
                 var letterOfInterestReceived = await _registeredSocietyService.GetSocietyLetterOfInterestReceived(registeredSocietyId);
                 return Ok(letterOfInterestReceived);
             }
-            catch (Exception){throw;}
+            catch (Exception) { throw; }
         }
     }
 }

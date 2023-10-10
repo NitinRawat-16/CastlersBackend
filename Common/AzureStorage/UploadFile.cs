@@ -1,8 +1,8 @@
 ﻿using Azure;
-using castlers.Dtos;
 using castlers.DbContexts;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using castlers.ResponseDtos;
 
 namespace castlers.Common.AzureStorage
 {

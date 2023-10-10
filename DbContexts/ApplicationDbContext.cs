@@ -32,6 +32,10 @@ namespace castlers.DbContexts
         public DbSet<PreTenderCompliancesDto> PreTenderCompliances { get; set; }
         public DbSet<ViewLetterOfInterestReceivedDto> LetterOfInterestReceived { get; set; }
         public DbSet<Blogs> Blogs { get; set; }
+        public DbSet<UserOTPDetails> UserOTPDetails { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
+        public DbSet<User> Users {  get; set; }
 
     }
 }

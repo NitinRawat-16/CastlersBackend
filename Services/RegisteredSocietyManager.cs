@@ -3,6 +3,8 @@ using castlers.Dtos;
 using castlers.Models;
 using castlers.Repository;
 using castlers.Common.Email;
+using System.Security.Cryptography;
+using castlers.ResponseDtos;
 
 namespace castlers.Services
 {
@@ -12,17 +14,20 @@ namespace castlers.Services
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly ITenderRepository _tenderRepo;
+        private readonly IUserRepository _userRepository;
         private readonly ISocietyDocRepository _societyDocRepository;
         private readonly ILetterOfInterestRepository _letterOfInterestRepository;
         private readonly IRegisteredSocietyRepository _registeredSocietyRepository;
         private readonly ISocietyMemberDetailsRepository _societyMemberDetailsRepository;
 
         public RegisteredSocietyManager(IRegisteredSocietyRepository registeredSocietyRepository, IMapper mapper, IEmailSender emailSender,
-            ISocietyMemberDetailsRepository societyMemberDetailsRepository, ISocietyDocRepository societyDocRepository, ITenderRepository tenderRepo, ILetterOfInterestRepository letterOfInterestRepository)
+            ISocietyMemberDetailsRepository societyMemberDetailsRepository, ISocietyDocRepository societyDocRepository, ITenderRepository tenderRepo,
+            ILetterOfInterestRepository letterOfInterestRepository, IUserRepository userRepository)
         {
             _mapper = mapper;
             _tenderRepo = tenderRepo;
             _emailSender = emailSender;
+            _userRepository = userRepository;
             _societyDocRepository = societyDocRepository;
             _letterOfInterestRepository = letterOfInterestRepository;
             _registeredSocietyRepository = registeredSocietyRepository;
@@ -32,47 +37,67 @@ namespace castlers.Services
 
         #region User Defined Method
 
-        public async Task<int> AddRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
+        public async Task<SocietyRegistrationResponseDto> AddRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
         {
+            SocietyRegistrationResponseDto response = new();
             var registeredSociety = _mapper.Map<RegisteredSocietyDto, RegisteredSociety>(registeredSocietyDto);
             registeredSociety.createdBy = Guid.NewGuid();
             registeredSociety.createdDate = DateTime.Now;
             registeredSociety.updatedBy = Guid.NewGuid();
             registeredSociety.updatedDate = DateTime.Now;
 
-            int registeredSocietyId = Convert.ToInt32(await _registeredSocietyRepository.AddRegisteredSocietyAsync(registeredSociety));
-            if (registeredSocietyId > 0)
+            // Generating registration society code
+            var cityFirstThreeChar = registeredSociety.city.Substring(0, 3);
+            var fiveDigitRandomNumber = RandomNumberGenerator.GetInt32(0, 10000).ToString("D5");
+            registeredSociety.societyRegisteredCode = string.Format("{0}{1}{2}", "MH", cityFirstThreeChar.ToUpper(), fiveDigitRandomNumber);
+            //
+            try
             {
-                foreach (var memberDetails in registeredSocietyDto.societyMemberDetails)
+                int registeredSocietyId = Convert.ToInt32(await _registeredSocietyRepository.AddRegisteredSocietyAsync(registeredSociety));
+                if (registeredSocietyId > 0)
                 {
-                    memberDetails.registeredSocietyId = registeredSocietyId;
-                    //memberDetails.createdDate = DateTime.Now.Date;
-                    //memberDetails.updatedDate = DateTime.Now.Date;
-                    memberDetails.societyMemberDetailsId = 0;
-                }
-                var societyMemberDetails = _mapper.Map<List<SocietyMemberDetailsDto>, List<SocietyMemberDetails>>(registeredSocietyDto.societyMemberDetails);
-                int result = Convert.ToInt32(await _societyMemberDetailsRepository.AddRegisteredSocietyMemberListAsync(societyMemberDetails));
+                    foreach (var memberDetails in registeredSocietyDto.societyMemberDetails)
+                    {
+                        memberDetails.registeredSocietyId = registeredSocietyId;
+                        memberDetails.societyMemberDetailsId = 0;
+                    }
+                    var societyMemberDetails = _mapper.Map<List<SocietyMemberDetailsDto>, List<SocietyMemberDetails>>(registeredSocietyDto.societyMemberDetails);
+                    response = await _societyMemberDetailsRepository.AddRegisteredSocietyMemberListAsync(societyMemberDetails);
+                    response.RegisteredSocietyId = registeredSocietyId;
 
-                #region Send Mail
-                //Society registered confirmation mail to society 
-                SendTo sendTo = new SendTo
-                {
-                    Name = registeredSocietyDto.societyName,
-                    Email = registeredSocietyDto.email,
-                    EMailType = Common.Enums.EmailTypes.SocietyRegister,
-                    Message = registeredSocietyDto.societyRegisteredCode
-                };
-                _emailSender.SendEmailAsync(sendTo);
-                //Member registered confirmation mail to society and members.
-                if (result > 0)
-                {
-                    var memberList = MemberListForEmail(societyMemberDetails, registeredSociety.societyRegisteredCode);
-                    _emailSender.SendEmailAsync(memberList);
+                    #region Send Mail
+                    //Society registered confirmation mail to society 
+                    SendTo sendTo = new SendTo
+                    {
+                        Name = registeredSocietyDto.societyName,
+                        Email = registeredSocietyDto.email,
+                        EMailType = Common.Enums.EmailTypes.SocietyRegistration,
+                        RegisteredSocietyCode = registeredSociety.societyRegisteredCode
+                    };
+                    if (response.Status == "success")
+                    {
+                        // Semd Email to new registered society
+                        await _emailSender.SendEmailAsync(sendTo);
+                    
+                        //Member registered confirmation mail to society and members.
+                        var memberList = MemberListForEmail(societyMemberDetails, registeredSociety.societyRegisteredCode, registeredSociety.societyName);
+                        await _emailSender.SendEmailAsync(memberList);
+                    }
+                    #endregion
+                    return response;
                 }
-                #endregion
             }
-
-            return Convert.ToInt32(registeredSocietyId);
+            catch (Exception error)
+            {
+                return new SocietyRegistrationResponseDto()
+                {
+                    Error = error.Message,
+                    Message = error.StackTrace,
+                    Status = "failed",
+                    SaveMemberCount = 0
+                };
+            }
+            return null;
         }
         public async Task<int> UpdateRegisteredSocietyAsync(RegisteredSocietyDto registeredSocietyDto)
         {
@@ -178,7 +203,7 @@ namespace castlers.Services
         {
             throw new NotImplementedException();
         }
-        private List<SendTo> MemberListForEmail(List<SocietyMemberDetails> societyMemberDetails, string societyCode)
+        private List<SendTo> MemberListForEmail(List<SocietyMemberDetails> societyMemberDetails, string societyCode, string societyName)
         {
             var memberlist = new List<SendTo>();
             foreach (var member in societyMemberDetails)
@@ -187,8 +212,9 @@ namespace castlers.Services
                 {
                     Name = member.memberName,
                     Email = member.email,
-                    Message = societyCode,
-                    EMailType = Common.Enums.EmailTypes.SocietyMemberRegister
+                    RegisteredSocietyCode = societyCode,
+                    SocietyName = societyName,
+                    EMailType = Common.Enums.EmailTypes.MemberRegistration
                 });
             }
             return memberlist;

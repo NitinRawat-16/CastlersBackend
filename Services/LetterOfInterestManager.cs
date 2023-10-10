@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
-using castlers.Common.Email;
 using castlers.Dtos;
 using castlers.Models;
 using castlers.Repository;
+using castlers.ResponseDtos;
+using castlers.Common.Email;
 
 namespace castlers.Services
 {
@@ -29,7 +30,7 @@ namespace castlers.Services
             _letterOfInterestRepository = letterOfInterestRepository;
         }
         #endregion
-        public async Task<SendMailResponse> LetterOfInterestedReceivedAsync(int developerId, int tenderId, bool interested)
+        public async Task<MailResponseDto> LetterOfInterestedReceivedAsync(int developerId, int tenderId, bool interested)
         {
             try
             {
@@ -41,7 +42,7 @@ namespace castlers.Services
                     Email = developerDetails.email,
                     EMailType = Common.Enums.EmailTypes.LetterOfInterestReceived
                 };
-                var response = new SendMailResponse();
+                var response = new MailResponseDto();
                 if (isSaved)
                 {
                     response = await _emailSender.SendEmailAsync(sendTo);
@@ -58,7 +59,7 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<SendMailResponse> LetterOfInterestSendAsync(List<DevDetailsForLetterOfInterest> sendLetterOfInterestDto)
+        public async Task<MailResponseDto> LetterOfInterestSendAsync(List<DevDetailsForLetterOfInterest> sendLetterOfInterestDto)
         {
             try
             {
@@ -82,7 +83,7 @@ namespace castlers.Services
                 }
                 List<int> developerId = sendLetterOfInterestDto.Select(d => d.DeveloperId).ToList();
                 var haveSaved = await _letterOfInterestRepository.AddLetterOfInterestSendAsync(developerId, societyId, tenderId);
-                var response = new SendMailResponse();
+                var response = new MailResponseDto();
                 if (haveSaved)
                 {
                     response = await _emailSender.SendEmailAsync(developerEmailList);

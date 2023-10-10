@@ -1,21 +1,29 @@
+using System.Text;
 using castlers.Services;
 using castlers.DbContexts;
 using castlers.Repository;
 using castlers.Common.SMS;
 using castlers.Common.Email;
-using castlers.Repository.Authentication;
 using castlers.Common.AzureStorage;
+using Microsoft.IdentityModel.Tokens;
 using castlers.Services.Authentication;
+using castlers.Repository.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Add Transient
 // Add services to the container.
+builder.Services.AddTransient<ISMSSender, SMSSender>();
 builder.Services.AddTransient<IUploadFile, UploadFile>();
-builder.Services.AddTransient<IAuthService,AuthManager>();
+builder.Services.AddTransient<IUserRepository, UserRepo>();
+builder.Services.AddTransient<IAuthService, AuthManager>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<ILoginService, LoginManager>();
 builder.Services.AddTransient<IBlogsService, BlogsManager>();
 builder.Services.AddTransient<IBlogsRepository, BlogsRepo>();
+builder.Services.AddTransient<IAdminService, AdminManager>();
+builder.Services.AddTransient<IAdminRepository, AdminRepo>();
 builder.Services.AddTransient<ITenderRepository, TenderRepo>();
 builder.Services.AddTransient<ITenderService, TenderManager>();
 builder.Services.AddTransient<IDeveloperRepository, DeveloperRepo>();
@@ -35,16 +43,8 @@ builder.Services.AddTransient<ISocietyMemberDetailsService, SocietyMemberDetails
 builder.Services.AddTransient<ISocietyMemberDetailsRepository, SocietyMemberDetailsRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeRepository, SocietyDevelopmentTypeRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeService, SocietyDevelopmentTypeManager>();
-//builder.Services.AddTransient<ISMSSender, SMSSender>();
+#endregion
 
-
-builder.Services.AddDbContext<ApplicationDbContext>();
-
-// Email Configuration
-//var emailConfig = builder.Configuration
-//        .GetSection("EmailConfiguration")
-//        .Get<EmailConfiguration>();
-//builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddControllers();
 
@@ -53,17 +53,30 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+#region JWT Configuration
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
+        ValidAudience = builder.Configuration["JwtConfig:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Secret_key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
+});
 
-//builder.Services.AddCors(opt =>
-//{
-//    opt.AddPolicy(name: "CorsPolicy", builder =>
-//    {
-//        builder.WithOrigins("http://localhost:4200")
-//        .AllowAnyHeader()
-//        .AllowAnyMethod();
-//    });
-//});
+builder.Services.AddAuthentication();
+#endregion
 
+builder.Services.AddDbContext<ApplicationDbContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
