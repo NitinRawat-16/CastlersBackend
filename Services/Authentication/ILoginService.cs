@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.ResponseDtos;
 
 namespace castlers.Services.Authentication
 {
@@ -6,5 +7,6 @@ namespace castlers.Services.Authentication
     {
         //public Task<LoginResponseDto> RegisteredSocietyLogin(string regSocietyEmail, string memberMobileNumber);
         public LoginResponseDto IsUserExists(string username, string password);
+        public Task<SendOTPResponseDto> SendOTPAsync(loginDto loginDto);
     }
 }

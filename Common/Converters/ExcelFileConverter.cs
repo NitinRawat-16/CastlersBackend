@@ -24,9 +24,9 @@ namespace castlers.Common.Converters
                             members.Add(new SocietyMemberDetails
                             {
                                 registeredSocietyId = societyId,
-                                memberName = reader.GetValue(0).ToString(),
-                                mobileNumber = reader.GetValue(1).ToString(),
-                                email = reader.GetValue(2).ToString(),
+                                memberName = reader.GetValue(0) is null ? string.Empty : reader.GetValue(0).ToString(),
+                                email = reader.GetValue(1) is null ? string.Empty : reader.GetValue(1).ToString(),
+                                mobileNumber = reader.GetValue(2) is null ? string.Empty : reader.GetValue(2).ToString(),
                                 societyMemberDesignationId = 0,
                                 createdBy = Guid.NewGuid(),
                                 updatedBy = Guid.NewGuid()

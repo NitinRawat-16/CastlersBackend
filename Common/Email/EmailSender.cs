@@ -1,8 +1,7 @@
 ﻿using castlers.Models;
 using castlers.Common.Enums;
 using System.Net.Http.Headers;
-using castlers.Dtos;
-using static System.Net.WebRequestMethods;
+using castlers.ResponseDtos;
 
 namespace castlers.Common.Email
 {
@@ -16,13 +15,13 @@ namespace castlers.Common.Email
         {
             _configuration = configuration;
         }
-        public async Task<SendMailResponse> SendEmailAsync(SendTo sendTo)
+        public async Task<MailResponseDto> SendEmailAsync(SendTo sendTo)
         {
             bool result;
             result = await Send(sendTo);
             if (result)
             {
-                return new SendMailResponse
+                return new MailResponseDto
                 {
                     SendMailCount = 1,
                     Message = "Mail have been send to user.",
@@ -31,7 +30,7 @@ namespace castlers.Common.Email
             }
             else
             {
-                return new SendMailResponse
+                return new MailResponseDto
                 {
                     SendMailCount = 0,
                     Message = "Some error occurs.",
@@ -39,7 +38,7 @@ namespace castlers.Common.Email
                 };
             }
         }
-        public async Task<SendMailResponse> SendEmailAsync(List<SendTo> sendToList)
+        public async Task<MailResponseDto> SendEmailAsync(List<SendTo> sendToList)
         {
             bool result;
             int sendMailCount = 0;
@@ -50,7 +49,7 @@ namespace castlers.Common.Email
             }
             if (sendToList.Count == sendMailCount)
             {
-                return new SendMailResponse
+                return new MailResponseDto
                 {
                     SendMailCount = sendMailCount,
                     Message = "Mail have been send to users.",
@@ -59,7 +58,7 @@ namespace castlers.Common.Email
             }
             else
             {
-                return new SendMailResponse
+                return new MailResponseDto
                 {
                     SendMailCount = sendMailCount,
                     Message = "Some error occurs for few users.",
@@ -92,16 +91,16 @@ namespace castlers.Common.Email
                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"name\":\"" + sendTo.Name + "\",\"otp\":\"12345\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Login_OTP_Mail + "\"}"
                             );
                         break;
-                    case EmailTypes.SocietyRegister:
+                    case EmailTypes.SocietyRegistration:
                         request.Content = new StringContent
                            (
-                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"societyname\":\"" + sendTo.Name + "\",\"societycode\":\"12345\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Society_Reg + "\"}"
+                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"societyname\":\"" + sendTo.Name + "\",\"societycode\":\"" + sendTo.RegisteredSocietyCode +"\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Society_Registration + "\"}"
                            );
                         break;
-                    case EmailTypes.SocietyMemberRegister:
+                    case EmailTypes.MemberRegistration:
                         request.Content = new StringContent
                            (
-                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"name\":\"" + sendTo.Name + "\",\"otp\":\"12345\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Society_Member_Reg + "\"}"
+                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"membername\":\"" + sendTo.Name + "\",\"societycode\":\""+sendTo.RegisteredSocietyCode+ "\", \"societyname\":\""+sendTo.SocietyName+"\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Member_Registration + "\"}"
                            );
                         break;
                     case EmailTypes.DeveloperRegister:
@@ -126,6 +125,12 @@ namespace castlers.Common.Email
                         request.Content = new StringContent
                            (
                              "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"enddate\":\"" + sendTo.SendTenderNoticeEndDate + "\",\"etenderform\":\"" + sendTo.SendTenderNoticeETenderFormAPI + "\",\"openingdate\":\"" + sendTo.SendTenderNoticePublicationDate + "\",\"societyname\":\"" + sendTo.SocietyName + "\",\"startdate\":\"" + sendTo.SendTenderNoticePresentationDate + "\",\"tendercode\":\"" + sendTo.TenderCode + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Send_Tender_Notice +"\"}"
+                           );
+                        break;
+                    case EmailTypes.AdminRegistration:
+                        request.Content = new StringContent
+                        (
+                            "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"admincode\":\"" + sendTo.Message + "\", \"name\":\"" + sendTo.Name + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Admin_Registration + "\"}"
                            );
                         break;
                 }

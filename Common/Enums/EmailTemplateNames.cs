@@ -3,11 +3,12 @@
     public enum EmailTemplateNames
     {
         Login_OTP_Mail,
-        Society_Reg,
-        Society_Member_Reg,
+        Society_Registration,
+        Member_Registration,
         Developer_Reg,
         Letter_Of_Interest,
         Letter_Of_Interest_Received,
-        Send_Tender_Notice
+        Send_Tender_Notice,
+        Admin_Registration
     }
 }

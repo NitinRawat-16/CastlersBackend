@@ -1,6 +1,6 @@
-﻿namespace castlers.Dtos
+﻿namespace castlers.ResponseDtos
 {
-    public class SendMailResponse
+    public class MailResponseDto
     {
         public int? SendMailCount { get; set; }
         public string? Message { get; set; }

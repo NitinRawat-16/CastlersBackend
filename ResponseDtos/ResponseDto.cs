@@ -1,4 +1,4 @@
-﻿namespace castlers.Dtos
+﻿namespace castlers.ResponseDtos
 {
     public class ResponseDto
     {

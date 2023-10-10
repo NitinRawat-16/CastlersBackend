@@ -7,6 +7,7 @@ namespace castlers.Repository
     {
         public Task<List<RegisteredSociety>> GetAllRegisteredSocietyAsync();
         public Task<RegisteredSociety> GetRegisteredSocietyByIdAsync(int Id);
+        public Task<RegisteredSociety> GetRegisteredSocietyByCodeAsync(string societyCode);
         public Task<int> AddRegisteredSocietyAsync(RegisteredSociety registeredSociety);
         public Task<int> UpdateRegisteredSocietyAsync(RegisteredSociety registeredSociety);
         public Task<int> DeleteRegisteredSocietyAsync(int societyMemberId);

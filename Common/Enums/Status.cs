@@ -2,8 +2,8 @@
 { 
     public enum Status
     {
-       Error,
-       Success,
-       Warning
+       error,
+       success,
+       failed
     }
 }

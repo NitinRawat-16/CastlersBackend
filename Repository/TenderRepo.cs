@@ -1,6 +1,6 @@
-﻿using castlers.Dtos;
-using castlers.Models;
+﻿using castlers.Models;
 using castlers.DbContexts;
+using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
@@ -184,6 +184,28 @@ namespace castlers.Repository
                     tenderId = Convert.ToInt32(para[1].Value);
                     return tenderId;
                 }
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<bool> ApproveSocietyTender(int tenderId, int societyId, bool isApprove, string tenderCode = "")
+        {
+            bool response = false;
+            try
+            {
+                List<SqlParameter> prmList = new List<SqlParameter>
+                {
+                    new("@TenderId", tenderId),
+                    new("@SocietyId", societyId),
+                    new("@IsApprove", isApprove),
+                    new("@TenderCode", tenderCode)
+                };
+                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC uspApproveSocietyTender @TenderId, @SocietyId, @IsApprove, @TenderCode OUT", prmList));
+
+                if (result > 0)
+                {
+                    return response = true;
+                }
+                return response;
             }
             catch (Exception) { throw; }
         }

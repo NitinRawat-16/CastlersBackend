@@ -3,11 +3,12 @@
     public enum EmailTypes
     {
         LoginOTP,
-        SocietyMemberRegister,
-        SocietyRegister,
+        SocietyRegistration,
+        MemberRegistration,
         DeveloperRegister,
         LetterOfInterest,
         LetterOfInterestReceived,
-        SendTenderNotice
+        SendTenderNotice,
+        AdminRegistration
     }
 }

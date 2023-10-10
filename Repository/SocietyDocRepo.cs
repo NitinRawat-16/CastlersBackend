@@ -4,6 +4,7 @@ using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using castlers.Common.AzureStorage;
+using castlers.ResponseDtos;
 
 namespace castlers.Repository
 {
@@ -11,23 +12,26 @@ namespace castlers.Repository
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IUploadFile _uploadFile;
-        public SocietyDocRepo(ApplicationDbContext dbContext, IUploadFile uploadFile)
+        private readonly IRegisteredSocietyRepository _regSociety;
+        public SocietyDocRepo(ApplicationDbContext dbContext, IUploadFile uploadFile, IRegisteredSocietyRepository regSociety)
         {
             _dbContext = dbContext;
             _uploadFile = uploadFile;
+            _regSociety = regSociety;
         }
         public async Task<SaveDocResponseDto> UploadSocietyDoc(SocietyDocumentDto documentDto)
         {
             SaveDocResponseDto saveDocResponseDto = new SaveDocResponseDto();
+            var societyDetails = await _regSociety.GetRegisteredSocietyByIdAsync(documentDto.SocietyId);
             IFormFile? file = documentDto.documentFile;
-            var filePath = string.Format("{0}/{1}/{2}", documentDto.societyName, documentDto.subType, documentDto.typeOfdocumentName + ".pdf");
+            var filePath = string.Format("{0}/{1}/{2}", societyDetails.societyName, documentDto.subType, documentDto.typeOfdocumentName + ".pdf");
             var responseDto = await _uploadFile.SaveDoc(file, filePath, documentDto.isUpdate);
             int isUpload;
 
             if (responseDto.Status == "Successfully")
             {
                 List<SqlParameter> parameters = new List<SqlParameter>();
-                parameters.Add(new SqlParameter("@RegisteredSocietyName", documentDto.societyName));
+                parameters.Add(new SqlParameter("@RegisteredSocietyName", societyDetails.societyName));
                 parameters.Add(new SqlParameter("@DocumentName", documentDto.typeOfdocumentName));
                 parameters.Add(new SqlParameter("@DocPath", responseDto.DocURL));
 

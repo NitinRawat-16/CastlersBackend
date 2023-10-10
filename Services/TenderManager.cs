@@ -7,8 +7,9 @@ namespace castlers.Services
 {
     public class TenderManager : ITenderService
     {
-        private readonly ITenderRepository _tenderRepo;
+        private const int MIN = 10000, MAX = 99999;
         private readonly IMapper _mapper;
+        private readonly ITenderRepository _tenderRepo;
         public TenderManager(ITenderRepository tenderRepo, IMapper mapper)
         {
             _tenderRepo = tenderRepo;
@@ -86,5 +87,18 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
+        public async Task<bool> ApproveSocietyTender(int tenderId, int societyId, bool isApprove)
+        {
+            bool result = false;
+            try
+            {
+                //return await _tenderRepo.;
+            }
+            catch (Exception) { throw; }
+            return result;
+        }
+
+        private string FiveDigitRandomNumber() => new Random().Next(MIN, MAX).ToString();
     }
 }

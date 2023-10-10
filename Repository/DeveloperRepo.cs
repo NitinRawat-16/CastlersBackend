@@ -1,10 +1,10 @@
-﻿using castlers.Dtos;
-using castlers.Models;
+﻿using castlers.Models;
 using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using castlers.ResponseDtos;
 
 namespace castlers.Repository
 {
@@ -76,6 +76,15 @@ namespace castlers.Repository
 
             Developer? developer = await Task.Run(() => _dbContext.Developer
                           .FromSqlRaw(@"exec GetDeveloperByID @developerId", param).AsEnumerable().FirstOrDefault());
+
+            return developer;
+        }
+        public async Task<Developer> GetDeveloperByCodeAsync (string developerCode)
+        {
+            var param = new SqlParameter("@DeveloperCode", developerCode);
+
+            Developer? developer = await Task.Run(() => _dbContext.Developer
+                          .FromSqlRaw(@"exec uspGetDeveloperByCode @DeveloperCode", param).AsEnumerable().FirstOrDefault());
 
             return developer;
         }

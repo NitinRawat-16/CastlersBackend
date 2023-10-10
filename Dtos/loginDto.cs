@@ -1,8 +1,12 @@
-﻿namespace castlers.Dtos
+﻿using System.Text.Json.Serialization;
+
+namespace castlers.Dtos
 {
     public class loginDto
     {
-        public string username { get; set; }
-        public string password { get; set; }
+
+        public string UserName { get; set; }
+        public string UserRole { get; set; }
+        public string UserMobileNumber { get; set; }
     }
 }

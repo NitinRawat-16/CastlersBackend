@@ -27,24 +27,23 @@ namespace castlers.Controllers
                 Email = "nitinrawatsde@gmail.com",
                 EMailType = Common.Enums.EmailTypes.LetterOfInterest
             };
-           await _emailSender.SendEmailAsync(sendTo);
+            await _emailSender.SendEmailAsync(sendTo);
             return await Task.FromResult(true);
         }
 
         [HttpPost("UserLogin")]
-        public LoginResponseDto Login(loginDto dto)
+        public async Task<IActionResult> Login(loginDto dto)
         {
-            LoginResponseDto loginResponseDto = new LoginResponseDto();
-            bool response = true;
+            if (dto.UserName.Length <= 0 || dto.UserMobileNumber.Length <= 0  || dto.UserRole.Length <= 0)
+            {
+                return BadRequest("Values are not correct!");
+            }
             try
             {
-                return _loginService.IsUserExists(dto.username, dto.password);
+                var response = await _loginService.SendOTPAsync(dto);
+                return Ok(response);
             }
-            catch (Exception)
-            {
-                response = false;
-            }
-            return loginResponseDto;
+            catch (Exception) { throw; }
         }
     }
 }
