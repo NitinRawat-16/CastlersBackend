@@ -3,6 +3,7 @@ using castlers.Dtos;
 using castlers.Models;
 using castlers.Repository;
 using castlers.Common.Email;
+using castlers.Common.AzureStorage;
 
 namespace castlers.Services
 {
@@ -10,15 +11,17 @@ namespace castlers.Services
     {
         #region User Defined Variables
         private readonly IMapper _mapper;
+        private readonly IUploadFile _uploadFile;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
         private readonly IPartnerKYCService _partnerKYCService;
         private readonly IDeveloperRepository _developerRepository;
         private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ILetterOfInterestRepository _letterOfInterestRepository;
-        public DeveloperManager(IDeveloperRepository developerRepository, IMapper mapper, IPartnerKYCService partnerKYCService, IEmailSender emailSender, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService, ILetterOfInterestRepository letterOfInterestRepository)
+        public DeveloperManager(IDeveloperRepository developerRepository, IMapper mapper, IPartnerKYCService partnerKYCService, IEmailSender emailSender, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService, ILetterOfInterestRepository letterOfInterestRepository, IUploadFile uploadFile)
         {
             _mapper = mapper;
+            _uploadFile = uploadFile;
             _emailSender = emailSender;
             _configuration = configuration;
             _partnerKYCService = partnerKYCService;
@@ -58,7 +61,7 @@ namespace castlers.Services
                 address = developerDto.address,
                 siteLink = developerDto.siteLink,
                 email = developerDto.email,
-                logoPath = "",
+                logoPath = await UploadFile(developerDto.name, "Logo", developerDto.logo),
                 profilePath = "",
                 registeredDeveloperCode = new Guid(),
                 experienceYear = developerDto.experienceYear,
@@ -75,6 +78,7 @@ namespace castlers.Services
 
             if (developerId > 0)
             {
+                List<PartnerKYCDto> partnerKYCs = new List<PartnerKYCDto>();
                 var partnerDetails = new PartnerKYCDto
                 {
                     designationTypeId = 1,
@@ -85,9 +89,8 @@ namespace castlers.Services
                     aadharCard = developerDto.prtnAadharCard,
                     partnerKYCId = 0
                 };
-                List<PartnerKYCDto> partnerKYCs = new List<PartnerKYCDto>();
                 partnerKYCs.Add(partnerDetails);
-                result = await _partnerKYCService.AddPartnerAsync(partnerKYCs);
+                result = await _partnerKYCService.AddPartnerAsync(developerDto.PartnerKYCDetails);
 
                 #region Commented code
                 //try
@@ -118,6 +121,16 @@ namespace castlers.Services
             }
             return result;
         }
-        
+
+        protected async Task<string> UploadFile(string developerName, string fileType, IFormFile file)
+        {
+            try
+            {
+                string filePath = string.Format("{0}/{1}/{2}", developerName, fileType, file.FileName);
+                var response = await _uploadFile.SaveDoc(file, filePath);
+                return response.DocURL;
+            }
+            catch (Exception) { throw; }
+        }
     }
 }

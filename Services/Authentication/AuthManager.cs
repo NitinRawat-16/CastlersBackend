@@ -59,7 +59,7 @@ namespace castlers.Services.Authentication
                     isOTPMatched = (verifyOTP.OTP == otpDetails.OTP);
                     isUserNameMatched = (verifyOTP.userName == otpDetails.userName);
                     isMobileNumberMatched = (verifyOTP.mobileNumber == otpDetails.userMobileNumber);
-                    OTPExpiry = !(otpDetails.creationDate.AddMinutes(otpLifeSpan) > verifyOTP.dateTime);
+                    OTPExpiry = !(otpDetails.creationDate.AddMinutes(otpLifeSpan) > DateTime.UtcNow);
                 }
                 //
 

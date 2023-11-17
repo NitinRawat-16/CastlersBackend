@@ -1,8 +1,6 @@
 ﻿using castlers.Common.Enums;
 using castlers.Models;
-using PdfSharpCore.Internal;
 using System.Net.Http.Headers;
-using Tavis.UriTemplates;
 
 namespace castlers.Common.SMS
 {

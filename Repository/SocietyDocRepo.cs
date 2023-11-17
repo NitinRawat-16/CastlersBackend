@@ -22,7 +22,7 @@ namespace castlers.Repository
         public async Task<SaveDocResponseDto> UploadSocietyDoc(SocietyDocumentDto documentDto)
         {
             SaveDocResponseDto saveDocResponseDto = new SaveDocResponseDto();
-            var societyDetails = await _regSociety.GetRegisteredSocietyByIdAsync(documentDto.SocietyId);
+            var societyDetails = await _regSociety.GetRegisteredSocietyByIdAsync(documentDto.societyId);
             IFormFile? file = documentDto.documentFile;
             var filePath = string.Format("{0}/{1}/{2}", societyDetails.societyName, documentDto.subType, documentDto.typeOfdocumentName + ".pdf");
             var responseDto = await _uploadFile.SaveDoc(file, filePath, documentDto.isUpdate);
