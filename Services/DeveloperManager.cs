@@ -90,6 +90,10 @@ namespace castlers.Services
                     partnerKYCId = 0
                 };
                 partnerKYCs.Add(partnerDetails);
+                developerDto.PartnerKYCDetails.ForEach(kycDetails =>
+                {
+                    kycDetails.developerId = developerId;
+                });
                 result = await _partnerKYCService.AddPartnerAsync(developerDto.PartnerKYCDetails);
 
                 #region Commented code
