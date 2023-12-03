@@ -31,11 +31,11 @@ namespace castlers.Controllers
         }
 
         [HttpPost("LetterOfInterestRecieved")]
-        public async Task<IActionResult> LetterOfInterestRecieved([FromQuery] int developerId, int tenderId, bool interested)
+        public async Task<IActionResult> LetterOfInterestRecieved([FromQuery] string code)
         {
             try
             {
-                var response = await _letterOfInterestService.LetterOfInterestedReceivedAsync(developerId, tenderId, interested);
+                var response = await _letterOfInterestService.LetterOfInterestedReceivedAsync(code);
                 return Ok(response);
             }
             catch (Exception) { throw; }

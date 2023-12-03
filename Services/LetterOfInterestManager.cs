@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using castlers.Dtos;
 using castlers.Models;
+using System.Text.Json;
 using castlers.Repository;
 using castlers.ResponseDtos;
 using castlers.Common.Email;
+using castlers.Common.Encrypt;
 
 namespace castlers.Services
 {
@@ -13,29 +15,32 @@ namespace castlers.Services
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
+        private readonly IDeveloperService _developerService;
+        private readonly ISecureInformation _secureInformation;
         private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ILetterOfInterestRepository _letterOfInterestRepository;
-        private readonly IDeveloperService _developerService;
         public LetterOfInterestManager(IEmailSender emailSender, IConfiguration configuration,
                                        IRegisteredSocietyService registeredSocietyService,
                                        ILetterOfInterestRepository letterOfInterestRepository,
                                        IDeveloperService developerService,
-                                       IMapper mapper)
+                                       IMapper mapper, ISecureInformation secureInformation)
         {
             _mapper = mapper;
             _emailSender = emailSender;
             _configuration = configuration;
             _developerService = developerService;
+            _secureInformation = secureInformation;
             _registeredSocietyService = registeredSocietyService;
             _letterOfInterestRepository = letterOfInterestRepository;
         }
         #endregion
-        public async Task<MailResponseDto> LetterOfInterestedReceivedAsync(int developerId, int tenderId, bool interested)
+        public async Task<MailResponseDto> LetterOfInterestedReceivedAsync(string queryParams)
         {
             try
             {
-                var isSaved = await _letterOfInterestRepository.AddLetterOfInterestedReceivedAsync(developerId, tenderId, interested);
-                var developerDetails = await _developerService.GetDeveloperByIdAsync(developerId);
+                var sendIntimation = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(queryParams));
+                var isSaved = await _letterOfInterestRepository.AddLetterOfInterestedReceivedAsync(sendIntimation.developerId, sendIntimation.tenderId, sendIntimation.interested);
+                var developerDetails = await _developerService.GetDeveloperByIdAsync(sendIntimation.developerId);
                 var sendTo = new SendTo
                 {
                     Name = developerDetails.name,
@@ -70,14 +75,31 @@ namespace castlers.Services
                 var letterOfInterestDetails = await _registeredSocietyService.GetRegisteredSocietyWithTechnicalDetails(sendLetterOfInterestDto[0].SocietyId);
                 foreach (var developer in sendLetterOfInterestDto)
                 {
+
+                    var sendIntimationInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
+                    {
+                        developerId = developer.DeveloperId,
+                        societyId = developer.SocietyId,
+                        tenderId = developer.TenderId,
+                        interested = true
+                    }));
+
+                    var sendIntimationNotInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
+                    {
+                        developerId = developer.DeveloperId,
+                        societyId = developer.SocietyId,
+                        tenderId = developer.TenderId,
+                        interested = false
+                    }));
+
                     developerEmailList.Add(new SendTo
                     {
                         Name = developer.Name,
                         Email = developer.Email,
                         SocietyName = string.IsNullOrEmpty(developer.SocietyName) ? letterOfInterestDetails.societyName : "",
                         EMailType = Common.Enums.EmailTypes.LetterOfInterest,
-                        InterestedDevAPI = LetterOfInterestAPI + developer.DeveloperId + "&societyId=" + developer.SocietyId + "&tenderId=" + developer.TenderId + "&interested=true",
-                        UninterestedDevAPI = LetterOfInterestAPI + developer.DeveloperId + "&societyId=" + developer.SocietyId + "&tenderId=" + developer.TenderId + "&interested=false",
+                        InterestedDevAPI = LetterOfInterestAPI + sendIntimationInterested + "&interested=true",
+                        UninterestedDevAPI = LetterOfInterestAPI + sendIntimationNotInterested + "&interested=false",
                         SocietyLetterOfInterestDetails = letterOfInterestDetails
                     });
                 }

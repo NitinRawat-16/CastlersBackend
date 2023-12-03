@@ -9,6 +9,7 @@
         LetterOfInterest,
         LetterOfInterestReceived,
         SendTenderNotice,
-        AdminRegistration
+        AdminRegistration,
+        ChairmanApproveTender
     }
 }

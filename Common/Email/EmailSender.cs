@@ -94,19 +94,19 @@ namespace castlers.Common.Email
                     case EmailTypes.SocietyRegistration:
                         request.Content = new StringContent
                            (
-                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"societyname\":\"" + sendTo.Name + "\",\"societycode\":\"" + sendTo.RegisteredSocietyCode +"\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Society_Registration + "\"}"
+                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"societyname\":\"" + sendTo.Name + "\",\"societycode\":\"" + sendTo.RegisteredSocietyCode + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Society_Registration + "\"}"
                            );
                         break;
                     case EmailTypes.MemberRegistration:
                         request.Content = new StringContent
                            (
-                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"membername\":\"" + sendTo.Name + "\",\"societycode\":\""+sendTo.RegisteredSocietyCode+ "\", \"societyname\":\""+sendTo.SocietyName+"\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Member_Registration + "\"}"
+                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"membername\":\"" + sendTo.Name + "\",\"societycode\":\"" + sendTo.RegisteredSocietyCode + "\", \"societyname\":\"" + sendTo.SocietyName + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Member_Registration + "\"}"
                            );
                         break;
                     case EmailTypes.DeveloperRegister:
                         request.Content = new StringContent
                            (
-                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"name\":\"" + sendTo.Name + "\",\"otp\":\"12345\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Developer_Reg + "\"}"
+                           "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"developername\":\"" + sendTo.Name + "\",\"developercode\":\"" + sendTo.Message + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Developer_registration + "\"}"
                            );
                         break;
                     case EmailTypes.LetterOfInterest:
@@ -124,13 +124,19 @@ namespace castlers.Common.Email
                     case EmailTypes.SendTenderNotice:
                         request.Content = new StringContent
                            (
-                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"enddate\":\"" + sendTo.SendTenderNoticeEndDate + "\",\"etenderform\":\"" + sendTo.SendTenderNoticeETenderFormAPI + "\",\"openingdate\":\"" + sendTo.SendTenderNoticePublicationDate + "\",\"societyname\":\"" + sendTo.SocietyName + "\",\"startdate\":\"" + sendTo.SendTenderNoticePresentationDate + "\",\"tendercode\":\"" + sendTo.TenderCode + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Send_Tender_Notice +"\"}"
+                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"enddate\":\"" + sendTo.SendTenderNoticeEndDate + "\",\"etenderform\":\"" + sendTo.SendTenderNoticeETenderFormAPI + "\",\"openingdate\":\"" + sendTo.SendTenderNoticePublicationDate + "\",\"societyname\":\"" + sendTo.SocietyName + "\",\"startdate\":\"" + sendTo.SendTenderNoticePresentationDate + "\",\"tendercode\":\"" + sendTo.TenderCode + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Send_Tender_Notice + "\"}"
                            );
                         break;
                     case EmailTypes.AdminRegistration:
                         request.Content = new StringContent
                         (
                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"admincode\":\"" + sendTo.Message + "\", \"name\":\"" + sendTo.Name + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Admin_Registration + "\"}"
+                           );
+                        break;
+                    case EmailTypes.ChairmanApproveTender:
+                        request.Content = new StringContent
+                        (
+                            "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"approvetenderdetails\":\"" + sendTo.Message + "\", \"societyname\":\"" + sendTo.SocietyName + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Chairmen_Approve_Tender + "\"}"
                            );
                         break;
                 }

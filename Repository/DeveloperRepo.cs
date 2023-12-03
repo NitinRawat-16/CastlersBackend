@@ -20,9 +20,6 @@ namespace castlers.Repository
         public async Task<int> AddDeveloperAsync(Developer developer)
         {
             var parameter = new List<SqlParameter>();
-            string logoPath = string.Empty;
-            string profilePath = string.Empty;
-
             parameter.Add(new SqlParameter("@name", developer.name));
             parameter.Add(new SqlParameter("@address", developer.address));
             parameter.Add(new SqlParameter("@logoPath", developer.logoPath));
@@ -37,24 +34,67 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@createdDate", developer.createdDate));
             parameter.Add(new SqlParameter("@updatedBy", developer.updatedBy));
             parameter.Add(new SqlParameter("@updatedDate", developer.updatedDate));
+            parameter.Add(new SqlParameter("@projectsInHand", developer.projectsInHand));
+            parameter.Add(new SqlParameter("@numberOfRERARegisteredProjects", developer.numberOfRERARegisteredProjects));
+            parameter.Add(new SqlParameter("@totalCompletedProjects", developer.totalCompletedProjects));
+            parameter.Add(new SqlParameter("@totalConstructionAreaDevTillToday", developer.totalConstructionAreaDevTillToday));
+            parameter.Add(new SqlParameter("@sizeOfTheLargestProjectHandled", developer.sizeOfTheLargestProjectHandled));
+            parameter.Add(new SqlParameter("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings));
+            parameter.Add(new SqlParameter("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears));
+            parameter.Add(new SqlParameter("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation));
+            parameter.Add(new SqlParameter("@awardsAndRecognition", developer.awardsAndRecognition)); 
+            parameter.Add(new SqlParameter("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities));
+            parameter.Add(new SqlParameter("@affilicationDevAssociationName", developer.affilicationDevAssociationName));
+
             parameter.Add(new SqlParameter("@developerId", developer.developerId));
 
-            parameter[14].Direction = ParameterDirection.Output;
+            parameter[25].Direction = ParameterDirection.Output;
 
             try
             {
                 var result = await Task.Run(() => _dbContext.Database
                .ExecuteSqlRawAsync(@"exec AddNewDeveloper @name,@address,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,
-                 @registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate, @organisationTypeId, @experienceYear, @developerId OUT", parameter.ToArray()));
+                  @registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate, @organisationTypeId, @experienceYear, 
+                  @projectsInHand, @numberOfRERARegisteredProjects, @totalCompletedProjects, @totalConstructionAreaDevTillToday, 
+                  @sizeOfTheLargestProjectHandled, @experienceInHighRiseBuildings, @avgTurnOverforLastThreeYears, @affilicationToAnyDevAssociation,
+                  @awardsAndRecognition, @haveBusinessInMultipleCities, @affilicationDevAssociationName,
+                  @developerId OUT", parameter.ToArray()));
 
-                if (parameter[14].Value is DBNull)
+                if (parameter[25].Value is DBNull)
                     return 0;
                 else
-                    return Convert.ToInt32(parameter[14].Value);
+                    return Convert.ToInt32(parameter[25].Value);
             }
             catch (Exception) { throw; }
 
         }
+        public async Task<int> AddDeveloperPastProjects(DeveloperPastProjectDetails developerPastProjects)
+        {
+            int id = 0;
+            SqlParameter[] prmArray = new SqlParameter[]
+            {
+                    new SqlParameter("@ProjectName", developerPastProjects.projectName),
+                    new SqlParameter("@ProjectLocation", developerPastProjects.projectLocation),
+                    new SqlParameter("@ReraRegistrationNumber", developerPastProjects.reraRegistrationNumber),
+                    new SqlParameter("@ProjectStartDate", developerPastProjects.projectStartDate),
+                    new SqlParameter("@ProjectEndDate", developerPastProjects.projectEndDate),
+                    new SqlParameter("@DeveloperId", developerPastProjects.developerId),
+                    new SqlParameter("@Id", id)
+            };
+            prmArray[6].Direction = ParameterDirection.Output;
+
+            try
+            {
+                await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperPastProjectDetails @ProjectName, @ProjectLocation, @ReraRegistrationNumber,
+                @ProjectStartDate, @ProjectEndDate, @DeveloperId, @Id OUT", prmArray));
+                if (prmArray[6].Value is DBNull)
+                    return 0;
+                else
+                    return Convert.ToInt32(prmArray[6].Value);
+            }
+            catch (Exception) { throw; }
+        }
+
         public Task<int> DeleteDeveloperAsync(int Id)
         {
             throw new NotImplementedException();
@@ -79,7 +119,7 @@ namespace castlers.Repository
 
             return developer;
         }
-        public async Task<Developer> GetDeveloperByCodeAsync (string developerCode)
+        public async Task<Developer> GetDeveloperByCodeAsync(string developerCode)
         {
             var param = new SqlParameter("@DeveloperCode", developerCode);
 
@@ -118,6 +158,6 @@ namespace castlers.Repository
             SaveDocResponseDto response = await _uploadFile.SaveDoc(file, filePath);
             return response;
         }
-      
+
     }
 }

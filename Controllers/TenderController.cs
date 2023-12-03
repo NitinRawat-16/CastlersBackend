@@ -114,5 +114,21 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
+
+        [HttpPost("ChairmanResponseForTenderDetails")]
+        public async Task<IActionResult> ChairmanResponseForTenderDetails([FromBody] ChairmanTenderApprovalDto chairmanTenderApprovalDto)
+        {
+            if (string.IsNullOrEmpty(chairmanTenderApprovalDto.Code)) return BadRequest("URL not found!");
+            try
+            {
+                var response = await _tenderService.ChairmanResponseforSocietyTenderDetails(chairmanTenderApprovalDto);
+
+                if (response)
+                    return Ok(response);
+                else
+                    return BadRequest("Can not process request");
+            }
+            catch (Exception) { throw; }
+        }
     }
 }

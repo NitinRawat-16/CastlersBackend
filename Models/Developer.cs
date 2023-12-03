@@ -24,7 +24,7 @@ public class Developer
     public IFormFile? logo { get; set; }
     public string? profilePath { get; set; }
     public string? logoPath { get; set; }
-    public Guid? registeredDeveloperCode { get; set; }
+    public string? registeredDeveloperCode { get; set; }
     public Guid createdBy { get; set; } = new Guid();
     public Guid updatedBy { get; set; } = new Guid();
     public DateTime createdDate { get; set; } = new DateTime().Date;
@@ -38,7 +38,7 @@ public class Developer
     public int? totalCompletedProjects { get; set; }
     public string? totalConstructionAreaDevTillToday { get; set; } = string.Empty;
     public string? sizeOfTheLargestProjectHandled { get; set; } = string.Empty;
-    public bool? experienceInHighRiseBuildings { get; set; } = false;
+    public string? experienceInHighRiseBuildings { get; set; } = string.Empty;
     public string? avgTurnOverforLastThreeYears { get; set; } = string.Empty;
     public bool? affilicationToAnyDevAssociation { get; set; } = false;
     public string? affilicationDevAssociationName { get; set; } = string.Empty;

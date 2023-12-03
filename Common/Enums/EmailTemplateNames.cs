@@ -5,10 +5,11 @@
         Login_OTP_Mail,
         Society_Registration,
         Member_Registration,
-        Developer_Reg,
+        Developer_registration,
         Letter_Of_Interest,
         Letter_Of_Interest_Received,
         Send_Tender_Notice,
-        Admin_Registration
+        Admin_Registration,
+        Chairmen_Approve_Tender
     }
 }

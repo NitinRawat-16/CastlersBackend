@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using castlers.Dtos;
 using castlers.Models;
-using castlers.DbContexts;
+using castlers.Common.SMS;
 using castlers.Repository;
 using castlers.Common.Email;
-using castlers.Common.SMS;
-using castlers.Common.Converters;
 using castlers.ResponseDtos;
+using castlers.Common.Converters;
 
 namespace castlers.Services
 {
@@ -108,7 +107,12 @@ namespace castlers.Services
         {
             return _societyMemberDetailsRepository
                 .DeleteRegisteredSocietyMemberByIdAsync(deleteSocietyMemberDto.societyMemberDetailsId, deleteSocietyMemberDto.registeredSocietyId);
+        }
 
+        public async Task<List<SocietyMemberDetailsDto>> GetRegisteredSocietyCommitteeMembersBySocietyIdAsync(int registeredSocietyId)
+        {
+            var societyMemberDetails = await _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId);
+            return _mapper.Map<List<SocietyMemberDetailsDto>>(societyMemberDetails);
         }
     }
 }

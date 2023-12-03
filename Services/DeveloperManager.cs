@@ -61,12 +61,24 @@ namespace castlers.Services
                 address = developerDto.address,
                 siteLink = developerDto.siteLink,
                 email = developerDto.email,
-                logoPath = await UploadFile(developerDto.name, "Logo", developerDto.logo),
-                profilePath = "",
-                registeredDeveloperCode = new Guid(),
+                logoPath = developerDto.logo == null ? string.Empty : await UploadFile(developerDto.name, "Logo", developerDto.logo),
+                profilePath = developerDto.profileDoc == null ? string.Empty : await UploadFile(developerDto.name, "ProfileDocument", developerDto.profileDoc),
+                registeredDeveloperCode = new Guid().ToString(),
                 experienceYear = developerDto.experienceYear,
                 profile = developerDto.profileDoc,
-                extraDoc = developerDto.registrationDoc,
+                // extraDoc = developerDto.registrationDoc == null ? string.Empty : await UploadFile(developerDto.name, "RegistrationDocument", developerDto.registrationDoc),
+                projectsInHand = developerDto.projectsInHand,
+                numberOfRERARegisteredProjects = developerDto.numberOfRERARegisteredProjects,
+                totalCompletedProjects = developerDto.totalCompletedProjects,
+                totalConstructionAreaDevTillToday = developerDto.totalConstructionAreaDevTillToday,
+                sizeOfTheLargestProjectHandled = developerDto.sizeOfTheLargestProjectHandled,
+                experienceInHighRiseBuildings = developerDto.experienceInHighRiseBuildings,
+                avgTurnOverforLastThreeYears = developerDto.avgTurnOverforLastThreeYears,
+                affilicationToAnyDevAssociation = developerDto.affilicationToAnyDevAssociation,
+                affilicationDevAssociationName = developerDto.affilicationDevAssociationName,
+                awardsAndRecognition = developerDto.awardsAndRecognitionDoc == null ? string.Empty :
+                                       await UploadFile(developerDto.name, "AwardsRecognition", developerDto.awardsAndRecognitionDoc),
+                haveBusinessInMultipleCities = developerDto.haveBusinessInMultipleCities,
                 createdBy = new Guid(),
                 createdDate = DateTime.Now,
                 updatedBy = new Guid(),
@@ -75,53 +87,52 @@ namespace castlers.Services
             };
 
             var developerId = await _developerRepository.AddDeveloperAsync(developer);
-
             if (developerId > 0)
             {
-                List<PartnerKYCDto> partnerKYCs = new List<PartnerKYCDto>();
-                var partnerDetails = new PartnerKYCDto
-                {
-                    designationTypeId = 1,
-                    developerId = developerId,
-                    email = developerDto.prtnEmail,
-                    contactNumber = developerDto.prtnContactNumber,
-                    panCard = developerDto.prtnPanCard,
-                    aadharCard = developerDto.prtnAadharCard,
-                    partnerKYCId = 0
-                };
-                partnerKYCs.Add(partnerDetails);
+                //List<PartnerKYCDto> partnerKYCs = new List<PartnerKYCDto>();
+                //var partnerDetails = new PartnerKYCDto 
+                //{
+                //    designationTypeId = 1,
+                //    developerId = developerId,
+                //    email = developerDto.prtnEmail,
+                //    contactNumber = developerDto.prtnContactNumber,
+                //    panCard = developerDto.prtnPanCard,
+                //    aadharCard = developerDto.prtnAadharCard,
+                //    partnerKYCId = 0
+                //};
+                //partnerKYCs.Add(partnerDetails);
+
+                developerDto.DeveloperPastProjectDetails.ForEach(p => p.developerId = developerId);
+                await AddDeveloperPastProjects(developerDto.DeveloperPastProjectDetails);
+
+                developerDto.PartnerKYCDetails.ForEach(p => p.developerId = developerId);
                 result = await _partnerKYCService.AddPartnerAsync(developerDto.PartnerKYCDetails);
 
-                #region Commented code
-                //try
-                //{
-                //    List<SqlParameter> parameters = new List<SqlParameter>();
-                //    parameters.Add(new("@designationTypeId", partnerDetails.designationTypeId));
-                //    parameters.Add(new("@developerId", partnerDetails.developerId));
-                //    parameters.Add(new("@email", partnerDetails.email));
-                //    parameters.Add(new("@contactNumber", partnerDetails.contactNumber));
-                //    parameters.Add(new("@panCard", partnerDetails.panCard));
-                //    parameters.Add(new("@aadharCard", partnerDetails.aadharCard));
-                //    parameters.Add(new("@createdDate", DateTime.Now));
-                //    parameters.Add(new("@updatedDate", DateTime.Now));
-                //    parameters.Add(new("@partnerKYCId", partnerDetails.partnerKYCId));
-
-                //    parameters[8].Direction = System.Data.ParameterDirection.Output;
-
-                //    await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC AddPartnerKYCDetails @designationTypeId, @developerId, @email, @contactNumber, @panCard, @aadharCard, @createdDate, @updatedDate, @partnerKYCId OUT", parameters.ToArray())
-                //    );
-                //    if (parameters[8].Value is DBNull)
-                //        return 0;
-                //    else
-                //        return Convert.ToInt32(parameters[8].Value);
-                //}
-                //catch (Exception) { throw; }
+                #region Email
+                SendTo sendTo = new SendTo()
+                {
+                    Name = developerDto.name,
+                    Email = developerDto.email,
+                    EMailType = Common.Enums.EmailTypes.DeveloperRegister,
+                    Message = developerDto.registeredDeveloperCode
+                };
+                await _emailSender.SendEmailAsync(sendTo);
                 #endregion
-
             }
             return result;
         }
-
+        public async Task AddDeveloperPastProjects(List<DeveloperPastProjectDetailsDto> developerPastProjectDetails)
+        {
+            try
+            {
+                var developerPastProjects = _mapper.Map<List<DeveloperPastProjectDetails>>(developerPastProjectDetails);
+                foreach (var projectDetails in developerPastProjects)
+                {
+                    await _developerRepository.AddDeveloperPastProjects(projectDetails);
+                }
+            }
+            catch (Exception) { throw; }
+        }
         protected async Task<string> UploadFile(string developerName, string fileType, IFormFile file)
         {
             try

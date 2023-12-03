@@ -16,9 +16,11 @@ namespace castlers.Repository
             _dbContext = dbContext;
             _uploadFile = uploadFile;
         }
+
         public async Task<string> AddSocietyTenderAsync(SocietyTenderDetails tenderDetails)
         {
             int result;
+            int tenderId = 0;
             List<SqlParameter> parameters = new List<SqlParameter>();
             parameters.Add(new("@tenderId", tenderDetails.tenderId));
             parameters.Add(new("@registeredSocietyId", tenderDetails.registeredSocietyId));
@@ -38,10 +40,11 @@ namespace castlers.Repository
             parameters.Add(new("@bettermentChargesPerMember", tenderDetails.bettermentChargesPerMember));
             parameters.Add(new("@isApprovedBySociety", tenderDetails.isApprovedBySociety));
             parameters.Add(new("@tenderCode", tenderDetails.tenderCode));
-            parameters.Add(new("@tenderPK", tenderDetails.tenderId));
+            parameters.Add(new("@status", tenderDetails.status));
+            parameters.Add(new("@tenderPK", tenderId));
 
             // OutPut of the Stored Procedure SCOPE_IDENTITY()
-            parameters[18].Direction = System.Data.ParameterDirection.Output;
+            parameters[19].Direction = System.Data.ParameterDirection.Output;
 
             try
             {
@@ -49,13 +52,14 @@ namespace castlers.Repository
                 .ExecuteSqlRawAsync(@"EXEC AddTenderDetails @tenderId, @registeredSocietyId, @percentageOfIncreaseArea, @quantamOfAreaAtDiscountRate,
                  @expectedDiscountRate, @corpusFund, @rentPerSqFtFlat, @rentPerSqFtOffice, @rentPerSqFtShop, @parkingPerMember, @typeOfProject,
                  @refundableDepositPerMemberForFlat, @refundableDepositPerMemberForOffice, @refundableDepositPerMemberForShop,
-                 @shiftingChargesForFlatOfficeShop, @bettermentChargesPerMember, @isApprovedBySociety, @tenderCode, @tenderPK OUT", parameters));
+                 @shiftingChargesForFlatOfficeShop, @bettermentChargesPerMember, @isApprovedBySociety, @tenderCode, @status, @tenderPK OUT", parameters));
 
-                result = Convert.ToInt32(parameters[18].Value);
+                result = Convert.ToInt32(parameters[19].Value);
             }
             catch (Exception) { throw; }
             return result.ToString();
         }
+        
         public async Task<string> AddDeveloperTenderAsync(DeveloperTenderDetails tenderDetails)
         {
 
@@ -113,6 +117,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
             return result.ToString();
         }
+        
         public async Task<List<SocietyTenderDetails>> GetTenderDetailsByIdAsync(int regSocietyId)
         {
             List<SocietyTenderDetails>? tenderDetails = new List<SocietyTenderDetails>();
@@ -128,6 +133,7 @@ namespace castlers.Repository
 
             return tenderDetails;
         }
+        
         public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
         {
             List<SocietyApprovedTendersDetails>? societyApprovedTenderList = new List<SocietyApprovedTendersDetails>();
@@ -143,6 +149,7 @@ namespace castlers.Repository
 
             return societyApprovedTenderList;
         }
+        
         public async Task<int> IsTenderExists(string tenderCode)
         {
             int result = 0;
@@ -156,6 +163,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
             return result;
         }
+        
         public async Task<SocietyTenderDetails> GetSocietyTenderDetailsByTenderIdAsync(int tenderId)
         {
             try
@@ -166,6 +174,7 @@ namespace castlers.Repository
             }
             catch (Exception) { throw; }
         }
+        
         public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
             int tenderId = 0;
@@ -187,7 +196,8 @@ namespace castlers.Repository
             }
             catch (Exception) { throw; }
         }
-        public async Task<bool> ApproveSocietyTender(int tenderId, int societyId, bool isApprove, string tenderCode = "")
+        
+        public async Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved)
         {
             bool response = false;
             try
@@ -195,13 +205,16 @@ namespace castlers.Repository
                 List<SqlParameter> prmList = new List<SqlParameter>
                 {
                     new("@TenderId", tenderId),
-                    new("@SocietyId", societyId),
-                    new("@IsApprove", isApprove),
-                    new("@TenderCode", tenderCode)
+                    new("@TenderCode", tenderCode),
+                    new("@IsApproved", isApproved),
+                    new("@IsUpdated", response)
                 };
-                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC uspApproveSocietyTender @TenderId, @SocietyId, @IsApprove, @TenderCode OUT", prmList));
 
-                if (result > 0)
+                prmList[3].Direction = System.Data.ParameterDirection.Output;
+
+                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC uspApprovedSocietyTenderCode @TenderId, @TenderCode, @IsApproved, @IsUpdated OUTPUT", prmList));
+
+                if (Convert.ToInt32(prmList[3].Value) > 0)
                 {
                     return response = true;
                 }
