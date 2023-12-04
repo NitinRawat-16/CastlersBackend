@@ -130,5 +130,17 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
+
+        [HttpPost("VerifyGetTenderDetailURL")]
+        public async Task<IActionResult> VerifyGetTenderDetailURL(string code)
+        {
+            if (code.Length <= 0) return BadRequest("Invalid Request");
+            try
+            {
+                var response = await _tenderService.VerifyGetTenderDetailURL(code);
+                return Ok(response); 
+            }
+            catch (Exception) { throw; }
+        }
     }
 }

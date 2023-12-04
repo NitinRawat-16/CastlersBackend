@@ -29,6 +29,7 @@ namespace castlers.Services
             _registeredSocietyService = registeredSocietyService;
             _societyMemberDetailsService = societyMemberDetailsService;
         }
+
         public async Task<string> AddSocietyTender(SocietyTenderDetailsDto tenderDetailsDto)
         {
             try
@@ -47,6 +48,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<string> AddDeveloperTender(DeveloperTenderDetailsDto tenderDetailsDto)
         {
             try
@@ -59,6 +61,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<List<SocietyTenderDetailsDto>> GetTenderDetailsByIdAsync(int regSocietyId)
         {
             try
@@ -69,6 +72,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
         {
             try
@@ -77,6 +81,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<int> IsTenderExists(string tenderCode)
         {
             try
@@ -85,6 +90,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsByTenderId(int tenderId)
         {
             try
@@ -94,6 +100,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
         public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
             try
@@ -135,6 +142,20 @@ namespace castlers.Services
 
             // Updated tender code of approved tender of the society.
             return await _tenderRepo.UpdatedTenderCodeforSocietyTenderId(tenderId, tenderCode, isApproved: true);
+        }
+
+        public async Task<SocietyTenderDetailsDto?> VerifyGetTenderDetailURL(string code)
+        {
+            try
+            {
+                var tenderApprovalRequest = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(code));
+
+                if (tenderApprovalRequest != null && tenderApprovalRequest.tenderId > 0)
+                    return await GetSocietyTenderDetailsByTenderId(tenderApprovalRequest.tenderId);
+
+                return null;
+            }
+            catch (Exception) { throw; }
         }
 
         public async void SendChairmanTenderApprovalRequest(SocietyTenderDetails tenderDetails)
