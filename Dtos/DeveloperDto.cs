@@ -12,6 +12,7 @@ namespace castlers.Dtos
         public string? name { get; set; }
         public int? organisationTypeId { get; set; }
         public string? address { get; set; }
+        public string? city { get; set; }
         public string? mobileNumber { get; set; }
         public int? experienceYear { get; set; }
         public string? siteLink { get; set; }
@@ -43,6 +44,7 @@ namespace castlers.Dtos
         public IFormFile? awardsAndRecognitionDoc { get; set; } = null; 
         public string? awardsAndRecognition { get; set; } = string.Empty;
         public bool? haveBusinessInMultipleCities { get; set; } = false;
+        public int reviewRatingScore { get; set; } = 0;
         public List<DeveloperPastProjectDetailsDto> DeveloperPastProjectDetails { get; set; }
         public List<PartnerKYCDto> PartnerKYCDetails { get; set; }
 

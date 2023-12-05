@@ -67,5 +67,18 @@ namespace castlers.Controllers
             }
             catch { throw; }
         }
+
+        [HttpPost("UpdateDeveloperReviewRating")]
+        public async Task<IActionResult> UpdateDeveloperReviewRating(UpdateDeveloperReviewRatingDto updateDeveloperReviewRatingDto)
+        {
+            if (updateDeveloperReviewRatingDto.DeveloperId <= 0) return BadRequest("Invalid Developer Id!");
+            try
+            {
+                var response = await _developerService.UpdateDeveloperReviewRating(updateDeveloperReviewRatingDto);
+                return Ok(response);
+            }
+            catch (Exception) { throw; }
+
+        }
     }
 }

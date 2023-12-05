@@ -11,6 +11,7 @@ namespace castlers.Repository
         public Task<int> UpdateDeveloperAsync(Developer developer);
         public Task<int> DeleteDeveloperAsync(int Id);
         public Task<int> AddDeveloperPastProjects(DeveloperPastProjectDetails developerPastProjects);
+        public Task<int> UpdateDeveloperReviewRating(int developerId , int reviewRatingScore);
 
     }
 }

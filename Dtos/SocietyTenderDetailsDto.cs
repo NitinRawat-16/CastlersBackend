@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace castlers.Dtos
 {
     public class SocietyTenderDetailsDto
@@ -21,7 +20,7 @@ namespace castlers.Dtos
         public double? shiftingChargesForFlatOfficeShop { get; set; }
         public double? bettermentChargesPerMember { get; set; }
         public bool? isApprovedBySociety { get; set; }
-        public string? tenderCode { get; set; }
+        //public string? tenderCode { get; set; }
         public int? status { get; set; }
     }
 }

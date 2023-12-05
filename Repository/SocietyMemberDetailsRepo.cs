@@ -13,14 +13,11 @@ namespace castlers.Repository
     public class SocietyMemberDetailsRepo : ISocietyMemberDetailsRepository
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IEmailSender _emailSender;
-        private readonly ISMSSender _smsSender;
+       
 
         public SocietyMemberDetailsRepo(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            //_emailSender = emailSender;
-            //_smsSender = smsSender;
         }
 
         public async Task<SocietyRegistrationResponseDto> AddRegisteredSocietyMemberListAsync(List<SocietyMemberDetails> societyMemberDetails)

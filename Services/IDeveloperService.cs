@@ -10,5 +10,6 @@ namespace castlers.Services
         public Task<int> AddDeveloperAsync(DeveloperDto developerDto);
         public Task<int> UpdateDeveloperAsync(DeveloperDto developerDto);
         public Task AddDeveloperPastProjects(List<DeveloperPastProjectDetailsDto> developerPastProjectDetails);
+        public Task<int>UpdateDeveloperReviewRating(UpdateDeveloperReviewRatingDto updateDeveloperReviewRatingDto);
     }
 }

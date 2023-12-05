@@ -132,13 +132,13 @@ namespace castlers.Controllers
         }
 
         [HttpPost("VerifyGetTenderDetailURL")]
-        public async Task<IActionResult> VerifyGetTenderDetailURL(string code)
+        public async Task<IActionResult> VerifyGetTenderDetailURL([FromQuery] string code)
         {
             if (code.Length <= 0) return BadRequest("Invalid Request");
             try
             {
                 var response = await _tenderService.VerifyGetTenderDetailURL(code);
-                return Ok(response); 
+                return Ok(response);
             }
             catch (Exception) { throw; }
         }

@@ -5,6 +5,8 @@ using castlers.Repository;
 using castlers.Common.Email;
 using System.Security.Cryptography;
 using castlers.ResponseDtos;
+using castlers.Common.Encrypt;
+using System.Text.Json;
 
 namespace castlers.Services
 {
@@ -14,6 +16,7 @@ namespace castlers.Services
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
         private readonly ITenderRepository _tenderRepo;
+        private readonly ISecureInformation _secureInformation;
         private readonly IUserRepository _userRepository;
         private readonly ISocietyDocRepository _societyDocRepository;
         private readonly ILetterOfInterestRepository _letterOfInterestRepository;
@@ -22,7 +25,7 @@ namespace castlers.Services
 
         public RegisteredSocietyManager(IRegisteredSocietyRepository registeredSocietyRepository, IMapper mapper, IEmailSender emailSender,
             ISocietyMemberDetailsRepository societyMemberDetailsRepository, ISocietyDocRepository societyDocRepository, ITenderRepository tenderRepo,
-            ILetterOfInterestRepository letterOfInterestRepository, IUserRepository userRepository)
+            ILetterOfInterestRepository letterOfInterestRepository, IUserRepository userRepository, ISecureInformation secureInformation)
         {
             _mapper = mapper;
             _tenderRepo = tenderRepo;
@@ -32,6 +35,7 @@ namespace castlers.Services
             _letterOfInterestRepository = letterOfInterestRepository;
             _registeredSocietyRepository = registeredSocietyRepository;
             _societyMemberDetailsRepository = societyMemberDetailsRepository;
+            _secureInformation = secureInformation;
         }
         #endregion
 
@@ -230,6 +234,20 @@ namespace castlers.Services
         public Task<int> DeleteRegisteredSocietyAsync(int Id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<RegisteredSocietyWithTechnicalDetails?> VerifyGetSocietyDetailsURL(string code)
+        {
+            try
+            {
+                var tenderApprovalRequest = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(code));
+
+                if (tenderApprovalRequest != null && tenderApprovalRequest.tenderId > 0)
+                    return await GetRegisteredSocietyWithTechnicalDetails(tenderApprovalRequest.tenderId);
+
+                return null;
+            }
+            catch (Exception) { throw; }
         }
         
         private List<SendTo> MemberListForEmail(List<SocietyMemberDetails> societyMemberDetails, string societyCode, string societyName)

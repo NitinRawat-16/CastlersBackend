@@ -13,7 +13,6 @@ namespace castlers.Services
         private readonly IMapper _mapper;
         private readonly IUploadFile _uploadFile;
         private readonly IEmailSender _emailSender;
-        private readonly IConfiguration _configuration;
         private readonly IPartnerKYCService _partnerKYCService;
         private readonly IDeveloperRepository _developerRepository;
         private readonly IRegisteredSocietyService _registeredSocietyService;
@@ -23,7 +22,6 @@ namespace castlers.Services
             _mapper = mapper;
             _uploadFile = uploadFile;
             _emailSender = emailSender;
-            _configuration = configuration;
             _partnerKYCService = partnerKYCService;
             _developerRepository = developerRepository;
             _registeredSocietyService = registeredSocietyService;
@@ -34,21 +32,25 @@ namespace castlers.Services
         {
             throw new NotImplementedException();
         }
+       
         public async Task<List<DeveloperDto>> GetDeveloperAsync()
         {
             var developerList = await _developerRepository.GetAllDeveloperAsync();
             return _mapper.Map<List<DeveloperDto>>(developerList);
         }
+        
         public async Task<DeveloperDto> GetDeveloperByIdAsync(int Id)
         {
             var developer = await _developerRepository.GetDeveloperByIdAsync(Id);
             return _mapper.Map<DeveloperDto>(developer);
         }
+        
         public Task<int> UpdateDeveloperAsync(DeveloperDto developerDto)
         {
             var developer = _mapper.Map<DeveloperDto, Developer>(developerDto);
             return _developerRepository.UpdateDeveloperAsync(developer);
         }
+        
         public async Task<int> AddDeveloperAsync(DeveloperDto developerDto)
         {
             //var developer = _mapper.Map<DeveloperDto, Developer>(developerDto);
@@ -59,6 +61,7 @@ namespace castlers.Services
                 organisationTypeId = developerDto.organisationTypeId,
                 mobileNumber = developerDto.mobileNumber,
                 address = developerDto.address,
+                city = developerDto.city,
                 siteLink = developerDto.siteLink,
                 email = developerDto.email,
                 logoPath = developerDto.logo == null ? string.Empty : await UploadFile(developerDto.name, "Logo", developerDto.logo),
@@ -121,6 +124,7 @@ namespace castlers.Services
             }
             return result;
         }
+        
         public async Task AddDeveloperPastProjects(List<DeveloperPastProjectDetailsDto> developerPastProjectDetails)
         {
             try
@@ -133,6 +137,16 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
+
+        public async Task<int> UpdateDeveloperReviewRating(UpdateDeveloperReviewRatingDto updateDeveloperReviewRatingDto)
+        {
+            try
+            {
+                return await _developerRepository.UpdateDeveloperReviewRating(updateDeveloperReviewRatingDto.DeveloperId, updateDeveloperReviewRatingDto.ReviewRatingScore);
+            }
+            catch (Exception){ throw;}
+        }
+        
         protected async Task<string> UploadFile(string developerName, string fileType, IFormFile file)
         {
             try

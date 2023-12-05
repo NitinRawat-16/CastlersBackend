@@ -5,6 +5,7 @@ using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using castlers.ResponseDtos;
+using castlers.Dtos;
 
 namespace castlers.Repository
 {
@@ -17,11 +18,13 @@ namespace castlers.Repository
             _dbContext = dbContext;
             _uploadFile = uploadFile;
         }
+
         public async Task<int> AddDeveloperAsync(Developer developer)
         {
             var parameter = new List<SqlParameter>();
             parameter.Add(new SqlParameter("@name", developer.name));
             parameter.Add(new SqlParameter("@address", developer.address));
+            parameter.Add(new SqlParameter("@city", developer.city));
             parameter.Add(new SqlParameter("@logoPath", developer.logoPath));
             parameter.Add(new SqlParameter("@siteLink", developer.siteLink));
             parameter.Add(new SqlParameter("@organisationTypeId", developer.organisationTypeId));
@@ -42,18 +45,18 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings));
             parameter.Add(new SqlParameter("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears));
             parameter.Add(new SqlParameter("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation));
-            parameter.Add(new SqlParameter("@awardsAndRecognition", developer.awardsAndRecognition)); 
+            parameter.Add(new SqlParameter("@awardsAndRecognition", developer.awardsAndRecognition));
             parameter.Add(new SqlParameter("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities));
             parameter.Add(new SqlParameter("@affilicationDevAssociationName", developer.affilicationDevAssociationName));
 
             parameter.Add(new SqlParameter("@developerId", developer.developerId));
 
-            parameter[25].Direction = ParameterDirection.Output;
+            parameter[26].Direction = ParameterDirection.Output;
 
             try
             {
                 var result = await Task.Run(() => _dbContext.Database
-               .ExecuteSqlRawAsync(@"exec AddNewDeveloper @name,@address,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,
+               .ExecuteSqlRawAsync(@"exec AddNewDeveloper @name,@address,@city,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,
                   @registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate, @organisationTypeId, @experienceYear, 
                   @projectsInHand, @numberOfRERARegisteredProjects, @totalCompletedProjects, @totalConstructionAreaDevTillToday, 
                   @sizeOfTheLargestProjectHandled, @experienceInHighRiseBuildings, @avgTurnOverforLastThreeYears, @affilicationToAnyDevAssociation,
@@ -68,6 +71,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
 
         }
+
         public async Task<int> AddDeveloperPastProjects(DeveloperPastProjectDetails developerPastProjects)
         {
             int id = 0;
@@ -99,6 +103,7 @@ namespace castlers.Repository
         {
             throw new NotImplementedException();
         }
+
         public async Task<List<Developer>> GetAllDeveloperAsync()
         {
             try
@@ -110,6 +115,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
 
         }
+
         public async Task<Developer> GetDeveloperByIdAsync(int Id)
         {
             var param = new SqlParameter("@developerId", Id);
@@ -119,6 +125,7 @@ namespace castlers.Repository
 
             return developer;
         }
+
         public async Task<Developer> GetDeveloperByCodeAsync(string developerCode)
         {
             var param = new SqlParameter("@DeveloperCode", developerCode);
@@ -128,6 +135,7 @@ namespace castlers.Repository
 
             return developer;
         }
+
         public async Task<int> UpdateDeveloperAsync(Developer developer)
         {
             var parameter = new List<SqlParameter>();
@@ -150,6 +158,26 @@ namespace castlers.Repository
 
             return result;
         }
+
+        public async Task<int> UpdateDeveloperReviewRating(int developerId, int reviewRatingScore)
+        {
+            try
+            {
+                var prmArray = new SqlParameter[]
+                {
+                new SqlParameter("@DeveloperId", developerId),
+                new SqlParameter("@ReviewRatingScore", reviewRatingScore)
+                };
+                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRaw(@"usp_UpdateDeveloperReviewRating @DeveloperId, @ReviewRatingScore", prmArray));
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         protected async Task<SaveDocResponseDto> DeveloperDocument(string developerName, string documentName, IFormFile file)
         {
             // creating file path for developer document save.
