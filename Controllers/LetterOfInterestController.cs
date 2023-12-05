@@ -30,12 +30,12 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
-        [HttpPost("LetterOfInterestRecieved")]
-        public async Task<IActionResult> LetterOfInterestRecieved([FromQuery] string code)
+        [HttpPost("LetterOfInterestSubmitted")]
+        public async Task<IActionResult> LetterOfInterestSubmitted([FromQuery] string code, string developerCode)
         {
             try
             {
-                var response = await _letterOfInterestService.LetterOfInterestedReceivedAsync(code);
+                var response = await _letterOfInterestService.LetterOfInterestedReceivedAsync(code, developerCode);
                 return Ok(response);
             }
             catch (Exception) { throw; }

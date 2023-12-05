@@ -240,10 +240,10 @@ namespace castlers.Services
         {
             try
             {
-                var tenderApprovalRequest = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(code));
+                var SocietyApprovalRequest = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(code));
 
-                if (tenderApprovalRequest != null && tenderApprovalRequest.tenderId > 0)
-                    return await GetRegisteredSocietyWithTechnicalDetails(tenderApprovalRequest.tenderId);
+                if (SocietyApprovalRequest != null && SocietyApprovalRequest.societyId > 0)
+                    return await GetRegisteredSocietyWithTechnicalDetails(SocietyApprovalRequest.societyId);
 
                 return null;
             }

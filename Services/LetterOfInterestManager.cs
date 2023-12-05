@@ -34,13 +34,19 @@ namespace castlers.Services
             _letterOfInterestRepository = letterOfInterestRepository;
         }
         #endregion
-        public async Task<MailResponseDto> LetterOfInterestedReceivedAsync(string queryParams)
+        public async Task<MailResponseDto> LetterOfInterestedReceivedAsync(string queryParams, string developerCode)
         {
             try
             {
                 var sendIntimation = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(queryParams));
-                var isSaved = await _letterOfInterestRepository.AddLetterOfInterestedReceivedAsync(sendIntimation.developerId, sendIntimation.tenderId, sendIntimation.interested);
                 var developerDetails = await _developerService.GetDeveloperByIdAsync(sendIntimation.developerId);
+
+                if (developerCode != developerDetails.registeredDeveloperCode)
+                {
+                    throw new Exception("Invalid Developer Code!");
+                }
+
+                var isSaved = await _letterOfInterestRepository.AddLetterOfInterestedReceivedAsync(sendIntimation.developerId, sendIntimation.tenderId, sendIntimation.interested);
                 var sendTo = new SendTo
                 {
                     Name = developerDetails.name,
