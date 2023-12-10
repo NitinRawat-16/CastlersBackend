@@ -131,7 +131,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
-        [HttpPost("VerifyGetTenderDetailURL")]
+        [HttpPost("VerifyGetTenderDetailURL")] // Verify chairman url for tender details
         public async Task<IActionResult> VerifyGetTenderDetailURL([FromQuery] string code)
         {
             if (code.Length <= 0) return BadRequest("Invalid Request");
@@ -150,6 +150,19 @@ namespace castlers.Controllers
             try
             {
                 var response = await _tenderService.UpdateTenderStatus(tenderStatusDto);
+                return Ok(response);
+            }
+            catch (Exception) { throw; }
+        }
+
+        //Verify developer url for tender details
+        [HttpPost("VerifyDeveloperTenderURL")]
+        public IActionResult VerifyDeveloperTenderURL([FromQuery] string code)
+        {
+            if (code.Length <= 0) BadRequest("Invalid request!");
+            try
+            {
+                var response = _tenderService.VerifyDeveloperTenderURL(code);
                 return Ok(response);
             }
             catch (Exception) { throw; }

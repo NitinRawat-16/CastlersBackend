@@ -15,6 +15,7 @@ namespace castlers.Common.Encrypt
     {
         public int developerId { get; set; }
         public int tenderNoticeId { get; set; }
+        public string tenderCode { get; set; }
     }
 
     public class SecureInformation : ISecureInformation

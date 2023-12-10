@@ -163,7 +163,8 @@ namespace castlers.Services
                     var fillTenderUrl = filltenderAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new TenderNoticeObj
                     {
                         developerId = developerId,
-                        tenderNoticeId = tenderNoticeId
+                        tenderNoticeId = tenderNoticeId,
+                        tenderCode = sendTender.TenderCode
                     }));
 
                     var viewDocUrl = viewDocAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
@@ -174,15 +175,15 @@ namespace castlers.Services
                     SendTo sendTo = new SendTo
                     {
                         Email = developerDetails.email,
+                        TenderCode = sendTender.TenderCode,
                         SocietyName = sendTender.SocietyName,
-                        EMailType = Common.Enums.EmailTypes.SendTenderNotice,
-                        SendTenderNoticeStartDate = sendTender.StartDate,
-                        SendTenderNoticeEndDate = sendTender.Enddate,
-                        SendTenderNoticeETenderFormAPI = fillTenderUrl,
                         SendTenderNoticeViewDocAPI = viewDocUrl,
-                        SendTenderNoticePresentationDate = sendTender.PresentationDate,
-                        SendTenderNoticePublicationDate = sendTender.PublicationDate,
-                        TenderCode = sendTender.TenderCode
+                        SendTenderNoticeETenderFormAPI = fillTenderUrl,
+                        EMailType = Common.Enums.EmailTypes.SendTenderNotice,
+                        SendTenderNoticeStartDate = Convert.ToDateTime(sendTender.StartDate).ToString("dd-MMM-yyyy"),
+                        SendTenderNoticeEndDate = Convert.ToDateTime(sendTender.Enddate).ToString("dd-MMM-yyyy"),
+                        SendTenderNoticePresentationDate = Convert.ToDateTime(sendTender.PresentationDate).ToString("dd-MMM-yyyy"),
+                        SendTenderNoticePublicationDate = Convert.ToDateTime(sendTender.PublicationDate).ToString("dd-MMM-yyyy")
                     };
 
                     await _emailSender.SendEmailAsync(sendTo);

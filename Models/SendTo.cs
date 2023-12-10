@@ -14,10 +14,10 @@ namespace castlers.Models
         public string? SocietyName { get; set; } = default;
         public string? InterestedDevAPI { get; set; } = default;
         public string? UninterestedDevAPI { get; set; } = default;
-        public DateTime? SendTenderNoticeEndDate { get; set; } = default;
-        public DateTime? SendTenderNoticePublicationDate { get; set; } = default;
-        public DateTime? SendTenderNoticeStartDate { get; set; } = default;
-        public DateTime? SendTenderNoticePresentationDate { get; set; } = default;
+        public string? SendTenderNoticeEndDate { get; set; } = default;
+        public string? SendTenderNoticePublicationDate { get; set; } = default;
+        public string? SendTenderNoticeStartDate { get; set; } = default;
+        public string? SendTenderNoticePresentationDate { get; set; } = default;
         public string? SendTenderNoticeETenderFormAPI { get; set; } = default;
         public string? SendTenderNoticeViewDocAPI { get; set; } = default;
         public string? TenderCode { get; set; } = default;

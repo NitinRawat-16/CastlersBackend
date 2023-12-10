@@ -171,6 +171,21 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
+        public bool VerifyDeveloperTenderURL(string code)
+        {
+            try
+            {
+                var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(code));
+
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async void SendChairmanTenderApprovalRequest(SocietyTenderDetails tenderDetails)
         {
             var approvalApi = _configuration.GetSection("Chairman_Tender_Approval_API").Value;
@@ -206,7 +221,7 @@ namespace castlers.Services
                 var result = await _tenderRepo.UpdateTenderStatus(tenderStatusDto.tenderId, tenderStatusDto.tenderStatus);
                 return result;
             }
-            catch (Exception)  { throw;  }
+            catch (Exception) { throw; }
         }
 
         private string FiveDigitRandomNumber() => new Random().Next(MIN, MAX).ToString();
