@@ -15,7 +15,7 @@ namespace castlers.Services
         public Task<bool> ChairmanResponseforSocietyTenderDetails(ChairmanTenderApprovalDto chairmanTenderApprovalDto);
         public Task<SocietyTenderDetailsDto?> VerifyGetTenderDetailURL(string code);
         public Task<int> UpdateTenderStatus(TenderStatusDto tenderStatusDto);
-        public bool VerifyDeveloperTenderURL(string code);
+        public Task<bool> VerifyDeveloperTenderURL(string code);
         public Task<int> VerifyDeveloperTenderCodeWithURL(DeveloperTenderVerifyDto developerTenderVerifyDto);
     }
 }
