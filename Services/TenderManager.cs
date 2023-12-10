@@ -6,6 +6,7 @@ using castlers.Repository;
 using castlers.Common.Email;
 using castlers.Common.Enums;
 using castlers.Common.Encrypt;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace castlers.Services
 {
@@ -184,6 +185,26 @@ namespace castlers.Services
             {
                 return false;
             }
+        }
+
+        public async Task<int> VerifyDeveloperTenderCodeWithURL(DeveloperTenderVerifyDto developerTenderVerifyDto)
+        {
+            try
+            {
+                var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(developerTenderVerifyDto.code));
+
+                if (tenderNoticeObj.tenderCode == null || tenderNoticeObj.tenderCode.Trim().Length <= 0)
+                {
+                    return 0;
+                }
+
+                if (tenderNoticeObj.tenderCode != developerTenderVerifyDto.tenderCode)
+                {
+                    return 0;
+                }
+                return await _tenderRepo.IsTenderExists(developerTenderVerifyDto.tenderCode);
+            }
+            catch (Exception) { return 0; }
         }
 
         public async void SendChairmanTenderApprovalRequest(SocietyTenderDetails tenderDetails)
