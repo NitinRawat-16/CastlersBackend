@@ -11,6 +11,6 @@ namespace castlers.Repository
         public Task<int> UpdateRegisteredSocietyMembersAsync(List<SocietyMemberDetails> societyMemberDetails);
         public Task<List<SocietyMemberDetails>> DeleteRegisteredSocietyMembersAsync(SocietyMemberDetails societyMemberDetails);
         public Task<int> DeleteRegisteredSocietyMemberByIdAsync (int societyMemberId, int societyId);
-        public Task<List<SocietyMemberDetails>> GetSocietyCommitteeMembersAsync(int registeredSocietyId);
+        public List<SocietyMemberDetails> GetSocietyCommitteeMembersAsync(int registeredSocietyId);
     }
 }

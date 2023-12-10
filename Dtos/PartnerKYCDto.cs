@@ -1,4 +1,6 @@
-﻿namespace castlers.Dtos
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace castlers.Dtos
 {
     public class PartnerKYCDto
     {
@@ -9,5 +11,8 @@
         public string? contactNumber { get; set; }
         public string? panCard { get; set; }
         public string? aadharCard { get; set; }
+        [NotMapped]
+        public IFormFile partnerFile { get; set; }
+        public string partnerFileUrl { get; set; } = string.Empty;
     }
 }

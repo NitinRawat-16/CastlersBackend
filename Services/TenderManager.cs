@@ -16,8 +16,8 @@ namespace castlers.Services
         private readonly IEmailSender _emailSender;
         private readonly ITenderRepository _tenderRepo;
         private readonly IConfiguration _configuration;
-        private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ISecureInformation _secureInformation;
+        private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ISocietyMemberDetailsService _societyMemberDetailsService;
         public TenderManager(ITenderRepository tenderRepo, IMapper mapper, ISocietyMemberDetailsService societyMemberDetailsService, IEmailSender emailSender, ISecureInformation secureInformation, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService)
         {
@@ -121,7 +121,10 @@ namespace castlers.Services
                 {
                     result = await UpdatedTenderCodeforSocietyTenderId(tenderApprovalRequest.tenderId, tenderApprovalRequest.societyId);
                 }
-                else { }
+                else
+                {
+                    await RejectTenderforSocietyTenderId(tenderApprovalRequest.tenderId, tenderApprovalRequest.societyId, chairmanTenderApprovalDto.Reason);
+                }
 
                 return result;
             }
@@ -141,7 +144,17 @@ namespace castlers.Services
             string tenderCode = string.Format("{0}{1}{2}{3}", "TND", societyCity.ToUpper(), FiveDigitRandomNumber(), "HSG");
 
             // Updated tender code of approved tender of the society.
-            return await _tenderRepo.UpdatedTenderCodeforSocietyTenderId(tenderId, tenderCode, isApproved: true);
+            return await _tenderRepo.UpdatedTenderCodeforSocietyTenderId(tenderId, tenderCode, isApproved: true, reason: string.Empty);
+        }
+
+        public async Task<bool> RejectTenderforSocietyTenderId(int tenderId, int societyId, string rejectReason)
+        {
+            // Putting the empty string in tender code after tender details is rejected
+            string tenderCode = string.Empty;
+
+            // Updated tender code of approved tender of the society.
+            var result = await _tenderRepo.UpdatedTenderCodeforSocietyTenderId(tenderId, tenderCode, isApproved: false, rejectReason);
+            return true;
         }
 
         public async Task<SocietyTenderDetailsDto?> VerifyGetTenderDetailURL(string code)
@@ -165,6 +178,7 @@ namespace castlers.Services
             #region Tender Approval Email
             //Send Approval mail to the chairman for the tender details
             var societyMemberList = await _societyMemberDetailsService.GetRegisteredSocietyCommitteeMembersBySocietyIdAsync((int)tenderDetails.registeredSocietyId);
+
             var societyDetails = await _registeredSocietyService.GetRegisteredSocietyByIdAsync((int)tenderDetails.registeredSocietyId);
             var societyChairman = societyMemberList.Where(m => m.societyMemberDesignationId == 1).FirstOrDefault();
 
@@ -183,6 +197,16 @@ namespace castlers.Services
             };
             await _emailSender.SendEmailAsync(sendTo);
             #endregion
+        }
+
+        public async Task<int> UpdateTenderStatus(TenderStatusDto tenderStatusDto)
+        {
+            try
+            {
+                var result = await _tenderRepo.UpdateTenderStatus(tenderStatusDto.tenderId, tenderStatusDto.tenderStatus);
+                return result;
+            }
+            catch (Exception)  { throw;  }
         }
 
         private string FiveDigitRandomNumber() => new Random().Next(MIN, MAX).ToString();

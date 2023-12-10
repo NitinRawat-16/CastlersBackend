@@ -14,7 +14,6 @@ namespace castlers.Repository
     {
         private readonly ApplicationDbContext _dbContext;
        
-
         public SocietyMemberDetailsRepo(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -169,7 +168,7 @@ namespace castlers.Repository
             }
         }
 
-        public async Task<List<SocietyMemberDetails>> GetSocietyCommitteeMembersAsync(int registeredSocietyId)
+        public List<SocietyMemberDetails> GetSocietyCommitteeMembersAsync(int registeredSocietyId)
         {
             string sql = "SELECT societyMemberDetailsId,registeredSocietyId,memberName," +
                         " mobileNumber,email,societyMemberDesignationId,createdBy,createdDate,updatedBy," +
@@ -177,7 +176,7 @@ namespace castlers.Repository
                         " AND societyMemberdesignationId In (1, 2 ,3, 4)";
 
             var param = new SqlParameter("@registeredSocietyId", registeredSocietyId);
-            var societyMemberDetails = await Task.Run(() => _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToList());
+            var societyMemberDetails =  _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToList();
 
             return societyMemberDetails;
         }

@@ -52,7 +52,7 @@ namespace castlers.Controllers
 
             try
             {
-                var response = await _partnerKYCService.AddPartnerAsync(partnerKYCDto);
+                var response = await _partnerKYCService.AddPartnerAsync(partnerKYCDto, string.Empty);
 
                 return Ok(response);
             }

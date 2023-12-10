@@ -47,6 +47,6 @@ public class Developer
     public IFormFile? awardsAndRecognitionDoc { get; set; } = null;
     public string? awardsAndRecognition { get; set; } = string.Empty;
     public bool? haveBusinessInMultipleCities { get; set; } = false;
-    public int reviewRatingScore { get; set; } = 0;
+    public int? reviewRatingScore { get; set; }
     public List<DeveloperPastProjectDetails> DeveloperPastProjectDetails { get; set; }
 }

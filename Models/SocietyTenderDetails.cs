@@ -24,5 +24,8 @@ namespace castlers.Models
         public bool? isApprovedBySociety { get; set; }
         public string? tenderCode { get; set; }   
         public int? status { get; set; }
+        public string? reason { get; set; } = string.Empty;
+        public DateTime creationDate { get; set; } = DateTime.Now;
+        public DateTime updationDate { get; set; } = DateTime.Now;
     }
 }

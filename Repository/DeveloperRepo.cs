@@ -63,10 +63,10 @@ namespace castlers.Repository
                   @awardsAndRecognition, @haveBusinessInMultipleCities, @affilicationDevAssociationName,
                   @developerId OUT", parameter.ToArray()));
 
-                if (parameter[25].Value is DBNull)
+                if (parameter[26].Value is DBNull)
                     return 0;
                 else
-                    return Convert.ToInt32(parameter[25].Value);
+                    return Convert.ToInt32(parameter[26].Value);
             }
             catch (Exception) { throw; }
 
@@ -80,21 +80,22 @@ namespace castlers.Repository
                     new SqlParameter("@ProjectName", developerPastProjects.projectName),
                     new SqlParameter("@ProjectLocation", developerPastProjects.projectLocation),
                     new SqlParameter("@ReraRegistrationNumber", developerPastProjects.reraRegistrationNumber),
+                    new SqlParameter("@ReraCertificateUrl", developerPastProjects.reraCertificateUrl),
                     new SqlParameter("@ProjectStartDate", developerPastProjects.projectStartDate),
                     new SqlParameter("@ProjectEndDate", developerPastProjects.projectEndDate),
                     new SqlParameter("@DeveloperId", developerPastProjects.developerId),
                     new SqlParameter("@Id", id)
             };
-            prmArray[6].Direction = ParameterDirection.Output;
+            prmArray[7].Direction = ParameterDirection.Output;
 
             try
             {
-                await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperPastProjectDetails @ProjectName, @ProjectLocation, @ReraRegistrationNumber,
+                await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperPastProjectDetails @ProjectName, @ProjectLocation, @ReraRegistrationNumber, @ReraCertificateUrl,
                 @ProjectStartDate, @ProjectEndDate, @DeveloperId, @Id OUT", prmArray));
-                if (prmArray[6].Value is DBNull)
+                if (prmArray[7].Value is DBNull)
                     return 0;
                 else
-                    return Convert.ToInt32(prmArray[6].Value);
+                    return Convert.ToInt32(prmArray[7].Value);
             }
             catch (Exception) { throw; }
         }

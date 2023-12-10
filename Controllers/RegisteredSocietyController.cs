@@ -200,5 +200,17 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
+
+        [HttpGet("GetTenderDetailsBySocietyId")]
+        public async Task<IActionResult> GetTenderDetailsBySocietyId(int registeredSocietyId)
+        {
+            if (registeredSocietyId <= 0) return BadRequest("Society Id can't be null");
+            try
+            {
+                var tenderDetails = await _registeredSocietyService.GetTenderDetailsBySocietyId(registeredSocietyId);
+                return Ok(tenderDetails);
+            }
+            catch (Exception)  {throw; }
+        }
     }
 }

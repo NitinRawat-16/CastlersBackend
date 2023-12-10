@@ -1,4 +1,6 @@
-﻿namespace castlers.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace castlers.Models
 {
     public class PartnerKYC
     {
@@ -9,6 +11,9 @@
         public string contactNumber { get; set; }
         public string panCard { get; set; }
         public string aadharCard { get; set; }
+        [NotMapped]
+        public IFormFile partnerFile { get; set; }
+        public string partnerFileUrl { get; set; } = string.Empty;
         public Guid createdBy { get; set; } = new Guid();
         public DateTime createdDate { get; set; } = DateTime.Now;
         public Guid updatedBy { get; set; } = new Guid();

@@ -16,6 +16,67 @@ namespace castlers.Controllers
             _tenderService = tenderService;
         }
 
+        [HttpGet("GetSocietyApprovedTenders")]
+        public async Task<IActionResult> GetSocietyApprovedTenders()
+        {
+            List<SocietyApprovedTendersDetails> societyTenderDetailsDto = new List<SocietyApprovedTendersDetails>();
+            try
+            {
+                societyTenderDetailsDto = await _tenderService.GetSocietyApprovedTenders();
+            }
+            catch (Exception) { throw; }
+
+            return Ok(societyTenderDetailsDto);
+        }
+
+        [HttpGet("GetSocietyTenderDetailsByTenderId")]
+        public async Task<IActionResult> GetSocietyTenderDetailsByTenderId(int tenderId)
+        {
+            if (tenderId < 0) return BadRequest("Tender Id should not be null");
+            try
+            {
+                var tenderDetails = await _tenderService.GetSocietyTenderDetailsByTenderId(tenderId);
+                return Ok(tenderDetails);
+            }
+            catch (Exception) { throw; }
+        }
+
+        [HttpGet("GetSocietyActiveTenderIdBySocietyId")]
+        public async Task<IActionResult> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        {
+            if (societyId < 0) return BadRequest("Society Id should not be null!");
+            try
+            {
+                var tenderId = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
+                if (tenderId > 0)
+                {
+                    return Ok(tenderId);
+                }
+                else
+                {
+                    return Ok(0);
+                }
+            }
+            catch (Exception) { throw; }
+        }
+
+        [HttpPost("IsTenderExists")]
+        public async Task<IActionResult> IsTenderExists([FromBody] TenderCodeDto tenderCodeDto)
+        {
+            if (tenderCodeDto.tenderCode == null)
+            {
+                return BadRequest("Tender code should not be empty!");
+            }
+            int result = 0;
+            try
+            {
+                result = await _tenderService.IsTenderExists(tenderCodeDto.tenderCode);
+            }
+            catch (Exception) { throw; }
+            return Ok(result);
+
+        }
+
         [HttpPost("AddTenderDetails")]
         public async Task<TenderResponseDto> AddSocietyTender([FromForm] SocietyTenderDetailsDto tenderDetailsDto)
         {
@@ -54,67 +115,6 @@ namespace castlers.Controllers
             return tenderResponseDto;
         }
 
-        [HttpGet("GetSocietyApprovedTenders")]
-        public async Task<IActionResult> GetSocietyApprovedTenders()
-        {
-            List<SocietyApprovedTendersDetails> societyTenderDetailsDto = new List<SocietyApprovedTendersDetails>();
-            try
-            {
-                societyTenderDetailsDto = await _tenderService.GetSocietyApprovedTenders();
-            }
-            catch (Exception) { throw; }
-
-            return Ok(societyTenderDetailsDto);
-        }
-
-        [HttpPost("IsTenderExists")]
-        public async Task<IActionResult> IsTenderExists([FromBody] TenderCodeDto tenderCodeDto)
-        {
-            if (tenderCodeDto.tenderCode == null)
-            {
-                return BadRequest("Tender code should not be empty!");
-            }
-            int result = 0;
-            try
-            {
-                result = await _tenderService.IsTenderExists(tenderCodeDto.tenderCode);
-            }
-            catch (Exception) { throw; }
-            return Ok(result);
-
-        }
-
-        [HttpGet("GetSocietyTenderDetailsByTenderId")]
-        public async Task<IActionResult> GetSocietyTenderDetailsByTenderId(int tenderId)
-        {
-            if (tenderId < 0) return BadRequest("Tender Id should not be null");
-            try
-            {
-                var tenderDetails = await _tenderService.GetSocietyTenderDetailsByTenderId(tenderId);
-                return Ok(tenderDetails);
-            }
-            catch (Exception) { throw; }
-        }
-
-        [HttpGet("GetSocietyActiveTenderIdBySocietyId")]
-        public async Task<IActionResult> GetSocietyActiveTenderIdBySocietyId(int societyId)
-        {
-            if (societyId < 0) return BadRequest("Society Id should not be null!");
-            try
-            {
-                var tenderId = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
-                if (tenderId > 0)
-                {
-                    return Ok(tenderId);
-                }
-                else
-                {
-                    return Ok(0);
-                }
-            }
-            catch (Exception) { throw; }
-        }
-
         [HttpPost("ChairmanResponseForTenderDetails")]
         public async Task<IActionResult> ChairmanResponseForTenderDetails([FromBody] ChairmanTenderApprovalDto chairmanTenderApprovalDto)
         {
@@ -138,6 +138,18 @@ namespace castlers.Controllers
             try
             {
                 var response = await _tenderService.VerifyGetTenderDetailURL(code);
+                return Ok(response);
+            }
+            catch (Exception) { throw; }
+        }
+
+        [HttpPost("UpdateTenderStatus")]
+        public async Task<IActionResult> UpdateTenderStatus([FromBody] TenderStatusDto tenderStatusDto)
+        {
+            if (tenderStatusDto.tenderId <= 0) return BadRequest("Tender id is invalid!");
+            try
+            {
+                var response = await _tenderService.UpdateTenderStatus(tenderStatusDto);
                 return Ok(response);
             }
             catch (Exception) { throw; }

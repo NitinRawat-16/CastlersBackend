@@ -22,6 +22,9 @@ namespace castlers.Dtos
         public bool? isApprovedBySociety { get; set; }
         //public string? tenderCode { get; set; }
         public int? status { get; set; }
+        public string reason { get; set; }
+        public DateTime creationDate { get; set; }
+        public DateTime updationDate { get; set; }
     }
 }
 

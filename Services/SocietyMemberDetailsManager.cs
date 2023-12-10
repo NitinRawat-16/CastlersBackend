@@ -111,7 +111,7 @@ namespace castlers.Services
 
         public async Task<List<SocietyMemberDetailsDto>> GetRegisteredSocietyCommitteeMembersBySocietyIdAsync(int registeredSocietyId)
         {
-            var societyMemberDetails = await _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId);
+            var societyMemberDetails = _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId);
             return _mapper.Map<List<SocietyMemberDetailsDto>>(societyMemberDetails);
         }
     }

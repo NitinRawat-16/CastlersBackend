@@ -26,18 +26,19 @@ namespace castlers.Repository
                     parameters.Add(new("@contactNumber", partnerKYC.contactNumber));
                     parameters.Add(new("@panCard", partnerKYC.panCard));
                     parameters.Add(new("@aadharCard", partnerKYC.aadharCard));
+                    parameters.Add(new("@partnerFileUrl", partnerKYC.partnerFileUrl));
                     parameters.Add(new("@createdDate", partnerKYC.createdDate));
                     parameters.Add(new("@updatedDate", partnerKYC.updatedDate));
                     parameters.Add(new("@partnerKYCId", partnerKYC.partnerKYCId));
 
-                    parameters[8].Direction = System.Data.ParameterDirection.Output;
+                    parameters[9].Direction = System.Data.ParameterDirection.Output;
 
-                    await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC AddPartnerKYCDetails @designationTypeId, @developerId, @email, @contactNumber, @panCard, @aadharCard, @createdDate, @updatedDate, @partnerKYCId OUT", parameters.ToArray())
+                    await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC AddPartnerKYCDetails @designationTypeId, @developerId, @email, @contactNumber, @panCard, @aadharCard, @partnerFileUrl, @createdDate, @updatedDate, @partnerKYCId OUT", parameters.ToArray())
                     );
-                    if (parameters[8].Value is DBNull)
-                        return 0;
+                    if (parameters[9].Value is DBNull)
+                        partnerKYC.partnerKYCId = -1;
                     else
-                        return Convert.ToInt32(parameters[8].Value);
+                        partnerKYC.partnerKYCId = Convert.ToInt32(parameters[9].Value);
                 }
                 catch (Exception) { throw; }
 
@@ -106,8 +107,8 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@updatedBy", partnerKYC.updatedBy));
             parameter.Add(new SqlParameter("@updatedDate", partnerKYC.updatedDate));
 
-           return await Task.Run(() => _dbContext.Database
-                   .ExecuteSqlRawAsync(@"exec UpdatePartnerKYC @partnerKYCId,@designationTypeId,@developerId,@email,@contactNumber,@panCard,@aadharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+            return await Task.Run(() => _dbContext.Database
+                    .ExecuteSqlRawAsync(@"exec UpdatePartnerKYC @partnerKYCId,@designationTypeId,@developerId,@email,@contactNumber,@panCard,@aadharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
         }
     }
 }

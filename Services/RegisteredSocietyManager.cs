@@ -23,6 +23,7 @@ namespace castlers.Services
         private readonly IRegisteredSocietyRepository _registeredSocietyRepository;
         private readonly ISocietyMemberDetailsRepository _societyMemberDetailsRepository;
 
+
         public RegisteredSocietyManager(IRegisteredSocietyRepository registeredSocietyRepository, IMapper mapper, IEmailSender emailSender,
             ISocietyMemberDetailsRepository societyMemberDetailsRepository, ISocietyDocRepository societyDocRepository, ITenderRepository tenderRepo,
             ILetterOfInterestRepository letterOfInterestRepository, IUserRepository userRepository, ISecureInformation secureInformation)
@@ -82,7 +83,7 @@ namespace castlers.Services
                     {
                         // Semd Email to new registered society
                         await _emailSender.SendEmailAsync(sendTo);
-                    
+
                         //Member registered confirmation mail to society and members.
                         var memberList = MemberListForEmail(societyMemberDetails, registeredSociety.societyRegisteredCode, registeredSociety.societyName);
                         await _emailSender.SendEmailAsync(memberList);
@@ -121,34 +122,34 @@ namespace castlers.Services
             }
             return isMembersUpdated;
         }
-        
+
         public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyAsync()
         {
             var registerdSocietyList = await _registeredSocietyRepository.GetAllRegisteredSocietyAsync();
             return _mapper.Map<List<RegisteredSocietyDto>>(registerdSocietyList);
         }
-        
+
         public async Task<RegisteredSocietyDto> GetRegisteredSocietyByIdAsync(int Id)
         {
             var registerdSociety = await _registeredSocietyRepository.GetRegisteredSocietyByIdAsync(Id);
             return _mapper.Map<RegisteredSocietyDto>(registerdSociety);
         }
-        
+
         public async Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationList()
         {
             var societyMemberDesignation = await _registeredSocietyRepository.GetSocietyMemberDesignationsAsync();
             return _mapper.Map<List<SocietyMemberDesignationDto>>(societyMemberDesignation);
         }
-        
+
         public async Task<RegisteredSocietyDto> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
         {
             RegisteredSociety registerdSociety = await _registeredSocietyRepository.GetRegisteredSocietyInfoAsync(registeredSocietyCode);
             RegisteredSocietyDto registeredSocietyDto = _mapper.Map<RegisteredSociety, RegisteredSocietyDto>(registerdSociety);
-            List<SocietyMemberDetails> societyMemberDetails = await _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registerdSociety.registeredSocietyId);
+            List<SocietyMemberDetails> societyMemberDetails = _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registerdSociety.registeredSocietyId);
             registeredSocietyDto.societyMemberDetails = _mapper.Map<List<SocietyMemberDetails>, List<SocietyMemberDetailsDto>>(societyMemberDetails);
             return registeredSocietyDto;
         }
-        
+
         public async Task<int> UpdateTechnicalDetailsSocietyAsync(UpdateTechnicalDetailsRegisteredSocietyDto technicalDetailsRegisteredSocietyDto)
         {
             //var registeredSociety = _mapper.Map<UpdateTechnicalDetailsRegisteredSocietyDto, RegisteredSociety>(technicalDetailsRegisteredSocietyDto);
@@ -161,7 +162,7 @@ namespace castlers.Services
                 throw;
             }
         }
-        
+
         public async Task<SocietyInfoViewDto> GetRegSocietyInfoWithDocDetailsAsync(int registeredSocietyId)
         {
             try
@@ -172,7 +173,7 @@ namespace castlers.Services
                 var documentList = await _societyDocRepository.GetSocietyDocs(registeredSocietyId);
 
                 var societyCommitteeMemberList = _mapper.Map<List<SocietyMemberDetailsDto>>
-                    (await _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId));
+                    (_societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId));
 
                 var societyTenderDetailsList = _mapper.Map<List<SocietyTenderDetailsDto>>(await _tenderRepo.GetTenderDetailsByIdAsync(registeredSocietyId));
 
@@ -202,7 +203,7 @@ namespace castlers.Services
                 throw;
             }
         }
-        
+
         public async Task<RegisteredSocietyTechnicalDetails> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
         {
             try
@@ -211,7 +212,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
-        
+
         public async Task<RegisteredSocietyWithTechnicalDetails> GetRegisteredSocietyWithTechnicalDetails(int societyId)
         {
             try
@@ -220,7 +221,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
-        
+
         public async Task<List<ViewLetterOfInterestReceivedDto>> GetSocietyLetterOfInterestReceived(int registeredSocietyId)
         {
             try
@@ -230,7 +231,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
-        
+
         public Task<int> DeleteRegisteredSocietyAsync(int Id)
         {
             throw new NotImplementedException();
@@ -249,7 +250,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
-        
+
         private List<SendTo> MemberListForEmail(List<SocietyMemberDetails> societyMemberDetails, string societyCode, string societyName)
         {
             var memberlist = new List<SendTo>();
@@ -265,6 +266,15 @@ namespace castlers.Services
                 });
             }
             return memberlist;
+        }
+
+        public async Task<SocietyTenderDetailsDto> GetTenderDetailsBySocietyId(int registeredSocietyId)
+        {
+            try
+            {
+                return _mapper.Map<SocietyTenderDetailsDto>(await _registeredSocietyRepository.GetTenderDetailsBySocietyId(registeredSocietyId));
+            }
+            catch (Exception) { throw; }
         }
 
         #endregion

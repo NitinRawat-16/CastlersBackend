@@ -132,7 +132,15 @@ namespace castlers.Services
             try
             {
                 var sendTenderNoticeDetails = _mapper.Map<SendTenderNotice>(sendTenderNoticeDto);
-                return await _letterOfInterestRepository.AddSendTenderNoticeDetails(sendTenderNoticeDetails);
+                var result =  await _letterOfInterestRepository.AddSendTenderNoticeDetails(sendTenderNoticeDetails);
+
+                // Send final tender Notice to the developers how saw us the interest in the Initmation
+
+               var developerEmailList = sendTenderNoticeDetails?.LetterOfInterestDeveloper?.Select(d => d.developerEmail).ToList();
+
+
+
+                return result;
             }
             catch (Exception) { throw; }
         }

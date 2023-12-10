@@ -4,6 +4,9 @@ using castlers.Models;
 using castlers.Repository;
 using castlers.Common.Email;
 using castlers.Common.AzureStorage;
+using Microsoft.VisualBasic.FileIO;
+using System.Security.Cryptography;
+using Microsoft.Graph.Models;
 
 namespace castlers.Services
 {
@@ -106,10 +109,10 @@ namespace castlers.Services
                 //partnerKYCs.Add(partnerDetails);
 
                 developerDto.DeveloperPastProjectDetails.ForEach(p => p.developerId = developerId);
-                await AddDeveloperPastProjects(developerDto.DeveloperPastProjectDetails);
+                await AddDeveloperPastProjects(developerDto.DeveloperPastProjectDetails, developerDto.name);
 
                 developerDto.PartnerKYCDetails.ForEach(p => p.developerId = developerId);
-                result = await _partnerKYCService.AddPartnerAsync(developerDto.PartnerKYCDetails);
+                result = await _partnerKYCService.AddPartnerAsync(developerDto.PartnerKYCDetails, developerDto.name);
 
                 #region Email
                 SendTo sendTo = new SendTo()
@@ -125,11 +128,22 @@ namespace castlers.Services
             return result;
         }
         
-        public async Task AddDeveloperPastProjects(List<DeveloperPastProjectDetailsDto> developerPastProjectDetails)
+        public async Task AddDeveloperPastProjects(List<DeveloperPastProjectDetailsDto> developerPastProjectDetails, string? developerName)
         {
             try
             {
                 var developerPastProjects = _mapper.Map<List<DeveloperPastProjectDetails>>(developerPastProjectDetails);
+
+                // Upload Rera certificate and Save certificate url in database.
+                foreach (var project in developerPastProjects)
+                {
+                    string filePath = string.Format("{0}/{1}/{2}", developerName, "RERACertifications",
+                        project.RERACertificate?.FileName.ToString().Trim() + RandomNumberGenerator.GetInt32(0, 10000).ToString("D5"));
+
+                    var response = await _uploadFile.SaveDoc(project.RERACertificate, filePath);
+                    project.reraCertificateUrl = response.DocURL;
+                }
+
                 foreach (var projectDetails in developerPastProjects)
                 {
                     await _developerRepository.AddDeveloperPastProjects(projectDetails);

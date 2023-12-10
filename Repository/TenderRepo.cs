@@ -48,11 +48,11 @@ namespace castlers.Repository
 
             try
             {
-                await Task.Run(() => _dbContext.Database
+                await  _dbContext.Database
                 .ExecuteSqlRawAsync(@"EXEC AddTenderDetails @tenderId, @registeredSocietyId, @percentageOfIncreaseArea, @quantamOfAreaAtDiscountRate,
                  @expectedDiscountRate, @corpusFund, @rentPerSqFtFlat, @rentPerSqFtOffice, @rentPerSqFtShop, @parkingPerMember, @typeOfProject,
                  @refundableDepositPerMemberForFlat, @refundableDepositPerMemberForOffice, @refundableDepositPerMemberForShop,
-                 @shiftingChargesForFlatOfficeShop, @bettermentChargesPerMember, @isApprovedBySociety, @tenderCode, @status, @tenderPK OUT", parameters));
+                 @shiftingChargesForFlatOfficeShop, @bettermentChargesPerMember, @isApprovedBySociety, @tenderCode, @status, @tenderPK OUT", parameters);
 
                 result = Convert.ToInt32(parameters[19].Value);
             }
@@ -197,7 +197,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
         }
         
-        public async Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved)
+        public async Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved, string reason)
         {
             bool response = false;
             try
@@ -207,20 +207,38 @@ namespace castlers.Repository
                     new("@TenderId", tenderId),
                     new("@TenderCode", tenderCode),
                     new("@IsApproved", isApproved),
+                    new("@Reason", reason),
                     new("@IsUpdated", response)
                 };
 
-                prmList[3].Direction = System.Data.ParameterDirection.Output;
+                prmList[4].Direction = System.Data.ParameterDirection.Output;
 
-                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC uspApprovedSocietyTenderCode @TenderId, @TenderCode, @IsApproved, @IsUpdated OUTPUT", prmList));
+                var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC uspApprovedSocietyTenderCode @TenderId, @TenderCode, @IsApproved, @Reason, @IsUpdated OUTPUT", prmList));
 
-                if (Convert.ToInt32(prmList[3].Value) > 0)
+                if (Convert.ToInt32(prmList[4].Value) > 0)
                 {
                     return response = true;
                 }
                 return response;
             }
             catch (Exception) { throw; }
+        }
+
+        public async Task<int> UpdateTenderStatus(int tenderId, int tenderStatus)
+        {
+            try
+            {
+                SqlParameter[] prmArray = new SqlParameter[]
+                {
+                    new SqlParameter("@TenderId", tenderId),
+                    new SqlParameter("@TenderStatus", tenderStatus),
+                };
+
+                return await Task.Run(() =>
+                    _dbContext.Database.ExecuteSqlRaw(@"EXEC usp_UpdateTenderStatus @TenderId @TenderStatus", prmArray)
+                );            
+            }
+            catch (Exception) {throw;  }
         }
     }
 }

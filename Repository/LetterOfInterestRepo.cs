@@ -96,7 +96,7 @@ namespace castlers.Repository
                 var result = 0;
                 List<SqlParameter> parameters = new List<SqlParameter>();
                 parameters.Add(new("@RegisteredSocietyId", sendTenderNotice.SocietyId));
-                parameters.Add(new("@TenderCode", "Test"));
+                parameters.Add(new("@TenderCode", sendTenderNotice.TenderCode));
                 parameters.Add(new("@EndDate", sendTenderNotice.Enddate));
                 parameters.Add(new("@StartDate", sendTenderNotice.StartDate));
                 parameters.Add(new("@PublicationDate", sendTenderNotice.PublicationDate));

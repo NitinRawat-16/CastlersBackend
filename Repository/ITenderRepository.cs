@@ -11,6 +11,7 @@ namespace castlers.Repository
         public Task<int> IsTenderExists(string tenderCode);
         public Task<SocietyTenderDetails> GetSocietyTenderDetailsByTenderIdAsync(int tenderId);
         public Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId);
-        public Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved);
+        public Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved, string reason);
+        public Task<int> UpdateTenderStatus(int tenderId, int tenderStatus);
     }
 }

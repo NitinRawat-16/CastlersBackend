@@ -14,7 +14,7 @@ namespace castlers.Repository
         {
             _dbContext = dbContext;
         }
-       
+
         #region User define method
         public Task<int> DeleteRegisteredSocietyAsync(int Id)
         {
@@ -30,8 +30,8 @@ namespace castlers.Repository
         {
             var param = new SqlParameter("@registeredSocietyId", Id);
 
-            RegisteredSociety? registeredSociety = await Task.Run(() =>
-                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).AsEnumerable().FirstOrDefault());
+            RegisteredSociety? registeredSociety =
+                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).AsEnumerable().FirstOrDefault();
 
             return registeredSociety;
         }
@@ -163,7 +163,7 @@ namespace castlers.Repository
                 SqlParameter para = new SqlParameter("@RegisteredSocietyId", registeredSocietyId);
                 RegisteredSocietyTechnicalDetails? registeredSocietyTechnicalDetails = new RegisteredSocietyTechnicalDetails();
                 registeredSocietyTechnicalDetails = await Task.Run(() => _dbContext.RegisteredSocietyTechnicalDetails
-                .FromSqlRaw(@"EXEC GetRegisterdSocietyTechnicalDetails @RegisteredSocietyId", para) .AsEnumerable().FirstOrDefault());
+                .FromSqlRaw(@"EXEC GetRegisterdSocietyTechnicalDetails @RegisteredSocietyId", para).AsEnumerable().FirstOrDefault());
 
                 return registeredSocietyTechnicalDetails;
             }
@@ -207,6 +207,17 @@ namespace castlers.Repository
                 .AsEnumerable().FirstOrDefault());
 
                 return societyWithTechnicalDetails;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<SocietyTenderDetails> GetTenderDetailsBySocietyId(int registeredSocietyId)
+        {
+            try
+            {
+                SqlParameter para = new SqlParameter("@RegisteredSocietyId", registeredSocietyId);
+                var societyTenderDetails = await Task.Run(() => _dbContext.SocietyTenderDetails?.FromSqlRaw<SocietyTenderDetails>(@"EXEC usp_GetTenderDetailsBySocietyId @RegisteredSocietyId", para).AsEnumerable()?.FirstOrDefault());
+                return societyTenderDetails;
             }
             catch (Exception) { throw; }
         }
