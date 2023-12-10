@@ -48,7 +48,7 @@ namespace castlers.Repository
 
             try
             {
-                await  _dbContext.Database
+                await _dbContext.Database
                 .ExecuteSqlRawAsync(@"EXEC AddTenderDetails @tenderId, @registeredSocietyId, @percentageOfIncreaseArea, @quantamOfAreaAtDiscountRate,
                  @expectedDiscountRate, @corpusFund, @rentPerSqFtFlat, @rentPerSqFtOffice, @rentPerSqFtShop, @parkingPerMember, @typeOfProject,
                  @refundableDepositPerMemberForFlat, @refundableDepositPerMemberForOffice, @refundableDepositPerMemberForShop,
@@ -59,7 +59,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
             return result.ToString();
         }
-        
+
         public async Task<string> AddDeveloperTenderAsync(DeveloperTenderDetails tenderDetails)
         {
 
@@ -117,7 +117,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
             return result.ToString();
         }
-        
+
         public async Task<List<SocietyTenderDetails>> GetTenderDetailsByIdAsync(int regSocietyId)
         {
             List<SocietyTenderDetails>? tenderDetails = new List<SocietyTenderDetails>();
@@ -133,7 +133,7 @@ namespace castlers.Repository
 
             return tenderDetails;
         }
-        
+
         public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
         {
             List<SocietyApprovedTendersDetails>? societyApprovedTenderList = new List<SocietyApprovedTendersDetails>();
@@ -149,7 +149,7 @@ namespace castlers.Repository
 
             return societyApprovedTenderList;
         }
-        
+
         public async Task<int> IsTenderExists(string tenderCode)
         {
             int result = 0;
@@ -163,7 +163,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
             return result;
         }
-        
+
         public async Task<SocietyTenderDetails> GetSocietyTenderDetailsByTenderIdAsync(int tenderId)
         {
             try
@@ -174,7 +174,7 @@ namespace castlers.Repository
             }
             catch (Exception) { throw; }
         }
-        
+
         public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
             int tenderId = 0;
@@ -196,7 +196,7 @@ namespace castlers.Repository
             }
             catch (Exception) { throw; }
         }
-        
+
         public async Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved, string reason)
         {
             bool response = false;
@@ -236,9 +236,9 @@ namespace castlers.Repository
 
                 return await Task.Run(() =>
                     _dbContext.Database.ExecuteSqlRaw(@"EXEC usp_UpdateTenderStatus @TenderId @TenderStatus", prmArray)
-                );            
+                );
             }
-            catch (Exception) {throw;  }
+            catch (Exception) { throw; }
         }
     }
 }

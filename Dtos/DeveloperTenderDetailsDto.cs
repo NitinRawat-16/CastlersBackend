@@ -19,10 +19,11 @@ namespace castlers.Dtos
         public double? refundableDepositPerMemberForShop { get; set; }
         public double? shiftingChargesForFlatOfficeShop { get; set; }
         public double? bettermentChargesPerMember { get; set; }
-        
+
         //public bool? isApprovedSociety { get; set; }
         public string? tenderCode { get; set; }
-        public int? developerId { get; set; }   
+        public int? developerId { get; set; }
         public IFormFile? developerTenderPdf { get; set; }
+        public string? code { get; set; }
     }
 }

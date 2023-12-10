@@ -54,9 +54,15 @@ namespace castlers.Services
         {
             try
             {
+                if (tenderDetailsDto.code.Length > 0)
+                {
+                    var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
+                    tenderDetailsDto.developerId = tenderNoticeObj.developerId;
+                    tenderDetailsDto.tenderCode = tenderNoticeObj.tenderCode;
+                }
+
                 string tenderId;
                 var tenderDetails = _mapper.Map<DeveloperTenderDetails>(tenderDetailsDto);
-                tenderDetails.tenderCode = string.Empty;
                 tenderId = await _tenderRepo.AddDeveloperTenderAsync(tenderDetails);
                 return tenderId;
             }
