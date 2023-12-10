@@ -222,12 +222,26 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<List<ViewLetterOfInterestReceivedDto>> GetSocietyLetterOfInterestReceived(int registeredSocietyId)
+        public async Task<GetInterestedDevelopersForTenderNoticeDto> GetSocietyLetterOfInterestReceived(int registeredSocietyId)
         {
             try
             {
-                var viewLetterOfInterestReceived = await _letterOfInterestRepository.GetSocietyLetterOfInterestReceived(registeredSocietyId);
-                return viewLetterOfInterestReceived;
+                GetInterestedDevelopersForTenderNoticeDto getInterestedDevelopers = new GetInterestedDevelopersForTenderNoticeDto();
+
+                var tenderDetails = await _registeredSocietyRepository.GetTenderDetailsBySocietyId(registeredSocietyId);
+
+                if (tenderDetails != null)
+                {
+                    getInterestedDevelopers.tenderCode = tenderDetails.tenderCode ?? string.Empty;
+                }
+                else
+                {
+                    getInterestedDevelopers.tenderCode = string.Empty;
+
+                }
+                getInterestedDevelopers.InterestedDevelopers = await _letterOfInterestRepository.GetSocietyLetterOfInterestReceived(registeredSocietyId);
+
+                return getInterestedDevelopers;
             }
             catch (Exception) { throw; }
         }
@@ -268,11 +282,16 @@ namespace castlers.Services
             return memberlist;
         }
 
-        public async Task<SocietyTenderDetailsDto> GetTenderDetailsBySocietyId(int registeredSocietyId)
+        public async Task<SocietyTenderDetailsDto?> GetTenderDetailsBySocietyId(int registeredSocietyId)
         {
             try
             {
-                return _mapper.Map<SocietyTenderDetailsDto>(await _registeredSocietyRepository.GetTenderDetailsBySocietyId(registeredSocietyId));
+                var tenderDetails = await _registeredSocietyRepository.GetTenderDetailsBySocietyId(registeredSocietyId);
+                if (tenderDetails != null)
+                {
+                    return _mapper.Map<SocietyTenderDetailsDto>(tenderDetails);
+                }
+                return null;
             }
             catch (Exception) { throw; }
         }

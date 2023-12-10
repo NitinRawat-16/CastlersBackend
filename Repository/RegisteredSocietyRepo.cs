@@ -211,7 +211,7 @@ namespace castlers.Repository
             catch (Exception) { throw; }
         }
 
-        public async Task<SocietyTenderDetails> GetTenderDetailsBySocietyId(int registeredSocietyId)
+        public async Task<SocietyTenderDetails?> GetTenderDetailsBySocietyId(int registeredSocietyId)
         {
             try
             {
