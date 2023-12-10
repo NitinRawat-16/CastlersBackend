@@ -124,7 +124,7 @@ namespace castlers.Common.Email
                     case EmailTypes.SendTenderNotice:
                         request.Content = new StringContent
                            (
-                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"enddate\":\"" + sendTo.SendTenderNoticeEndDate + "\",\"etenderform\":\"" + sendTo.SendTenderNoticeETenderFormAPI + "\",\"openingdate\":\"" + sendTo.SendTenderNoticePublicationDate + "\",\"societyname\":\"" + sendTo.SocietyName + "\",\"startdate\":\"" + sendTo.SendTenderNoticePresentationDate + "\",\"tendercode\":\"" + sendTo.TenderCode + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Send_Tender_Notice + "\"}"
+                             "{\"recipients\":[{\"to\":[{\"name\":\"" + sendTo.Name + "\",\"email\":\"" + sendTo.Email + "\"}],\"variables\":{\"enddate\":\"" + sendTo.SendTenderNoticeEndDate + "\",\"etenderform\":\"" + sendTo.SendTenderNoticeETenderFormAPI + "\",\"openingdate\":\"" + sendTo.SendTenderNoticePublicationDate + "\",\"societyname\":\"" + sendTo.SocietyName + "\",\"startdate\":\"" + sendTo.SendTenderNoticePresentationDate + "\",\"tendercode\":\"" + sendTo.TenderCode + "\" , \"viewdocuments\":\"" + sendTo.SendTenderNoticeViewDocAPI + "\"}}],\"from\":{\"name\":\"" + SENDER + "\",\"email\":\"" + FROM + "\"},\"domain\":\"" + DOMAIN + "\",\"template_id\":\"" + EmailTemplateNames.Send_Tender_Notice + "\"}"
                            );
                         break;
                     case EmailTypes.AdminRegistration:

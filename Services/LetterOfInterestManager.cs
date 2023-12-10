@@ -132,17 +132,65 @@ namespace castlers.Services
             try
             {
                 var sendTenderNoticeDetails = _mapper.Map<SendTenderNotice>(sendTenderNoticeDto);
-                var result =  await _letterOfInterestRepository.AddSendTenderNoticeDetails(sendTenderNoticeDetails);
+                var tenderNoticeId = await _letterOfInterestRepository.AddSendTenderNoticeDetails(sendTenderNoticeDetails);
 
-                // Send final tender Notice to the developers how saw us the interest in the Initmation
+                // Send final tender Notice to the selected developers
+                if (sendTenderNoticeDetails.SocietyId == null || sendTenderNoticeDetails.SocietyId <= 0)
+                    return 0;
 
-               var developerEmailList = sendTenderNoticeDetails?.LetterOfInterestDeveloper?.Select(d => d.developerEmail).ToList();
 
-
-
-                return result;
+                if (sendTenderNoticeDetails.SelectedDevelopersId?.Count > 0)
+                {
+                    await SendNotice(tenderNoticeId, sendTenderNoticeDetails);
+                }
+                return tenderNoticeId;
             }
             catch (Exception) { throw; }
+        }
+
+        private async Task<bool> SendNotice(int tenderNoticeId, SendTenderNotice sendTender)
+        {
+            try
+            {
+                var filltenderAPI = _configuration.GetSection("Developer_Fill_Tender_API").Value;
+                var viewDocAPI = _configuration.GetSection("View_Society_Documents_API").Value;
+
+                foreach (int developerId in sendTender.SelectedDevelopersId)
+                {
+                    // Sending email to the developers 
+                    var developerDetails = await _developerService.GetDeveloperByIdAsync(developerId);
+
+                    var fillTenderUrl = filltenderAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new TenderNoticeObj
+                    {
+                        developerId = developerId,
+                        tenderNoticeId = tenderNoticeId
+                    }));
+
+                    var viewDocUrl = viewDocAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
+                    {
+                        societyId = (int)sendTender.SocietyId
+                    }));
+
+                    SendTo sendTo = new SendTo
+                    {
+                        Email = developerDetails.email,
+                        SocietyName = sendTender.SocietyName,
+                        EMailType = Common.Enums.EmailTypes.SendTenderNotice,
+                        SendTenderNoticeStartDate = sendTender.StartDate,
+                        SendTenderNoticeEndDate = sendTender.Enddate,
+                        SendTenderNoticeETenderFormAPI = fillTenderUrl,
+                        SendTenderNoticeViewDocAPI = viewDocUrl,
+                        SendTenderNoticePresentationDate = sendTender.PresentationDate,
+                        SendTenderNoticePublicationDate = sendTender.PublicationDate,
+                        TenderCode = sendTender.TenderCode
+                    };
+
+                    await _emailSender.SendEmailAsync(sendTo);
+                }
+                return true;
+            }
+            catch (Exception) { throw; }
+
         }
     }
 }

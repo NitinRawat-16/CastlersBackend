@@ -10,6 +10,6 @@ namespace castlers.Dtos
         public DateTime? StartDate { get; set; }
         public DateTime? PublicationDate { get; set; }
         public DateTime? PresentationDate { get; set; }
-        public List<ViewLetterOfInterestReceivedDto>? LetterOfInterestDeveloper { get; set; }
+        public List<int>? SelectedDevelopersId { get; set; }
     }
 }

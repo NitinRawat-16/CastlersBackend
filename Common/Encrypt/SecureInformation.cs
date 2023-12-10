@@ -11,6 +11,12 @@ namespace castlers.Common.Encrypt
         public bool interested { get; set; }
     }
 
+    public class TenderNoticeObj
+    {
+        public int developerId { get; set; }
+        public int tenderNoticeId { get; set; }
+    }
+
     public class SecureInformation : ISecureInformation
     {
         private readonly byte[] _byteArray;
