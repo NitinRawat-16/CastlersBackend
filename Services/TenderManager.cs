@@ -54,11 +54,19 @@ namespace castlers.Services
         {
             try
             {
+                TenderNoticeObj? tenderNoticeObj = new TenderNoticeObj();
                 if (tenderDetailsDto.code.Length > 0)
                 {
-                    var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
-                    tenderDetailsDto.developerId = tenderNoticeObj.developerId;
-                    tenderDetailsDto.tenderCode = tenderNoticeObj.tenderCode;
+                    tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
+                }
+                tenderDetailsDto.developerId = tenderNoticeObj.developerId;
+                tenderDetailsDto.tenderCode = tenderNoticeObj.tenderCode;
+
+                var isFilled = await IsDeveloperAlreadyFilledTender((int)tenderDetailsDto.developerId, tenderDetailsDto.tenderCode);
+
+                if (isFilled)
+                {
+                    return "-1";
                 }
 
                 string tenderId;
@@ -247,6 +255,16 @@ namespace castlers.Services
             {
                 var result = await _tenderRepo.UpdateTenderStatus(tenderStatusDto.tenderId, tenderStatusDto.tenderStatus);
                 return result;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<bool> IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
+        {
+            try
+            {
+                var isFilled = await _tenderRepo.IsDeveloperAlreadyFilledTender(developerId, tenderCode);
+                return Convert.ToBoolean(isFilled);
             }
             catch (Exception) { throw; }
         }

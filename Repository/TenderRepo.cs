@@ -240,5 +240,28 @@ namespace castlers.Repository
             }
             catch (Exception) { throw; }
         }
+
+        public async Task<int> IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
+        {
+            try
+            {
+                int isFilled = 0;
+                SqlParameter[] prmArray = new SqlParameter[]
+                {
+                    new SqlParameter("@DeveloperId", developerId),
+                    new SqlParameter("@TenderCode", tenderCode),
+                    new SqlParameter("@IsFilled", isFilled)
+                };
+                prmArray[2].Direction = System.Data.ParameterDirection.Output;
+
+                await Task.Run(() => _dbContext.Database.ExecuteSqlRaw("@EXEC usp_IsDeveloperAlreadyFilledTender @DeveloperId, @TenderCode, @IsFilled OUT", prmArray));
+
+                if (prmArray[2].Value != DBNull.Value)
+                    return Convert.ToInt32(prmArray[2].Value);
+                else
+                    return 0;
+            }
+            catch (Exception) { throw; }
+        }
     }
 }
