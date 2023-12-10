@@ -13,6 +13,6 @@ namespace castlers.Repository
         public Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId);
         public Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved, string reason);
         public Task<int> UpdateTenderStatus(int tenderId, int tenderStatus);
-        public Task<int> IsDeveloperAlreadyFilledTender(int developerId, string tenderCode);
+        public int IsDeveloperAlreadyFilledTender(int developerId, string tenderCode);
     }
 }

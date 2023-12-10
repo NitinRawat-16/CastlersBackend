@@ -179,13 +179,13 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<bool> VerifyDeveloperTenderURL(string code)
+        public bool VerifyDeveloperTenderURL(string code)
         {
             try
             {
                 var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(code));
 
-                var isFilled = await IsDeveloperAlreadyFilledTender((int)tenderNoticeObj.developerId, tenderNoticeObj.tenderCode);
+                var isFilled = IsDeveloperAlreadyFilledTender((int)tenderNoticeObj.developerId, tenderNoticeObj.tenderCode);
 
                 if (isFilled)
                 {
@@ -257,11 +257,11 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<bool> IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
+        private bool IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
         {
             try
             {
-                var isFilled = await _tenderRepo.IsDeveloperAlreadyFilledTender(developerId, tenderCode);
+                var isFilled = _tenderRepo.IsDeveloperAlreadyFilledTender(developerId, tenderCode);
                 return Convert.ToBoolean(isFilled);
             }
             catch (Exception) { throw; }

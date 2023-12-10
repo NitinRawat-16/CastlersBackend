@@ -234,14 +234,13 @@ namespace castlers.Repository
                     new SqlParameter("@TenderStatus", tenderStatus),
                 };
 
-                return await Task.Run(() =>
-                    _dbContext.Database.ExecuteSqlRaw(@"EXEC usp_UpdateTenderStatus @TenderId @TenderStatus", prmArray)
-                );
+                return await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_UpdateTenderStatus @TenderId @TenderStatus", prmArray);
+
             }
             catch (Exception) { throw; }
         }
 
-        public async Task<int> IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
+        public int IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
         {
             try
             {
@@ -254,14 +253,14 @@ namespace castlers.Repository
                 };
                 prmArray[2].Direction = System.Data.ParameterDirection.Output;
 
-                await Task.Run(() => _dbContext.Database.ExecuteSqlRaw("@EXEC usp_IsDeveloperAlreadyFilledTender @DeveloperId, @TenderCode, @IsFilled OUT", prmArray));
+                _dbContext.Database.ExecuteSqlRaw(@"EXEC usp_IsDeveloperAlreadyFilledTender @DeveloperId, @TenderCode, @IsFilled OUT", prmArray);
 
                 if (prmArray[2].Value != DBNull.Value)
                     return Convert.ToInt32(prmArray[2].Value);
                 else
                     return 0;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
     }
 }
