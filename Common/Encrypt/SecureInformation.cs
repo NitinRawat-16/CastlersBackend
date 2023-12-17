@@ -15,7 +15,7 @@ namespace castlers.Common.Encrypt
     {
         public int developerId { get; set; }
         public int tenderNoticeId { get; set; }
-        public string tenderCode { get; set; }
+        public string? tenderCode { get; set; }
     }
 
     public class SecureInformation : ISecureInformation
@@ -32,7 +32,7 @@ namespace castlers.Common.Encrypt
             string encryptData = string.Empty;
             try
             {
-                string EncryptionKey = _config.GetSection("EncryptionKey").Value;
+                string EncryptionKey = _config.GetSection("EncryptionKey").Value ?? string.Empty;
                 byte[] clearBytes = Encoding.Unicode.GetBytes(data);
                 using (Aes encryptor = Aes.Create())
                 {
@@ -59,7 +59,7 @@ namespace castlers.Common.Encrypt
             string decryptData = string.Empty;
             try
             {
-                string EncryptionKey = _config.GetSection("EncryptionKey").Value;
+                string EncryptionKey = _config.GetSection("EncryptionKey").Value ?? string.Empty;
                 data = data.Replace(" ", "+");
                 byte[] cipherBytes = Convert.FromBase64String(data);
                 using (Aes encryptor = Aes.Create())

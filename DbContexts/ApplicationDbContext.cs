@@ -35,7 +35,10 @@ namespace castlers.DbContexts
         public DbSet<UserOTPDetails> UserOTPDetails { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<RefreshToken> RefreshToken { get; set; }
-        public DbSet<User> Users {  get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<DeveloperAmenities> DeveloperAmenities { get; set; }
+        public DbSet<DeveloperAmenitiesDetails> DeveloperAmenitiesDetails { get; set; }
+        public DbSet<DeveloperConstructionSpec> DeveloperConstructionSpecs { get; set; }
 
     }
 }

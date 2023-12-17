@@ -29,6 +29,8 @@ builder.Services.AddTransient<ITenderRepository, TenderRepo>();
 builder.Services.AddTransient<ITenderService, TenderManager>();
 builder.Services.AddTransient<IDeveloperRepository, DeveloperRepo>();
 builder.Services.AddTransient<IDeveloperService, DeveloperManager>();
+builder.Services.AddTransient<IAmenitiesRepository, AmenitiesRepo>();
+builder.Services.AddTransient<IAmenitiesService, AmenitiesManager>();
 builder.Services.AddTransient<ISecureInformation, SecureInformation>();
 builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
 builder.Services.AddTransient<IPartnerKYCService, PartnerKYCManager>();

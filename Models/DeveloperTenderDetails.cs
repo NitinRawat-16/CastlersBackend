@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using castlers.Dtos;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace castlers.Models
@@ -26,9 +27,7 @@ namespace castlers.Models
         public string? tenderCode { get; set; }
         public int? developerId { get; set; }
         [NotMapped]
-        public IFormFile? developerTenderPdf {  get; set; }
+        public IFormFile? developerTenderPdf { get; set; }
         
-        
-
     }
 }

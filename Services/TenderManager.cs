@@ -18,14 +18,16 @@ namespace castlers.Services
         private readonly ITenderRepository _tenderRepo;
         private readonly IConfiguration _configuration;
         private readonly ISecureInformation _secureInformation;
+        private readonly IAmenitiesService _amenitiesService;
         private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ISocietyMemberDetailsService _societyMemberDetailsService;
-        public TenderManager(ITenderRepository tenderRepo, IMapper mapper, ISocietyMemberDetailsService societyMemberDetailsService, IEmailSender emailSender, ISecureInformation secureInformation, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService)
+        public TenderManager(ITenderRepository tenderRepo, IMapper mapper, ISocietyMemberDetailsService societyMemberDetailsService, IEmailSender emailSender, ISecureInformation secureInformation, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService, IAmenitiesService amenitiesService)
         {
             _mapper = mapper;
             _tenderRepo = tenderRepo;
             _emailSender = emailSender;
             _configuration = configuration;
+            _amenitiesService = amenitiesService;
             _secureInformation = secureInformation;
             _registeredSocietyService = registeredSocietyService;
             _societyMemberDetailsService = societyMemberDetailsService;
@@ -35,10 +37,10 @@ namespace castlers.Services
         {
             try
             {
+                tenderDetailsDto.status = (int)TenderStatus.Pending;
                 var tenderDetails = _mapper.Map<SocietyTenderDetails>(tenderDetailsDto);
                 tenderDetails.tenderCode = string.Empty;
                 tenderDetails.isApprovedBySociety = false;
-                tenderDetails.status = (int)TenderStatus.Pending;
                 var tenderId = await _tenderRepo.AddSocietyTenderAsync(tenderDetails);
                 tenderDetails.tenderId = Convert.ToInt32(tenderId) > 0 ? Convert.ToInt32(tenderId) : -1;
 
@@ -54,17 +56,25 @@ namespace castlers.Services
         {
             try
             {
-                TenderNoticeObj? tenderNoticeObj = new TenderNoticeObj();
-                if (tenderDetailsDto.code.Length > 0)
-                {
-                    tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
-                }
-                tenderDetailsDto.developerId = tenderNoticeObj.developerId;
-                tenderDetailsDto.tenderCode = tenderNoticeObj.tenderCode;
-
                 string tenderId;
+                if (tenderDetailsDto.code != null && tenderDetailsDto.code.Length > 0)
+                {
+                    var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
+                    tenderDetailsDto.developerId = tenderNoticeObj?.developerId;
+                    tenderDetailsDto.tenderCode = tenderNoticeObj?.tenderCode;
+                    tenderDetailsDto.DeveloperAmenitiesDto.DeveloperId = tenderDetailsDto.developerId ?? -1;
+                    tenderDetailsDto.DeveloperConstructionSpecDto.DeveloperId = tenderDetailsDto.developerId ?? -1;
+                }
                 var tenderDetails = _mapper.Map<DeveloperTenderDetails>(tenderDetailsDto);
                 tenderId = await _tenderRepo.AddDeveloperTenderAsync(tenderDetails);
+
+                if (Convert.ToInt32(tenderId) > 0)
+                {
+                    tenderDetailsDto.DeveloperAmenitiesDto.TenderId = Convert.ToInt32(tenderId);
+                    tenderDetailsDto.DeveloperConstructionSpecDto.TenderId = Convert.ToInt32(tenderId);
+                    var amenitiesId = await _amenitiesService.AddDeveloperAmenities(tenderDetailsDto.DeveloperAmenitiesDto);
+                    var amenitiesDetailsId = await _amenitiesService.AddDeveloperConstructionSpecs(tenderDetailsDto.DeveloperConstructionSpecDto);
+                }
                 return tenderId;
             }
             catch (Exception) { throw; }

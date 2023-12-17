@@ -3,7 +3,6 @@ namespace castlers.Dtos
 {
     public class DeveloperTenderDetailsDto
     {
-        //public int tenderId { get; set; }
         public int? registeredSocietyId { get; set; }
         public double? percentageOfIncreaseArea { get; set; }
         public double? quantamOfAreaAtDiscountRate { get; set; }
@@ -25,5 +24,7 @@ namespace castlers.Dtos
         public int? developerId { get; set; }
         public IFormFile? developerTenderPdf { get; set; }
         public string? code { get; set; }
+        public DeveloperAmenitiesDto DeveloperAmenitiesDto { get; set; } = new();
+        public DeveloperConstructionSpecDto DeveloperConstructionSpecDto { get; set; } = new();
     }
 }
