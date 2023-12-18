@@ -30,6 +30,9 @@ namespace castlers.Dtos
         public string? Electrical { get; set; }
         public string? WaterSupply { get; set; }
         [NotMapped]
+        public IFormFile? UserConstructionSpecPdf { get; set; }
+        public string? UserConstructionSpecPdfUrl { get; set; }
+        [NotMapped]
         public IFormFile? ConstructionSpecPdf { get; set; }
         public string? ConstructionSpecPdfUrl { get; set; }
         public bool isActive { get; set; }

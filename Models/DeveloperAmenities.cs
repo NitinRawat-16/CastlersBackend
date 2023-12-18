@@ -1,9 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace castlers.Models
 {
+    [Keyless]
     public class DeveloperAmenities
     {
+        public DeveloperAmenities()
+        {
+                DeveloperAmenitiesDetails = new DeveloperAmenitiesDetails();
+        }
         public int AmenitiesId { get; set; }
         public int DeveloperId { get; set; }
         public int TenderId { get; set; }
@@ -41,14 +47,18 @@ namespace castlers.Models
         public bool SmartEnergyConsumption { get; set; }
         public bool IntilligentDetectionWaterManagement { get; set; }
         public bool SmokeDetectionAlert { get; set; }
-        public bool HomeAutomation { get; set; }
+        public bool HomeAutomation { get; set; } 
         public bool AdditionAmenities { get; set; }
+        [NotMapped]
+        public IFormFile? UserAmenitiesPdf { get; set; }
+        public string? UserAmenitiesPdfUrl { get; set; }
         [NotMapped]
         public IFormFile? AmenitiesPdf { get; set; }
         public string? AmenitiesPdfUrl { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime UpdationDate { get; set; }
-        public DeveloperAmenitiesDetails DeveloperAmenitiesDetails { get; set; } = new();
+        [NotMapped]
+        public DeveloperAmenitiesDetails DeveloperAmenitiesDetails { get; set; }
     }
 }

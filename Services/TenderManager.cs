@@ -7,6 +7,7 @@ using castlers.Common.Email;
 using castlers.Common.Enums;
 using castlers.Common.Encrypt;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Services
 {
@@ -17,17 +18,20 @@ namespace castlers.Services
         private readonly IEmailSender _emailSender;
         private readonly ITenderRepository _tenderRepo;
         private readonly IConfiguration _configuration;
-        private readonly ISecureInformation _secureInformation;
         private readonly IAmenitiesService _amenitiesService;
+        private readonly ISecureInformation _secureInformation;
+        private readonly IDeveloperService _developerService;
         private readonly IRegisteredSocietyService _registeredSocietyService;
         private readonly ISocietyMemberDetailsService _societyMemberDetailsService;
-        public TenderManager(ITenderRepository tenderRepo, IMapper mapper, ISocietyMemberDetailsService societyMemberDetailsService, IEmailSender emailSender, ISecureInformation secureInformation, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService, IAmenitiesService amenitiesService)
+        public TenderManager(ITenderRepository tenderRepo, IMapper mapper, ISocietyMemberDetailsService societyMemberDetailsService, IEmailSender emailSender, ISecureInformation secureInformation, IConfiguration configuration, IRegisteredSocietyService registeredSocietyService, IAmenitiesService amenitiesService,
+            IDeveloperService developerService)
         {
             _mapper = mapper;
             _tenderRepo = tenderRepo;
             _emailSender = emailSender;
             _configuration = configuration;
             _amenitiesService = amenitiesService;
+            _developerService = developerService;
             _secureInformation = secureInformation;
             _registeredSocietyService = registeredSocietyService;
             _societyMemberDetailsService = societyMemberDetailsService;
@@ -57,24 +61,46 @@ namespace castlers.Services
             try
             {
                 string tenderId;
+                DeveloperDto developer = new();
+                TenderNoticeObj? tenderNoticeObj = new();
                 if (tenderDetailsDto.code != null && tenderDetailsDto.code.Length > 0)
                 {
-                    var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
-                    tenderDetailsDto.developerId = tenderNoticeObj?.developerId;
-                    tenderDetailsDto.tenderCode = tenderNoticeObj?.tenderCode;
-                    tenderDetailsDto.DeveloperAmenitiesDto.DeveloperId = tenderDetailsDto.developerId ?? -1;
-                    tenderDetailsDto.DeveloperConstructionSpecDto.DeveloperId = tenderDetailsDto.developerId ?? -1;
+                    try
+                    {
+                        tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(tenderDetailsDto.code));
+                    }
+                    catch (Exception ex) { throw ex.InnerException; }
                 }
+
+                developer = await _developerService.GetDeveloperByIdAsync(tenderDetailsDto.developerId ?? -1);
+                tenderDetailsDto.developerId = tenderNoticeObj?.developerId;
+                tenderDetailsDto.tenderCode = tenderNoticeObj?.tenderCode;
+                tenderDetailsDto.DeveloperAmenities.DeveloperId = tenderDetailsDto.developerId ?? -1;
+                tenderDetailsDto.DeveloperConstructionSpec.DeveloperId = tenderDetailsDto.developerId ?? -1;
                 var tenderDetails = _mapper.Map<DeveloperTenderDetails>(tenderDetailsDto);
                 tenderId = await _tenderRepo.AddDeveloperTenderAsync(tenderDetails);
 
                 if (Convert.ToInt32(tenderId) > 0)
                 {
-                    tenderDetailsDto.DeveloperAmenitiesDto.TenderId = Convert.ToInt32(tenderId);
-                    tenderDetailsDto.DeveloperConstructionSpecDto.TenderId = Convert.ToInt32(tenderId);
-                    var amenitiesId = await _amenitiesService.AddDeveloperAmenities(tenderDetailsDto.DeveloperAmenitiesDto);
-                    var amenitiesDetailsId = await _amenitiesService.AddDeveloperConstructionSpecs(tenderDetailsDto.DeveloperConstructionSpecDto);
+                    tenderDetailsDto.DeveloperAmenities.TenderId = Convert.ToInt32(tenderId);
+                    tenderDetailsDto.DeveloperConstructionSpec.TenderId = Convert.ToInt32(tenderId);
+
+                    var amenitiesId = await _amenitiesService.AddDeveloperAmenities(tenderDetailsDto.DeveloperAmenities);
+
+                    var amenitiesDetailsId = await _amenitiesService.AddDeveloperConstructionSpecs(tenderDetailsDto.DeveloperConstructionSpec);
                 }
+
+                // Email to admin for developer tender submitted notification
+                if (developer != null && developer.developerId > 0)
+                {
+                    SendTo sendTo = new SendTo()
+                    {
+                        Name = developer.name,
+                        Email = _configuration.GetSection("Admin_Email").Value,
+                        TenderCode = tenderNoticeObj?.tenderCode,
+                    };
+                }
+           
                 return tenderId;
             }
             catch (Exception) { throw; }

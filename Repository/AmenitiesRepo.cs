@@ -60,31 +60,29 @@ namespace castlers.Repository
                     new("@CreationDate", developerAmenities.CreationDate),
                     new("@UpdationDate", developerAmenities.UpdationDate),
                     new("@IsActive", developerAmenities.IsActive),
+                    new("@UserAmenitiesPdfUrl", developerAmenities.UserAmenitiesPdfUrl),
                     new("@AmenitiesId", developerAmenities.AmenitiesId),
                 };
 
                 prmArray[prmArray.Length - 1].Direction = System.Data.ParameterDirection.Output;
 
-                //await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperAmenities
-                //@DeveloperId, @TenderId, @LiftElivator, @GeneratorBackup, @SwimmingPool, @Gym, @ClubHouse, @GamingRoom,
-                //@OutdoorPlayCourt, @ChildrenPlayArea, @SeniorCitizenPark, @JoggingTrack, @LandscapeGarden, @SolarWaterSystem, @SolarBackup, @EvChargingStation, @SecurityCabin, @CctvCoverage, @SocietyOffice,
-                //@DecorativeEntranceGate, @RainWaterHarvesting, @FireFightingSystem, @TerraceGarden, @LetterBox, 
-                //@GasPipeLine, @SecuritySystem, @DishConnection, @VideoDoorPhone, @IntercomSystem, @EasyDryerSystem, 
-                //@AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AmenitiesPdfUrl, 
-                //@CreationDate, @UpdationDate, @IsActive, @AmenitiesId OUTPUT", prmArray);
+                await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperAmenities
+                @DeveloperId, @TenderId, @LiftElivator, @GeneratorBackup, @SwimmingPool, @Gym, @ClubHouse, @GamingRoom,
+                @OutdoorPlayCourt, @ChildrenPlayArea, @SeniorCitizenPark, @JoggingTrack, @LandscapeGarden, @SolarWaterSystem, @SolarBackup, @EvChargingStation, @SecurityCabin, @CctvCoverage, @SocietyOffice,
+                @DecorativeEntranceGate, @RainWaterHarvesting, @FireFightingSystem, @TerraceGarden, @LetterBox, 
+                @GasPipeLine, @SecuritySystem, @DishConnection, @VideoDoorPhone, @IntercomSystem, @EasyDryerSystem, 
+                @AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AmenitiesPdfUrl, 
+                @CreationDate, @UpdationDate, @IsActive, @UserAmenitiesPdfUrl, @AmenitiesId OUTPUT", prmArray);
 
-                await _dbContext.DeveloperAmenities.AddAsync(developerAmenities);
-                var result = await _dbContext.SaveChangesAsync();
-                return result;
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
             }
             catch (Exception) { throw; }
         }
 
-        public Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetails developerAmenitiesDetails)
+        public async Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetails developerAmenitiesDetails)
         {
             try
             {
-
                 SqlParameter[] prmArray = new SqlParameter[]
                 {
                     new("@DeveloperAmenitiesId", developerAmenitiesDetails.DeveloperAmenitiesId),
@@ -129,23 +127,69 @@ namespace castlers.Repository
 
                 prmArray[prmArray.Length - 1].Direction = System.Data.ParameterDirection.Output;
 
-                //await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperAmenitiesDetails
-                //@DeveloperAmenitiesId, @LiftElivator, @GeneratorBackup, @SwimmingPool, @Gym, @ClubHouse, @GamingRoom,
-                //@OutdoorPlayCourt, @ChildrenPlayArea, @SeniorCitizenPark, @JoggingTrack, @LandscapeGarden, @SolarWaterSystem, @SolarBackup, @EvChargingStation, @SecurityCabin, @CctvCoverage, @SocietyOffice,
-                //@DecorativeEntranceGate, @RainWaterHarvesting, @FireFightingSystem, @TerraceGarden, @LetterBox, 
-                //@GasPipeLine, @SecuritySystem, @DishConnection, @VideoDoorPhone, @IntercomSystem, @EasyDryerSystem, 
-                //@AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AdditionalAmenities, 
-                //@AmenitiesDetailsId OUTPUT", prmArray);
-                return null;
+                await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperAmenitiesDetails
+                @DeveloperAmenitiesId, @LiftElivator, @GeneratorBackup, @SwimmingPool, @Gym, @ClubHouse, @GamingRoom,
+                @OutdoorPlayCourt, @ChildrenPlayArea, @SeniorCitizenPark, @JoggingTrack, @LandscapeGarden, @SolarWaterSystem, @SolarBackup, @EvChargingStation, @SecurityCabin, @CctvCoverage, @SocietyOffice,
+                @DecorativeEntranceGate, @RainWaterHarvesting, @FireFightingSystem, @TerraceGarden, @LetterBox, 
+                @GasPipeLine, @SecuritySystem, @DishConnection, @VideoDoorPhone, @IntercomSystem, @EasyDryerSystem, 
+                @AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AdditionalAmenities, 
+                @AmenitiesDetailsId OUTPUT", prmArray);
+
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
             }
             catch (Exception) { throw; }
         }
 
-        public Task<int> AddDeveloperConstructionSpecs(DeveloperConstructionSpec developerConstructionSpec)
+        public async Task<int> AddDeveloperConstructionSpecs(DeveloperConstructionSpec developerConstructionSpec)
         {
             try
             {
-                return null;
+                SqlParameter[] prmArray = new SqlParameter[]
+              {
+                    new("@DeveloperId", developerConstructionSpec.DeveloperId),
+                    new("@TenderId", developerConstructionSpec.TenderId),
+                    new("@Structure", developerConstructionSpec.Structure),
+                    new("@WallBrickType", developerConstructionSpec.WallBrickType),
+                    new("@WallSize", developerConstructionSpec.WallSize),
+                    new("@FlooringTilesHouse", developerConstructionSpec.FlooringTilesHouse),
+                    new("@FlooringTilesTerrace", developerConstructionSpec.FlooringTilesTerrace),
+                    new("@FlooringTilesDryBalcony", developerConstructionSpec.FlooringTilesDryBalcony),
+                    new("@FlooringTilesBathroom", developerConstructionSpec.FlooringTilesBathroom),
+                    new("@FlooringTilesToilet", developerConstructionSpec.FlooringTilesToilet),
+                    new("@WallTilesKitchen", developerConstructionSpec.WallTilesKitchen),
+                    new("@WallTilesBathroom", developerConstructionSpec.WallTilesBathroom),
+                    new("@WallTilesToilets", developerConstructionSpec.WallTilesToilets),
+                    new("@WallTilesTerrace", developerConstructionSpec.WallTilesTerrace),
+                    new("@WallTilesSitoutArea", developerConstructionSpec.WallTilesSitoutArea),
+                    new("@KitchenPlatformSpec", developerConstructionSpec.KitchenPlatformSpec),
+                    new("@KitchenPlatformType", developerConstructionSpec.KitchenPlatformType),
+                    new("@MainDoorSpecification", developerConstructionSpec.MainDoorSpecification),
+                    new("@InternalDoorSpecification", developerConstructionSpec.InternalDoorSpecification),
+                    new("@BathroomDoorSpecification", developerConstructionSpec.BathroomDoorSpecification),
+                    new("@TerraceDoorSpecification", developerConstructionSpec.TerraceDoorSpecification),
+                    new("@Windows", developerConstructionSpec.Windows),
+                    new("@Electrical", developerConstructionSpec.Electrical),
+                    new("@WaterSupply", developerConstructionSpec.WaterSupply),
+                    new("@ConstructionSpecPdfUrl", developerConstructionSpec.ConstructionSpecPdfUrl),
+                    new("@CreationDate", developerConstructionSpec.CreationDate),
+                    new("@UpdationDate", developerConstructionSpec.UpdationDate),
+                    new("@IsActive", developerConstructionSpec.IsActive),
+                    new("@UserConstructionSpecPdfUrl", developerConstructionSpec.UserConstructionSpecPdfUrl),
+                    new("@ConstructionSpecId", developerConstructionSpec.ConstructionSpecId)
+              };
+
+                prmArray[prmArray.Length - 1].Direction = System.Data.ParameterDirection.Output;
+
+                await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperConstructionSpec 
+                @DeveloperId, @TenderId, @Structure, @WallBrickType, @WallSize, @FlooringTilesHouse,
+                @FlooringTilesTerrace, @FlooringTilesDryBalcony, @FlooringTilesBathroom, @FlooringTilesToilet, 
+                @WallTilesKitchen, @WallTilesBathroom, @WallTilesToilets, @WallTilesTerrace, @WallTilesSitoutArea, 
+                @KitchenPlatformSpec, @KitchenPlatformType, @MainDoorSpecification, @InternalDoorSpecification, 
+                @BathroomDoorSpecification, @TerraceDoorSpecification, @Windows, @Electrical, @WaterSupply, 
+                @ConstructionSpecPdfUrl, @CreationDate, @UpdationDate, @IsActive, @UserConstructionSpecPdfUrl,
+                @ConstructionSpecId OUTPUT", prmArray);
+
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
             }
             catch (Exception) { throw; }
         }

@@ -24,7 +24,7 @@ namespace castlers.Dtos
         public int? developerId { get; set; }
         public IFormFile? developerTenderPdf { get; set; }
         public string? code { get; set; }
-        public DeveloperAmenitiesDto DeveloperAmenitiesDto { get; set; } = new();
-        public DeveloperConstructionSpecDto DeveloperConstructionSpecDto { get; set; } = new();
+        public DeveloperAmenitiesDto DeveloperAmenities { get; set; } = new();
+        public DeveloperConstructionSpecDto DeveloperConstructionSpec { get; set; } = new();
     }
 }

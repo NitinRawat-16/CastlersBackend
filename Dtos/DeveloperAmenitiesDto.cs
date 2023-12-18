@@ -1,10 +1,13 @@
-﻿using castlers.Models;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace castlers.Dtos
 {
     public class DeveloperAmenitiesDto
     {
+        public DeveloperAmenitiesDto()
+        {
+               DeveloperAmenitiesDetails = new DeveloperAmenitiesDetailsDto();
+        }
         public int AmenitiesId { get; set; }
         public int DeveloperId { get; set; }
         public int TenderId { get; set; }
@@ -45,11 +48,14 @@ namespace castlers.Dtos
         public bool HomeAutomation { get; set; }
         public bool AdditionAmenities { get; set; }
         [NotMapped]
+        public IFormFile? UserAmenitiesPdf { get; set; }
+        public string? UserAmenitiesPdfUrl { get; set; }
+        [NotMapped]
         public IFormFile? AmenitiesPdf { get; set; }
         public string? AmenitiesPdfUrl { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime UpdationDate { get; set; }
-        public DeveloperAmenitiesDetailsDto DeveloperAmenitiesDetailsDto { get; set; } = new();
+        public DeveloperAmenitiesDetailsDto DeveloperAmenitiesDetails { get; set; } 
     }
 }

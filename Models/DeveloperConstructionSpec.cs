@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace castlers.Models
 {
+    [Keyless]
     public class DeveloperConstructionSpec
     {
         public int ConstructionSpecId { get; set; }
@@ -30,9 +32,12 @@ namespace castlers.Models
         public string? Electrical { get; set; }
         public string? WaterSupply { get; set; }
         [NotMapped]
+        public IFormFile? UserConstructionSpecPdf { get; set; }
+        public string? UserConstructionSpecPdfUrl { get; set; }
+        [NotMapped]
         public IFormFile? ConstructionSpecPdf { get; set; }
         public string? ConstructionSpecPdfUrl { get; set; }
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime UpdationDate { get; set; }
     }

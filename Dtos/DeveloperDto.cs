@@ -45,6 +45,8 @@ namespace castlers.Dtos
         public string? awardsAndRecognition { get; set; } = string.Empty;
         public bool? haveBusinessInMultipleCities { get; set; } = false;
         public int? reviewRatingScore { get; set; }
+        public string? lastThreeYearReturns { get; set; }
+        public string? financialSecurityToTheSociety { get; set; }
         public List<DeveloperPastProjectDetailsDto> DeveloperPastProjectDetails { get; set; }
         public List<PartnerKYCDto> PartnerKYCDetails { get; set; }
 

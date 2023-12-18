@@ -8,6 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Database\obj\**" />
+    <Compile Remove="Database\Properties\**" />
+    <Content Remove="Database\obj\**" />
+    <Content Remove="Database\Properties\**" />
+    <EmbeddedResource Remove="Database\obj\**" />
+    <EmbeddedResource Remove="Database\Properties\**" />
+    <None Remove="Database\obj\**" />
+    <None Remove="Database\Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Repository\khaculog.q20~" />
   </ItemGroup>
 

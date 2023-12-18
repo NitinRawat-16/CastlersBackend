@@ -1,18 +1,17 @@
-﻿using castlers.Models;
+﻿using System.Data;
+using castlers.Models;
 using castlers.DbContexts;
+using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
-using castlers.ResponseDtos;
-using castlers.Dtos;
 
 namespace castlers.Repository
 {
     public class DeveloperRepo : IDeveloperRepository
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IUploadFile _uploadFile;
+        private readonly ApplicationDbContext _dbContext;
         public DeveloperRepo(ApplicationDbContext dbContext, IUploadFile uploadFile)
         {
             _dbContext = dbContext;
@@ -48,25 +47,22 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@awardsAndRecognition", developer.awardsAndRecognition));
             parameter.Add(new SqlParameter("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities));
             parameter.Add(new SqlParameter("@affilicationDevAssociationName", developer.affilicationDevAssociationName));
-
+            parameter.Add(new("@lastThreeYearReturns", developer.lastThreeYearReturns));
+            parameter.Add(new("@financialSecurityToTheSociety", developer.financialSecurityToTheSociety));
             parameter.Add(new SqlParameter("@developerId", developer.developerId));
 
-            parameter[26].Direction = ParameterDirection.Output;
+            parameter[parameter.Count - 1].Direction = ParameterDirection.Output;
 
             try
             {
                 var result = await Task.Run(() => _dbContext.Database
                .ExecuteSqlRawAsync(@"exec AddNewDeveloper @name,@address,@city,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,
-                  @registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate, @organisationTypeId, @experienceYear, 
-                  @projectsInHand, @numberOfRERARegisteredProjects, @totalCompletedProjects, @totalConstructionAreaDevTillToday, 
-                  @sizeOfTheLargestProjectHandled, @experienceInHighRiseBuildings, @avgTurnOverforLastThreeYears, @affilicationToAnyDevAssociation,
-                  @awardsAndRecognition, @haveBusinessInMultipleCities, @affilicationDevAssociationName,
-                  @developerId OUT", parameter.ToArray()));
+               @registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate, @organisationTypeId, @experienceYear, @projectsInHand, @numberOfRERARegisteredProjects, @totalCompletedProjects, @totalConstructionAreaDevTillToday, @sizeOfTheLargestProjectHandled, @experienceInHighRiseBuildings, @avgTurnOverforLastThreeYears, @affilicationToAnyDevAssociation, @awardsAndRecognition, @haveBusinessInMultipleCities, @affilicationDevAssociationName, @lastThreeYearReturns, @financialSecurityToTheSociety, @developerId OUT", parameter.ToArray()));
 
-                if (parameter[26].Value is DBNull)
+                if (parameter[parameter.Count - 1].Value is DBNull)
                     return 0;
                 else
-                    return Convert.ToInt32(parameter[26].Value);
+                    return Convert.ToInt32(parameter[parameter.Count - 1].Value);
             }
             catch (Exception) { throw; }
 
@@ -86,16 +82,17 @@ namespace castlers.Repository
                     new SqlParameter("@DeveloperId", developerPastProjects.developerId),
                     new SqlParameter("@Id", id)
             };
-            prmArray[7].Direction = ParameterDirection.Output;
+            prmArray[prmArray.Length - 1].Direction = ParameterDirection.Output;
 
             try
             {
                 await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_AddDeveloperPastProjectDetails @ProjectName, @ProjectLocation, @ReraRegistrationNumber, @ReraCertificateUrl,
                 @ProjectStartDate, @ProjectEndDate, @DeveloperId, @Id OUT", prmArray));
-                if (prmArray[7].Value is DBNull)
+
+                if (prmArray[prmArray.Length - 1].Value is DBNull)
                     return 0;
                 else
-                    return Convert.ToInt32(prmArray[7].Value);
+                    return Convert.ToInt32(prmArray[prmArray.Length - 1].Value);
             }
             catch (Exception) { throw; }
         }

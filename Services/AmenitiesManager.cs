@@ -19,19 +19,30 @@ namespace castlers.Services
             _amenitiesRepo = amenitiesRepository;
             _developerService = developerService;
         }
-        public Task<int> AddDeveloperAmenities(DeveloperAmenitiesDto developerAmenitiesDto)
+        public async Task<int> AddDeveloperAmenities(DeveloperAmenitiesDto developerAmenitiesDto)
         {
-            
-            if (developerAmenitiesDto.AmenitiesPdf != null)
+            try
             {
-                //Upload amenities pdf to the azure storage
+                var developerDetails = await _developerService.GetDeveloperByIdAsync(developerAmenitiesDto.DeveloperId);
 
-
-
+                if (developerAmenitiesDto.AmenitiesPdf != null)
+                {
+                    //Upload amenities pdf to the azure storage
+                    string amenitiesfilePath = string.Format("{0}/{1}", developerDetails.name, developerAmenitiesDto.AmenitiesPdf.FileName);
+                    var saveDocResponseDto = await _uploadFile.SaveDoc(developerAmenitiesDto.AmenitiesPdf, amenitiesfilePath);
+                    developerAmenitiesDto.AmenitiesPdfUrl = saveDocResponseDto.DocURL;
+                }
+                if (developerAmenitiesDto.UserAmenitiesPdf != null)
+                {
+                    //Upload user amenities pdf to the azure storage
+                    string userAmenitiesfilePath = string.Format("{0}/{1}", developerDetails.name, developerAmenitiesDto?.UserAmenitiesPdf?.FileName);
+                    var saveDocResponseDto = await _uploadFile.SaveDoc(developerAmenitiesDto.UserAmenitiesPdf, userAmenitiesfilePath);
+                    developerAmenitiesDto.UserAmenitiesPdfUrl = saveDocResponseDto.DocURL;
+                }
+                int amenitiesId = await _amenitiesRepo.AddDeveloperAmenities(_mapper.Map<DeveloperAmenities>(developerAmenitiesDto));
+                return amenitiesId;
             }
-
-            _mapper.Map<DeveloperAmenities>(developerAmenitiesDto);
-            throw new NotImplementedException();
+            catch (Exception) { throw; }
         }
 
         public Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetailsDto developerAmenitiesDetailsDto)
@@ -39,9 +50,29 @@ namespace castlers.Services
             throw new NotImplementedException();
         }
 
-        public Task<int> AddDeveloperConstructionSpecs(DeveloperConstructionSpecDto developerConstructionSpecDto)
+        public async Task<int> AddDeveloperConstructionSpecs(DeveloperConstructionSpecDto developerConstructionSpecDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var developerDetails = await _developerService.GetDeveloperByIdAsync(developerConstructionSpecDto.DeveloperId);
+                if (developerConstructionSpecDto.ConstructionSpecPdf != null)
+                {
+                    var constructionfilePath = string.Format("{0}/{1}", developerDetails.name, developerConstructionSpecDto.ConstructionSpecPdf.FileName);
+                    var saveDocResponseDto = await _uploadFile.SaveDoc(developerConstructionSpecDto.ConstructionSpecPdf, constructionfilePath);
+                    developerConstructionSpecDto.ConstructionSpecPdfUrl = saveDocResponseDto.DocURL;
+                }
+
+                if(developerConstructionSpecDto.UserConstructionSpecPdf != null)
+                {
+                    var userConstructionfilePath = string.Format("{0}/{1}", developerDetails.name, developerConstructionSpecDto.UserConstructionSpecPdf.FileName);
+                    var saveDocResponseDto = await _uploadFile.SaveDoc(developerConstructionSpecDto.UserConstructionSpecPdf, userConstructionfilePath);
+                    developerConstructionSpecDto.UserConstructionSpecPdfUrl = saveDocResponseDto.DocURL;
+                }
+
+                var constructionSpecId = await _amenitiesRepo.AddDeveloperConstructionSpecs(_mapper.Map<DeveloperConstructionSpec>(developerConstructionSpecDto));
+                return constructionSpecId;
+            }
+            catch (Exception) { throw; }
         }
     }
 }
