@@ -2,8 +2,9 @@
 {
     public class DocumentDto
     {
-        public string? DocumentType { get; set; }
-        public string? DocumentSubType { get; set; }
-        public IFormFile? DocumentFile { get; set; }
+        public string? Name { get; set; }
+        public string? Type { get; set; }
+        public string? SubType { get; set; }
+        public string? Url { get; set; }
     }
 }

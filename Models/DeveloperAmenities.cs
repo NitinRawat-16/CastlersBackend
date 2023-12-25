@@ -8,11 +8,11 @@ namespace castlers.Models
     {
         public DeveloperAmenities()
         {
-                DeveloperAmenitiesDetails = new DeveloperAmenitiesDetails();
+            DeveloperAmenitiesDetails = new DeveloperAmenitiesDetails();
         }
         public int AmenitiesId { get; set; }
         public int DeveloperId { get; set; }
-        public int TenderId { get; set; }
+        public int DeveloperTenderId { get; set; }
         public bool LiftElivator { get; set; }
         public bool GeneratorBackup { get; set; }
         public bool SwimmingPool { get; set; }
@@ -47,7 +47,7 @@ namespace castlers.Models
         public bool SmartEnergyConsumption { get; set; }
         public bool IntilligentDetectionWaterManagement { get; set; }
         public bool SmokeDetectionAlert { get; set; }
-        public bool HomeAutomation { get; set; } 
+        public bool HomeAutomation { get; set; }
         public bool AdditionAmenities { get; set; }
         [NotMapped]
         public IFormFile? UserAmenitiesPdf { get; set; }

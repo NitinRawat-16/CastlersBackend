@@ -160,17 +160,16 @@ namespace castlers.Services
                     // Sending email to the developers 
                     var developerDetails = await _developerService.GetDeveloperByIdAsync(developerId);
 
-                    var fillTenderUrl = filltenderAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new TenderNoticeObj
+                    var code = _secureInformation.Encrypt(JsonSerializer.Serialize(new TenderNoticeObj
                     {
                         developerId = developerId,
                         tenderNoticeId = tenderNoticeId,
-                        tenderCode = sendTender.TenderCode
+                        tenderCode = sendTender.TenderCode,
+                        societyId = sendTender.SocietyId ?? -1
                     }));
 
-                    var viewDocUrl = viewDocAPI + _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
-                    {
-                        societyId = (int)sendTender.SocietyId
-                    }));
+                    var fillTenderUrl = filltenderAPI + code;
+                    var viewDocUrl = viewDocAPI + code;
 
                     SendTo sendTo = new SendTo
                     {

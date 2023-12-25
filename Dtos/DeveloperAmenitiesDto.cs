@@ -10,7 +10,7 @@ namespace castlers.Dtos
         }
         public int AmenitiesId { get; set; }
         public int DeveloperId { get; set; }
-        public int TenderId { get; set; }
+        public int DeveloperTenderId { get; set; }
         public bool LiftElivator { get; set; }
         public bool GeneratorBackup { get; set; }
         public bool SwimmingPool { get; set; }

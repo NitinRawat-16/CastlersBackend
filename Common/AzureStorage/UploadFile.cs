@@ -1,8 +1,8 @@
 ﻿using Azure;
 using castlers.DbContexts;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using castlers.ResponseDtos;
+using Azure.Storage.Blobs.Models;
 
 namespace castlers.Common.AzureStorage
 {
@@ -21,6 +21,7 @@ namespace castlers.Common.AzureStorage
         {
             //BlobContainerClient container = new BlobContainerClient(_storageConnectionString, _storageContainerName);
             var fileName = file.FileName;
+            filePath = filePath.Replace(" ", "_");
             //var filePath = string.Format(path + "/{0}", fileName);
             try
             {

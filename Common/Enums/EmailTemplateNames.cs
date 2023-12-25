@@ -11,6 +11,7 @@
         Send_Tender_Notice,
         Admin_Registration,
         Chairmen_Approve_Tender,
-        Tender_Filled_By_Developer
+        Tender_Filled_By_Developer,
+        Voting_Notification
     }
 }

@@ -11,6 +11,7 @@
         SendTenderNotice,
         AdminRegistration,
         ChairmanApproveTender,
-        TenderFilledByDeveloper
+        TenderFilledByDeveloper,
+        VotingNotification
     }
 }

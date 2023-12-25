@@ -8,7 +8,7 @@ namespace castlers.Models
     {
         public int ConstructionSpecId { get; set; }
         public int DeveloperId { get; set; }
-        public int TenderId { get; set; }
+        public int DeveloperTenderId { get; set; }
         public string? Structure { get; set; }
         public string? WallBrickType { get; set; }
         public string? WallSize { get; set; }

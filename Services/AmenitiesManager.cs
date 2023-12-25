@@ -45,9 +45,14 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetailsDto developerAmenitiesDetailsDto)
+        public async Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetailsDto developerAmenitiesDetailsDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int amenitiesDetailsId = await _amenitiesRepo.AddDeveloperAmenitiesDetails(_mapper.Map<DeveloperAmenitiesDetails>(developerAmenitiesDetailsDto));
+                return amenitiesDetailsId;
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<int> AddDeveloperConstructionSpecs(DeveloperConstructionSpecDto developerConstructionSpecDto)
@@ -62,7 +67,7 @@ namespace castlers.Services
                     developerConstructionSpecDto.ConstructionSpecPdfUrl = saveDocResponseDto.DocURL;
                 }
 
-                if(developerConstructionSpecDto.UserConstructionSpecPdf != null)
+                if (developerConstructionSpecDto.UserConstructionSpecPdf != null)
                 {
                     var userConstructionfilePath = string.Format("{0}/{1}", developerDetails.name, developerConstructionSpecDto.UserConstructionSpecPdf.FileName);
                     var saveDocResponseDto = await _uploadFile.SaveDoc(developerConstructionSpecDto.UserConstructionSpecPdf, userConstructionfilePath);
@@ -71,6 +76,24 @@ namespace castlers.Services
 
                 var constructionSpecId = await _amenitiesRepo.AddDeveloperConstructionSpecs(_mapper.Map<DeveloperConstructionSpec>(developerConstructionSpecDto));
                 return constructionSpecId;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperAmenitiesDto> GetDeveloperAmenitiesAsync(int developerId)
+        {
+            try
+            {
+                return _mapper.Map<DeveloperAmenitiesDto>(await _amenitiesRepo.GetDeveloperAmenitiesAsync(developerId));
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperConstructionSpecDto> GetDeveloperConstructionSpecAsync(int developerId)
+        {
+            try
+            {
+                return _mapper.Map<DeveloperConstructionSpecDto>(await _amenitiesRepo.GetDeveloperConstructionSpecAsync(developerId));
             }
             catch (Exception) { throw; }
         }

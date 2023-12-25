@@ -60,7 +60,7 @@ namespace castlers.Services
         {
             try
             {
-                string tenderId;
+                string developerTenderId;
                 DeveloperDto developer = new();
                 TenderNoticeObj? tenderNoticeObj = new();
                 if (tenderDetailsDto.code != null && tenderDetailsDto.code.Length > 0)
@@ -72,22 +72,25 @@ namespace castlers.Services
                     catch (Exception ex) { throw ex.InnerException; }
                 }
 
-                developer = await _developerService.GetDeveloperByIdAsync(tenderDetailsDto.developerId ?? -1);
+                developer = await _developerService.GetDeveloperByIdAsync(tenderNoticeObj.developerId);
+
                 tenderDetailsDto.developerId = tenderNoticeObj?.developerId;
                 tenderDetailsDto.tenderCode = tenderNoticeObj?.tenderCode;
-                tenderDetailsDto.DeveloperAmenities.DeveloperId = tenderDetailsDto.developerId ?? -1;
-                tenderDetailsDto.DeveloperConstructionSpec.DeveloperId = tenderDetailsDto.developerId ?? -1;
-                var tenderDetails = _mapper.Map<DeveloperTenderDetails>(tenderDetailsDto);
-                tenderId = await _tenderRepo.AddDeveloperTenderAsync(tenderDetails);
+                tenderDetailsDto.DeveloperAmenities.DeveloperId = tenderNoticeObj.developerId;
+                tenderDetailsDto.DeveloperConstructionSpec.DeveloperId = tenderNoticeObj.developerId;
 
-                if (Convert.ToInt32(tenderId) > 0)
+                developerTenderId = await _tenderRepo.AddDeveloperTenderAsync(_mapper.Map<DeveloperTenderDetails>(tenderDetailsDto));
+
+                if (Convert.ToInt32(developerTenderId) > 0)
                 {
-                    tenderDetailsDto.DeveloperAmenities.TenderId = Convert.ToInt32(tenderId);
-                    tenderDetailsDto.DeveloperConstructionSpec.TenderId = Convert.ToInt32(tenderId);
+                    tenderDetailsDto.DeveloperAmenities.DeveloperTenderId = Convert.ToInt32(developerTenderId);
+                    tenderDetailsDto.DeveloperConstructionSpec.DeveloperTenderId = Convert.ToInt32(developerTenderId);
 
                     var amenitiesId = await _amenitiesService.AddDeveloperAmenities(tenderDetailsDto.DeveloperAmenities);
 
-                    var amenitiesDetailsId = await _amenitiesService.AddDeveloperConstructionSpecs(tenderDetailsDto.DeveloperConstructionSpec);
+                    tenderDetailsDto.DeveloperAmenitiesDetails.DeveloperAmenitiesId = amenitiesId;
+                    var amenitiesDetailsId = await _amenitiesService.AddDeveloperAmenitiesDetails(tenderDetailsDto.DeveloperAmenitiesDetails);
+                    var ConstructionSpecId = await _amenitiesService.AddDeveloperConstructionSpecs(tenderDetailsDto.DeveloperConstructionSpec);
                 }
 
                 // Email to admin for developer tender submitted notification
@@ -100,8 +103,8 @@ namespace castlers.Services
                         TenderCode = tenderNoticeObj?.tenderCode,
                     };
                 }
-           
-                return tenderId;
+
+                return developerTenderId;
             }
             catch (Exception) { throw; }
         }
@@ -223,10 +226,10 @@ namespace castlers.Services
 
                 var isFilled = IsDeveloperAlreadyFilledTender((int)tenderNoticeObj.developerId, tenderNoticeObj.tenderCode);
 
-                if (isFilled)
-                {
-                    return false;
-                }
+                //if (isFilled)
+                //{
+                //    return false;
+                //}
                 return true;
             }
             catch (Exception)
@@ -299,6 +302,25 @@ namespace castlers.Services
             {
                 var isFilled = _tenderRepo.IsDeveloperAlreadyFilledTender(developerId, tenderCode);
                 return Convert.ToBoolean(isFilled);
+            }
+            catch (Exception) { throw; }
+        }
+
+        // Get the list of developer those who filled the tender against the tender code for voting.
+        public async Task<List<DeveloperTenderDetailsDto>> GetInterestedDevelopersForTenderId(int tenderId)
+        {
+            try
+            {
+                return _mapper.Map<List<DeveloperTenderDetailsDto>>(await _tenderRepo.GetInterestedDevelopersForTenderId(tenderId));
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperTenderDetailsDto> GetDeveloperTenderAsync(int developerId)
+        {
+            try
+            {
+                return _mapper.Map<DeveloperTenderDetailsDto>(await _tenderRepo.GetDeveloperTenderAsync(developerId));
             }
             catch (Exception) { throw; }
         }

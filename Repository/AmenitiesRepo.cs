@@ -19,7 +19,7 @@ namespace castlers.Repository
                 SqlParameter[] prmArray = new SqlParameter[]
                 {
                     new("@DeveloperId", developerAmenities.DeveloperId),
-                    new("@TenderId", developerAmenities.TenderId),
+                    new("@TenderId", developerAmenities.DeveloperTenderId),
                     new("@LiftElivator", developerAmenities.LiftElivator),
                     new("@GeneratorBackup", developerAmenities.GeneratorBackup),
                     new("@SwimmingPool", developerAmenities.SwimmingPool),
@@ -57,8 +57,8 @@ namespace castlers.Repository
                     new("@HomeAutomation", developerAmenities.HomeAutomation),
                     new("@AdditionalAmenities", developerAmenities.AdditionAmenities),
                     new("@AmenitiesPdfUrl", developerAmenities.AmenitiesPdfUrl),
-                    new("@CreationDate", developerAmenities.CreationDate),
-                    new("@UpdationDate", developerAmenities.UpdationDate),
+                    new("@CreationDate", DateTime.Now),
+                    new("@UpdationDate", DateTime.Now),
                     new("@IsActive", developerAmenities.IsActive),
                     new("@UserAmenitiesPdfUrl", developerAmenities.UserAmenitiesPdfUrl),
                     new("@AmenitiesId", developerAmenities.AmenitiesId),
@@ -71,10 +71,10 @@ namespace castlers.Repository
                 @OutdoorPlayCourt, @ChildrenPlayArea, @SeniorCitizenPark, @JoggingTrack, @LandscapeGarden, @SolarWaterSystem, @SolarBackup, @EvChargingStation, @SecurityCabin, @CctvCoverage, @SocietyOffice,
                 @DecorativeEntranceGate, @RainWaterHarvesting, @FireFightingSystem, @TerraceGarden, @LetterBox, 
                 @GasPipeLine, @SecuritySystem, @DishConnection, @VideoDoorPhone, @IntercomSystem, @EasyDryerSystem, 
-                @AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AmenitiesPdfUrl, 
+                @AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AdditionalAmenities, @AmenitiesPdfUrl, 
                 @CreationDate, @UpdationDate, @IsActive, @UserAmenitiesPdfUrl, @AmenitiesId OUTPUT", prmArray);
 
-                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value == DBNull.Value ? -1 : prmArray[prmArray.Length - 1].Value);
             }
             catch (Exception) { throw; }
         }
@@ -135,7 +135,7 @@ namespace castlers.Repository
                 @AirCondition, @WaterPurifier, @ModulerKitchen, @SmartEnergyConsumption, @IntilligentDetectionWaterManagement, @SmokeDetectionAlert, @HomeAutomation, @AdditionalAmenities, 
                 @AmenitiesDetailsId OUTPUT", prmArray);
 
-                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value == DBNull.Value ? -1 : prmArray[prmArray.Length - 1].Value);
             }
             catch (Exception) { throw; }
         }
@@ -147,7 +147,7 @@ namespace castlers.Repository
                 SqlParameter[] prmArray = new SqlParameter[]
               {
                     new("@DeveloperId", developerConstructionSpec.DeveloperId),
-                    new("@TenderId", developerConstructionSpec.TenderId),
+                    new("@TenderId", developerConstructionSpec.DeveloperTenderId),
                     new("@Structure", developerConstructionSpec.Structure),
                     new("@WallBrickType", developerConstructionSpec.WallBrickType),
                     new("@WallSize", developerConstructionSpec.WallSize),
@@ -171,8 +171,8 @@ namespace castlers.Repository
                     new("@Electrical", developerConstructionSpec.Electrical),
                     new("@WaterSupply", developerConstructionSpec.WaterSupply),
                     new("@ConstructionSpecPdfUrl", developerConstructionSpec.ConstructionSpecPdfUrl),
-                    new("@CreationDate", developerConstructionSpec.CreationDate),
-                    new("@UpdationDate", developerConstructionSpec.UpdationDate),
+                    new("@CreationDate", DateTime.Now),
+                    new("@UpdationDate", DateTime.Now),
                     new("@IsActive", developerConstructionSpec.IsActive),
                     new("@UserConstructionSpecPdfUrl", developerConstructionSpec.UserConstructionSpecPdfUrl),
                     new("@ConstructionSpecId", developerConstructionSpec.ConstructionSpecId)
@@ -189,7 +189,31 @@ namespace castlers.Repository
                 @ConstructionSpecPdfUrl, @CreationDate, @UpdationDate, @IsActive, @UserConstructionSpecPdfUrl,
                 @ConstructionSpecId OUTPUT", prmArray);
 
-                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value ?? -1);
+                return Convert.ToInt32(prmArray[prmArray.Length - 1].Value == DBNull.Value ? -1 : prmArray[prmArray.Length - 1].Value);
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperAmenities> GetDeveloperAmenitiesAsync(int developerId)
+        {
+            try
+            {
+                var amenitiesDetails = await _dbContext.DeveloperAmenities
+                    .FromSqlRaw(@"SELECT * FROM DeveloperAmenities WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
+                    .FirstOrDefaultAsync();
+                return amenitiesDetails ?? new();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperConstructionSpec> GetDeveloperConstructionSpecAsync(int developerId)
+        {
+            try
+            {
+                var constructionSpecDetails = await _dbContext.DeveloperConstructionSpecs
+                    .FromSqlRaw(@"SELECT * FROM DeveloperConstructionSpec WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
+                    .FirstOrDefaultAsync();
+                return constructionSpecDetails ?? new();
             }
             catch (Exception) { throw; }
         }

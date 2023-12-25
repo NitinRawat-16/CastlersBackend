@@ -1,17 +1,17 @@
 ﻿using castlers.Dtos;
 using castlers.Models;
 using castlers.DbContexts;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using castlers.Common.AzureStorage;
 using castlers.ResponseDtos;
+using Microsoft.Data.SqlClient;
+using castlers.Common.AzureStorage;
+using Microsoft.EntityFrameworkCore;
 
 namespace castlers.Repository
 {
     public class SocietyDocRepo : ISocietyDocRepository
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IUploadFile _uploadFile;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IRegisteredSocietyRepository _regSociety;
         public SocietyDocRepo(ApplicationDbContext dbContext, IUploadFile uploadFile, IRegisteredSocietyRepository regSociety)
         {

@@ -4,6 +4,7 @@ using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
+using castlers.Dtos;
 
 namespace castlers.Repository
 {
@@ -261,6 +262,29 @@ namespace castlers.Repository
                     return 0;
             }
             catch (Exception ex) { throw ex; }
+        }
+
+        public async Task<List<DeveloperTenderDetails>> GetInterestedDevelopersForTenderId(int tenderId)
+        {
+            try
+            {
+                var interesteddevelopers = await _dbContext.DeveloperTenderDetails
+                     .FromSqlRaw(@"EXEC usp_InterestedDevelopersForTenderCode", new SqlParameter("@TenderId", tenderId))
+                     .ToListAsync();
+
+                return interesteddevelopers;
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<DeveloperTenderDetails> GetDeveloperTenderAsync(int developerId)
+        {
+            try
+            {
+                var tenderDetails = await _dbContext.DeveloperTenderDetails.FromSqlRaw(@"SELECT * FROM DeveloperTenderDetails WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId)).FirstOrDefaultAsync();
+                return tenderDetails ?? new();
+            }
+            catch (Exception) { throw; }
         }
     }
 }

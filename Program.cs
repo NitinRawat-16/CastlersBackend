@@ -27,6 +27,8 @@ builder.Services.AddTransient<IAdminService, AdminManager>();
 builder.Services.AddTransient<IAdminRepository, AdminRepo>();
 builder.Services.AddTransient<ITenderRepository, TenderRepo>();
 builder.Services.AddTransient<ITenderService, TenderManager>();
+builder.Services.AddTransient<IVotingRepository, VotingRepo>();
+builder.Services.AddTransient<IVotingService, VotingManager>();
 builder.Services.AddTransient<IDeveloperRepository, DeveloperRepo>();
 builder.Services.AddTransient<IDeveloperService, DeveloperManager>();
 builder.Services.AddTransient<IAmenitiesRepository, AmenitiesRepo>();

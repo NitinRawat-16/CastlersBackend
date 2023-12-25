@@ -1,6 +1,6 @@
 ﻿using castlers.Dtos;
-using castlers.ResponseDtos;
 using castlers.Services;
+using castlers.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -18,7 +18,7 @@ namespace castlers.Controllers
         [HttpPost("SocietyDocumentUpload")]
         public async Task<SaveDocResponseDto> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
         {
-            if(documentDto.documentFile == null)
+            if (documentDto.documentFile == null)
             {
                 return new SaveDocResponseDto
                 {
@@ -28,7 +28,7 @@ namespace castlers.Controllers
                     Message = "Please Add File While Saving the Document."
                 };
             }
-            
+
             try
             {
                 return await _societyDocumentsService.SocietyDocumentsUpload(documentDto);
@@ -37,6 +37,18 @@ namespace castlers.Controllers
             {
                 throw;
             }
+        }
+
+        [HttpPost("GetSocietyDocumentList")]
+        public async Task<IActionResult> GetSocietyDocumentList([FromQuery] string code)
+        {
+            if (code.Trim().Length <= 0) return BadRequest("Invalid Request!");
+            try
+            {
+                var societyDocuments = await _societyDocumentsService.GetSocietyDocumentList(code);
+                return Ok(societyDocuments);
+            }
+            catch (Exception) { throw; }
         }
     }
 }

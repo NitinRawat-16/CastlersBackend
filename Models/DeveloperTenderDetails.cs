@@ -28,6 +28,7 @@ namespace castlers.Models
         public int? developerId { get; set; }
         [NotMapped]
         public IFormFile? developerTenderPdf { get; set; }
-        
+        public string? developerTenderPdfPath { get; set; }
+
     }
 }

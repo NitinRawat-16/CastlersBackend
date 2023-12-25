@@ -23,8 +23,10 @@ namespace castlers.Dtos
         public string? tenderCode { get; set; }
         public int? developerId { get; set; }
         public IFormFile? developerTenderPdf { get; set; }
+        public string? developerTenderPdfPath { get; set; }
         public string? code { get; set; }
         public DeveloperAmenitiesDto DeveloperAmenities { get; set; } = new();
+        public DeveloperAmenitiesDetailsDto DeveloperAmenitiesDetails { get; set; } = new();
         public DeveloperConstructionSpecDto DeveloperConstructionSpec { get; set; } = new();
     }
 }

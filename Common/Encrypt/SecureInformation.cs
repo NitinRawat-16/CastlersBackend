@@ -1,5 +1,5 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
+using System.Security.Cryptography;
 
 namespace castlers.Common.Encrypt
 {
@@ -13,9 +13,16 @@ namespace castlers.Common.Encrypt
 
     public class TenderNoticeObj
     {
+        public int societyId { get; set; }
         public int developerId { get; set; }
         public int tenderNoticeId { get; set; }
         public string? tenderCode { get; set; }
+    }
+
+    public class VotingObj
+    {
+        public int memberId { get; set; }
+        public int electionId { get; set; }
     }
 
     public class SecureInformation : ISecureInformation

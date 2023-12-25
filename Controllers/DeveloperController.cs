@@ -38,7 +38,7 @@ namespace castlers.Controllers
         [HttpPost("addDeveloper")]
         public async Task<IActionResult> AddDeveloperAsync([FromForm] DeveloperDto developerDto)
         {
-            if (developerDto == null)
+            if (developerDto == null || developerDto.name == null || developerDto.name.Trim().Length <= 0)
             {
                 return BadRequest();
             }

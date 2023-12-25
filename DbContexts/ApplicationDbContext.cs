@@ -39,6 +39,8 @@ namespace castlers.DbContexts
         public DbSet<DeveloperAmenities> DeveloperAmenities { get; set; }
         public DbSet<DeveloperAmenitiesDetails> DeveloperAmenitiesDetails { get; set; }
         public DbSet<DeveloperConstructionSpec> DeveloperConstructionSpecs { get; set; }
+        public DbSet<ElectionDetails> ElectionDetails { get; set; }
+        public DbSet<MembersPreferredDevelopers> MembersPreferredDevelopers { get; set; }
 
     }
 }
