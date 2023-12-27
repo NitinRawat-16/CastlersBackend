@@ -12,7 +12,7 @@ namespace castlers.Dtos
         public string? panCard { get; set; }
         public string? aadharCard { get; set; }
         [NotMapped]
-        public IFormFile partnerFile { get; set; }
-        public string partnerFileUrl { get; set; } = string.Empty;
+        public IFormFile? partnerFile { get; set; }
+        public string? partnerFileUrl { get; set; }
     }
 }
