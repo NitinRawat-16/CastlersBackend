@@ -46,7 +46,7 @@ namespace castlers.Dtos
         public bool IntilligentDetectionWaterManagement { get; set; }
         public bool SmokeDetectionAlert { get; set; }
         public bool HomeAutomation { get; set; }
-        public bool AdditionAmenities { get; set; }
+        public bool AdditionalAmenities { get; set; }
         [NotMapped]
         public IFormFile? UserAmenitiesPdf { get; set; }
         public string? UserAmenitiesPdfUrl { get; set; }

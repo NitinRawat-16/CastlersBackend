@@ -55,7 +55,7 @@ namespace castlers.Repository
                     new("@IntilligentDetectionWaterManagement", developerAmenities.IntilligentDetectionWaterManagement),
                     new("@SmokeDetectionAlert", developerAmenities.SmokeDetectionAlert),
                     new("@HomeAutomation", developerAmenities.HomeAutomation),
-                    new("@AdditionalAmenities", developerAmenities.AdditionAmenities),
+                    new("@AdditionalAmenities", developerAmenities.AdditionalAmenities),
                     new("@AmenitiesPdfUrl", developerAmenities.AmenitiesPdfUrl),
                     new("@CreationDate", DateTime.Now),
                     new("@UpdationDate", DateTime.Now),
@@ -199,7 +199,7 @@ namespace castlers.Repository
             try
             {
                 var amenitiesDetails = await _dbContext.DeveloperAmenities
-                    .FromSqlRaw(@"SELECT * FROM DeveloperAmenities WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
+                    .FromSqlRaw(@"SELECT tenderId AS DeveloperTenderId, * FROM DeveloperAmenities WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
                     .FirstOrDefaultAsync();
                 return amenitiesDetails ?? new();
             }
@@ -211,7 +211,7 @@ namespace castlers.Repository
             try
             {
                 var constructionSpecDetails = await _dbContext.DeveloperConstructionSpecs
-                    .FromSqlRaw(@"SELECT * FROM DeveloperConstructionSpec WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
+                    .FromSqlRaw(@"SELECT tenderId AS DeveloperTenderId, * FROM DeveloperConstructionSpec WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
                     .FirstOrDefaultAsync();
                 return constructionSpecDetails ?? new();
             }

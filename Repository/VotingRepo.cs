@@ -19,7 +19,7 @@ namespace castlers.Repository
             try
             {
                 var electionDetails = await _dbContext.ElectionDetails
-                    .FromSqlRaw(@"SELECT * FROM ElectionDetails WHERE electionId = electionId", new SqlParameter("@electionId", electionId))
+                    .FromSqlRaw(@"SELECT * FROM ElectionDetails WHERE electionId = @electionId", new SqlParameter("@electionId", electionId))
                     .FirstOrDefaultAsync();
                 return electionDetails ?? new();
             }

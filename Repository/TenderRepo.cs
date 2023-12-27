@@ -268,7 +268,7 @@ namespace castlers.Repository
             try
             {
                 var interesteddevelopers = await _dbContext.DeveloperTenderDetails
-                     .FromSqlRaw(@"EXEC usp_InterestedDevelopersForTenderCode", new SqlParameter("@TenderId", tenderId))
+                     .FromSqlRaw(@"EXEC usp_InterestedDevelopersForTenderCode @TenderId", new SqlParameter("@TenderId", tenderId))
                      .ToListAsync();
 
                 return interesteddevelopers;

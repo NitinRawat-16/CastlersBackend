@@ -197,7 +197,7 @@ namespace castlers.Services
                 int developerId = developerTender.developerId > 0 ? (int)developerTender.developerId : -1;
 
                 var developerDetails = await _developerService.GetDeveloperByIdAsync(developerId);
-                var developerTenderDetails = await _tenderService.GetDeveloperTenderAsync(developerId);
+               // var developerTenderDetails = await _tenderService.GetDeveloperTenderAsync(developerId);
                 var amenitiesDetails = await _amenitiesService.GetDeveloperAmenitiesAsync(developerId);
                 var constSpecDetails = await _amenitiesService.GetDeveloperConstructionSpecAsync(developerId);
 
@@ -205,7 +205,7 @@ namespace castlers.Services
                 votingDeveloper.DeveloperName = developerDetails.name;
                 votingDeveloper.LogoUrl = developerDetails.logoPath;
                 votingDeveloper.Rating = developerDetails.reviewRatingScore ?? 0;
-                votingDeveloper.TenderPdfUrl = developerTenderDetails.developerTenderPdfPath;
+                votingDeveloper.TenderPdfUrl = developerTender.developerTenderPdfPath;
                 votingDeveloper.AmenitiesPdfUrl = amenitiesDetails.AmenitiesPdfUrl;
                 votingDeveloper.UserAmenitiesPdfUrl = amenitiesDetails.UserAmenitiesPdfUrl;
                 votingDeveloper.ConstructionSpecPdfUrl = constSpecDetails.ConstructionSpecPdfUrl;
