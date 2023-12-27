@@ -1,5 +1,8 @@
-﻿namespace castlers.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace castlers.Models
 {
+    [Keyless]
     public class MembersPreferredDevelopers
     {
         public int PreferredDeveloperId { get; set; }

@@ -41,7 +41,7 @@ namespace castlers.Services
 
             var result = await _societyMemberDetailsRepository.AddRegisteredSocietyNewMembersAsync(newMemberDetails);
             var societyDetails = await _regSocietyService.GetRegisteredSocietyByIdAsync(memberDetailsDto.societyId);
-            
+
             newMemberDetails.societyNewMemberDetails = newMemberDetails.societyNewMemberDetails
                 .Where(m => m.email != string.Empty || m.email != "" || m.email is null).ToList();
 
@@ -113,6 +113,15 @@ namespace castlers.Services
         {
             var societyMemberDetails = _societyMemberDetailsRepository.GetSocietyCommitteeMembersAsync(registeredSocietyId);
             return _mapper.Map<List<SocietyMemberDetailsDto>>(societyMemberDetails);
+        }
+
+        public async Task<List<SocietyMemberDetailsDto>> GetSocietyAllMembersAsync(int societyId)
+        {
+            try
+            {
+                return _mapper.Map<List<SocietyMemberDetailsDto>>(await _societyMemberDetailsRepository.GetSocietyAllMembersAsync(societyId));
+            }
+            catch (Exception) { throw; }
         }
     }
 }

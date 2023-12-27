@@ -19,5 +19,7 @@ namespace castlers.Services
         public Task<int> VerifyDeveloperTenderCodeWithURL(DeveloperTenderVerifyDto developerTenderVerifyDto);
         public Task<List<DeveloperTenderDetailsDto>> GetInterestedDevelopersForTenderId(int tenderId);
         public Task<DeveloperTenderDetailsDto> GetDeveloperTenderAsync(int developerId);
+        public Task<List<SendTenderNoticeDto>> GetTenderPublicationsAsync();
+        public Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsAsync(string tenderCode);
     }
 }

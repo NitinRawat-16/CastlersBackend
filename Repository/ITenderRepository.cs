@@ -17,5 +17,7 @@ namespace castlers.Repository
         public int IsDeveloperAlreadyFilledTender(int developerId, string tenderCode);
         public Task<List<DeveloperTenderDetails>> GetInterestedDevelopersForTenderId(int tenderId);
         public Task<DeveloperTenderDetails> GetDeveloperTenderAsync(int developerId);
+        public Task<List<SendTenderNotice>> GetTenderPublicationsAsync();
+        public Task<SocietyTenderDetails> GetTenderDetailsAsync(string tenderCode);
     }
 }

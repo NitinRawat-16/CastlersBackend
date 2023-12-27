@@ -3,31 +3,114 @@ using castlers.Models;
 using System.Text.Json;
 using castlers.Repository;
 using castlers.Common.Encrypt;
-using Microsoft.AspNetCore.Mvc;
+using castlers.Common.Enums;
+using castlers.Common.Email;
+using System.Reflection;
 
 namespace castlers.Services
 {
     public class VotingManager : IVotingService
     {
+        private readonly IConfiguration _config;
+        private readonly IEmailSender _emailSender;
         private readonly IVotingRepository _votingRepo;
         private readonly ITenderService _tenderService;
         private readonly IDeveloperService _developerService;
         private readonly IAmenitiesService _amenitiesService;
         private readonly ISecureInformation _secureInformation;
+        private readonly IRegisteredSocietyService _societyService;
         private readonly ISocietyMemberDetailsService _societyMemberService;
         public VotingManager(IVotingRepository votingRepository,
                             ISecureInformation secureInformation,
                             IDeveloperService developerService,
                             ITenderService tenderService,
                             ISocietyMemberDetailsService societyMemberService,
-                            IAmenitiesService amenitiesService)
+                            IAmenitiesService amenitiesService,
+                            IConfiguration config,
+                            IRegisteredSocietyService societyService,
+                            IEmailSender emailSender)
         {
+            _config = config;
+            _emailSender = emailSender;
             _votingRepo = votingRepository;
             _tenderService = tenderService;
+            _societyService = societyService;
             _amenitiesService = amenitiesService;
             _developerService = developerService;
             _secureInformation = secureInformation;
             _societyMemberService = societyMemberService;
+        }
+
+        public async Task<int> SaveElectionDetailsAsync()
+        {
+            try
+            {
+                var tenderPublications = await _tenderService.GetTenderPublicationsAsync();
+                if (tenderPublications.Any())
+                {
+                    foreach (var tender in tenderPublications)
+                    {
+                        // Save election details
+                        var tenderDetails = await _tenderService.GetSocietyTenderDetailsAsync(tender.TenderCode ?? "");
+                        var memberDetails = await _societyMemberService.GetSocietyAllMembersAsync(tender.SocietyId ?? -1);
+
+                        ElectionDetails electionDetails = new()
+                        {
+                            TenderId = tenderDetails.tenderId,
+                            StartDate = tender.PublicationDate ?? DateTime.Now,
+                            EndDate = tender.PresentationDate ?? DateTime.Now.AddDays(15),
+                            Status = ElectionStatus.Active.ToString(),
+                            TotalVoters = memberDetails.Count,
+                            TotalVoted = 0,
+                            CreationDate = DateTime.Now,
+                            UpdationDate = DateTime.Now
+                        };
+
+                        electionDetails.ElectionId = await _votingRepo.SaveElectionDetails(electionDetails);
+
+                        // Send mail regarding election and voting process
+
+                        SendVotingNotification(tender.SocietyId, electionDetails, memberDetails);
+                    }
+                }
+                return 1;
+            }
+            catch (Exception) { throw; }
+        }
+
+        private async void SendVotingNotification(int? societyId, ElectionDetails election, List<SocietyMemberDetailsDto> societyMembers)
+        {
+            try
+            {
+                var society = await _societyService.GetRegisteredSocietyByIdAsync(societyId ?? -1);
+                if (societyMembers.Any())
+                {
+                    foreach (var member in societyMembers)
+                    {
+                        var votingUrl = _config.GetSection("Voting_Page_API").Value ?? string.Empty;
+
+                        var code = _secureInformation.Encrypt(JsonSerializer.Serialize(new VotingObj
+                        {
+                            memberId = member.societyMemberDetailsId,
+                            electionId = election.ElectionId,
+                        }));
+
+                        SendTo sendTo = new()
+                        {
+                            SocietyName = society.societyName,
+                            Email = member.email,
+                            EMailType = EmailTypes.VotingNotification,
+                            Name = member.memberName,
+                            SendTenderNoticePublicationDate = election.StartDate.ToString("dd-MMM-yyyy"),
+                            SendTenderNoticePresentationDate = election.EndDate.ToString("dd-MMM-yyyy"),
+                            Message = votingUrl + code
+                        };
+
+                        var response = await _emailSender.SendEmailAsync(sendTo);
+                    }
+                }
+            }
+            catch (Exception) { throw; }
         }
 
         public async Task<int> SaveMemberVote(SubmitVotingDto submitVoting)
@@ -68,7 +151,7 @@ namespace castlers.Services
 
                 foreach (var member in societyMembers)
                 {
-                    VotingObj votingObj = new VotingObj()
+                    VotingObj votingObj = new()
                     {
                         electionId = -1,
                         memberId = member.societyMemberDetailsId

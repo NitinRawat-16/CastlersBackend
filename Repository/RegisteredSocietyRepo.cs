@@ -30,10 +30,9 @@ namespace castlers.Repository
         {
             var param = new SqlParameter("@registeredSocietyId", Id);
 
-            RegisteredSociety? registeredSociety =
-                   _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).AsEnumerable().FirstOrDefault();
+            var registeredSociety = _dbContext.RegisteredSociety.FromSqlRaw(@"exec GetRegisteredSocietyById @registeredSocietyId", param).AsEnumerable().FirstOrDefault();
 
-            return registeredSociety;
+            return registeredSociety ?? new();
         }
         public async Task<RegisteredSociety> GetRegisteredSocietyByCodeAsync(string societyCode)
         {
@@ -42,7 +41,7 @@ namespace castlers.Repository
             RegisteredSociety? registeredSociety = await Task.Run(() =>
                    _dbContext.RegisteredSociety.FromSqlRaw(@"exec uspGetRegisteredSocietyByCode @SocietyCode", param).AsEnumerable().FirstOrDefault());
 
-            return registeredSociety;
+            return registeredSociety ?? new();
         }
         public async Task<int> AddRegisteredSocietyAsync(RegisteredSociety registeredSociety)
         {

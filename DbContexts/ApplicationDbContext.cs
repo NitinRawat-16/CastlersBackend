@@ -41,6 +41,7 @@ namespace castlers.DbContexts
         public DbSet<DeveloperConstructionSpec> DeveloperConstructionSpecs { get; set; }
         public DbSet<ElectionDetails> ElectionDetails { get; set; }
         public DbSet<MembersPreferredDevelopers> MembersPreferredDevelopers { get; set; }
+        public DbSet<SendTenderNotice> SendTenderNotices { get; set; }
 
     }
 }

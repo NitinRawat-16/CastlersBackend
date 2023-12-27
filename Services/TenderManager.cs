@@ -326,5 +326,22 @@ namespace castlers.Services
         }
 
         private string FiveDigitRandomNumber() => new Random().Next(MIN, MAX).ToString();
+
+        public async Task<List<SendTenderNoticeDto>> GetTenderPublicationsAsync()
+        {
+            try
+            {
+                return _mapper.Map<List<SendTenderNoticeDto>>(await _tenderRepo.GetTenderPublicationsAsync());
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsAsync(string tenderCode)
+        {
+            try
+            {
+               return _mapper.Map<SocietyTenderDetailsDto>(await _tenderRepo.GetTenderDetailsAsync(tenderCode));
+            }
+            catch (Exception) { throw; }
+        }
     }
 }

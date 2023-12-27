@@ -6,5 +6,6 @@ namespace castlers.Repository
     {
         public Task<int> SaveMemberVoteAsync(MembersPreferredDevelopers membersPreferredDevelopers);
         public Task<ElectionDetails> GetElectionDetailsAsync(int electionId);
+        public Task<int> SaveElectionDetails(ElectionDetails electionDetails);
     }
 }

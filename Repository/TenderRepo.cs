@@ -4,14 +4,13 @@ using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
-using castlers.Dtos;
 
 namespace castlers.Repository
 {
     public class TenderRepo : ITenderRepository
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly IUploadFile _uploadFile;
+        private readonly ApplicationDbContext _dbContext;
         public TenderRepo(ApplicationDbContext dbContext, IUploadFile uploadFile)
         {
             _dbContext = dbContext;
@@ -283,6 +282,28 @@ namespace castlers.Repository
             {
                 var tenderDetails = await _dbContext.DeveloperTenderDetails.FromSqlRaw(@"SELECT * FROM DeveloperTenderDetails WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId)).FirstOrDefaultAsync();
                 return tenderDetails ?? new();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<List<SendTenderNotice>> GetTenderPublicationsAsync()
+        {
+            try
+            {
+                return await _dbContext.SendTenderNotices.FromSqlRaw(@"EXEC usp_GetTenderPublications").ToListAsync();
+            }
+            catch (Exception) { throw; }
+        }
+
+        public async Task<SocietyTenderDetails> GetTenderDetailsAsync(string tenderCode)
+        {
+            try
+            {
+                var tender = await _dbContext.SocietyTenderDetails
+                   .FromSqlRaw(@"SELECT * FROM TenderDetails WHERE tenderCode = {0}", tenderCode)
+                   .FirstOrDefaultAsync();
+
+                return tender ?? new();
             }
             catch (Exception) { throw; }
         }

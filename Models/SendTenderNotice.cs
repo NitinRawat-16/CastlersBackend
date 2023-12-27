@@ -1,7 +1,8 @@
-﻿using castlers.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace castlers.Models
 {
+    [Keyless]
     public class SendTenderNotice
     {
         public int? SocietyId { get; set; }

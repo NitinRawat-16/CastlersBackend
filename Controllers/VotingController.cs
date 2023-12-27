@@ -13,6 +13,18 @@ namespace castlers.Controllers
         {
             _votingService = votingService;
         }
+
+        [HttpPost("StartVoting")]
+        public async Task<IActionResult> StartVoting()
+        {
+            try
+            {
+                var response = await _votingService.SaveElectionDetailsAsync();
+                return Ok(response);
+            }
+            catch (Exception) { throw; }
+        }
+
         [HttpPost("SubmitMembersVoting")]
         public async Task<IActionResult> SubmitMembersVoting([FromBody] SubmitVotingDto submitVoting)
         {

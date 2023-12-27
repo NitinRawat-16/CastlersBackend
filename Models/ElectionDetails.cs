@@ -1,6 +1,8 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
 namespace castlers.Models
 {
+    [Keyless]
     public class ElectionDetails
     {
         public int ElectionId { get; set; }

@@ -1,8 +1,6 @@
 ﻿using System.Data;
 using castlers.Models;
-using castlers.Common.SMS;
 using castlers.DbContexts;
-using castlers.Common.Email;
 using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.Converters;
@@ -115,7 +113,7 @@ namespace castlers.Repository
                         + " AND societyMemberdesignationId IS NULL";
 
                 var param = new SqlParameter("@registeredSocietyId", registeredSocietyId);
-                var societyMemberDetails = await Task.Run(() => _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToList());
+                var societyMemberDetails = await _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToListAsync();
                 return societyMemberDetails;
 
             }
@@ -178,6 +176,17 @@ namespace castlers.Repository
             var param = new SqlParameter("@registeredSocietyId", registeredSocietyId);
             var societyMemberDetails =  _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToList();
 
+            return societyMemberDetails;
+        }
+
+        public async Task<List<SocietyMemberDetails>> GetSocietyAllMembersAsync(int societyId)
+        {
+            string sql = "SELECT societyMemberDetailsId,registeredSocietyId,memberName," +
+                        " mobileNumber,email,societyMemberDesignationId,createdBy,createdDate,updatedBy," +
+                        "updatedDate FROM dbo.SocietyMemberDetails where registeredSocietyId = @registeredSocietyId " ;
+
+            var param = new SqlParameter("@registeredSocietyId", societyId);
+            var societyMemberDetails = await _dbContext.SocietyMemberDetails.FromSqlRaw(sql, param).ToListAsync();
             return societyMemberDetails;
         }
 

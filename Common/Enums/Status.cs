@@ -14,4 +14,10 @@
         Rejected = 4,
         Discarded = 5
     }
+
+    public enum ElectionStatus
+    {
+        Active,
+        Completed
+    }
 }
