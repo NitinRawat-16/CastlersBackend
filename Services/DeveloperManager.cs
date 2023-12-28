@@ -121,7 +121,7 @@ public class DeveloperManager : IDeveloperService
                     Name = developerDto.name,
                     Email = developerDto.email,
                     EMailType = Common.Enums.EmailTypes.DeveloperRegister,
-                    Message = developerDto.registeredDeveloperCode
+                    Message = developer.registeredDeveloperCode
                 };
                 await _emailSender.SendEmailAsync(sendTo);
                 #endregion

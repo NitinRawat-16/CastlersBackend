@@ -20,36 +20,38 @@ namespace castlers.Repository
 
         public async Task<int> AddDeveloperAsync(Developer developer)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@name", developer.name));
-            parameter.Add(new SqlParameter("@address", developer.address));
-            parameter.Add(new SqlParameter("@city", developer.city));
-            parameter.Add(new SqlParameter("@logoPath", developer.logoPath));
-            parameter.Add(new SqlParameter("@siteLink", developer.siteLink));
-            parameter.Add(new SqlParameter("@organisationTypeId", developer.organisationTypeId));
-            parameter.Add(new SqlParameter("@experienceYear", developer.experienceYear));
-            parameter.Add(new SqlParameter("@email", developer.email));
-            parameter.Add(new SqlParameter("@profilePath", developer.profilePath));
-            parameter.Add(new SqlParameter("@mobileNumber", developer.mobileNumber));
-            parameter.Add(new SqlParameter("@registeredDeveloperCode", developer.registeredDeveloperCode));
-            parameter.Add(new SqlParameter("@createdBy", developer.createdBy));
-            parameter.Add(new SqlParameter("@createdDate", developer.createdDate));
-            parameter.Add(new SqlParameter("@updatedBy", developer.updatedBy));
-            parameter.Add(new SqlParameter("@updatedDate", developer.updatedDate));
-            parameter.Add(new SqlParameter("@projectsInHand", developer.projectsInHand));
-            parameter.Add(new SqlParameter("@numberOfRERARegisteredProjects", developer.numberOfRERARegisteredProjects));
-            parameter.Add(new SqlParameter("@totalCompletedProjects", developer.totalCompletedProjects));
-            parameter.Add(new SqlParameter("@totalConstructionAreaDevTillToday", developer.totalConstructionAreaDevTillToday));
-            parameter.Add(new SqlParameter("@sizeOfTheLargestProjectHandled", developer.sizeOfTheLargestProjectHandled));
-            parameter.Add(new SqlParameter("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings));
-            parameter.Add(new SqlParameter("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears));
-            parameter.Add(new SqlParameter("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation));
-            parameter.Add(new SqlParameter("@awardsAndRecognition", developer.awardsAndRecognition));
-            parameter.Add(new SqlParameter("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities));
-            parameter.Add(new SqlParameter("@affilicationDevAssociationName", developer.affilicationDevAssociationName));
-            parameter.Add(new("@lastThreeYearReturns", developer.lastThreeYearReturns));
-            parameter.Add(new("@financialSecurityToTheSociety", developer.financialSecurityToTheSociety));
-            parameter.Add(new SqlParameter("@developerId", developer.developerId));
+            var parameter = new List<SqlParameter>
+            {
+                new("@name", developer.name),
+                new("@address", developer.address),
+                new("@city", developer.city),
+                new("@logoPath", developer.logoPath),
+                new("@siteLink", developer.siteLink),
+                new("@email", developer.email),
+                new("@profilePath", developer.profilePath),
+                new("@mobileNumber", developer.mobileNumber),
+                new("@registeredDeveloperCode", developer.registeredDeveloperCode),
+                new("@createdBy", developer.createdBy),
+                new("@createdDate", developer.createdDate),
+                new("@updatedBy", developer.updatedBy),
+                new("@updatedDate", developer.updatedDate),
+                new("@organisationTypeId", developer.organisationTypeId),
+                new("@experienceYear", developer.experienceYear),
+                new("@projectsInHand", developer.projectsInHand),
+                new("@numberOfRERARegisteredProjects", developer.numberOfRERARegisteredProjects),
+                new("@totalCompletedProjects", developer.totalCompletedProjects),
+                new("@totalConstructionAreaDevTillToday", developer.totalConstructionAreaDevTillToday),
+                new("@sizeOfTheLargestProjectHandled", developer.sizeOfTheLargestProjectHandled),
+                new("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings),
+                new("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears),
+                new("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation),
+                new("@awardsAndRecognition", developer.awardsAndRecognition),
+                new("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities),
+                new("@affilicationDevAssociationName", developer.affilicationDevAssociationName),
+                new("@lastThreeYearReturns", developer.lastThreeYearReturns == null ? DBNull.Value : developer.lastThreeYearReturns),
+                new("@financialSecurityToTheSociety", developer.financialSecurityToTheSociety == null ? DBNull.Value : developer.financialSecurityToTheSociety),
+                new("@developerId", developer.developerId)
+            };
 
             parameter[parameter.Count - 1].Direction = ParameterDirection.Output;
 

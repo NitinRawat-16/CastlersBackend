@@ -26,7 +26,7 @@ namespace castlers.Repository
                     parameters.Add(new("@contactNumber", partnerKYC.contactNumber));
                     parameters.Add(new("@panCard", partnerKYC.panCard));
                     parameters.Add(new("@aadharCard", partnerKYC.aadharCard));
-                    parameters.Add(new("@partnerFileUrl", partnerKYC.partnerFileUrl));
+                    parameters.Add(new("@partnerFileUrl", partnerKYC.partnerFileUrl == null ? DBNull.Value : partnerKYC.partnerFileUrl));
                     parameters.Add(new("@createdDate", partnerKYC.createdDate));
                     parameters.Add(new("@updatedDate", partnerKYC.updatedDate));
                     parameters.Add(new("@partnerKYCId", partnerKYC.partnerKYCId));
