@@ -47,15 +47,8 @@ namespace castlers.Controllers
             if (societyId < 0) return BadRequest("Society Id should not be null!");
             try
             {
-                var tenderId = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
-                if (tenderId > 0)
-                {
-                    return Ok(tenderId);
-                }
-                else
-                {
-                    return Ok(0);
-                }
+                var response = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
+                return Ok(response);
             }
             catch (Exception) { throw; }
         }

@@ -175,24 +175,27 @@ namespace castlers.Repository
             catch (Exception) { throw; }
         }
 
-        public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        public async Task<object> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
             int tenderId = 0;
+            string? message = string.Empty;
             try
             {
                 List<SqlParameter> para = new List<SqlParameter>();
                 para.Add(new("@SocietyId", societyId));
                 para.Add(new("@TenderId", tenderId));
+                para.Add(new("@Message", message));
                 para[1].Direction = System.Data.ParameterDirection.Output;
-                tenderId = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC GetSocietyActiveTenderIdBySocietyId @SocietyId, @TenderId OUT", para));
+                para[2].Direction = System.Data.ParameterDirection.Output;
+                tenderId = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC GetSocietyActiveTenderIdBySocietyId @SocietyId, @TenderId OUT, @Message OUT", para));
 
-                if (para[1].Value is DBNull)
-                    return 0;
-                else
+                tenderId = para[1].Value is DBNull ? 0 : Convert.ToInt32(para[1].Value);
+                message = para[2].Value is DBNull ? string.Empty : para[2].Value?.ToString();
+                return new
                 {
-                    tenderId = Convert.ToInt32(para[1].Value);
-                    return tenderId;
-                }
+                    tenderId,
+                    message
+                };
             }
             catch (Exception) { throw; }
         }

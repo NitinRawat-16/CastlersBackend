@@ -148,7 +148,7 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId)
+        public async Task<object> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
             try
             {

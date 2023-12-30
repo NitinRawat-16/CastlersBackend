@@ -140,28 +140,7 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
         }
-
-        public async Task<bool> SendVotingNotification()
-        {
-            try
-            {
-                int societyId = -1;
-                List<SocietyMemberDetailsDto> societyMembers = new();
-                societyMembers = await _societyMemberService.GetRegisteredSocietyMembersBySocietyIdAsync(societyId);
-
-                foreach (var member in societyMembers)
-                {
-                    VotingObj votingObj = new()
-                    {
-                        electionId = -1,
-                        memberId = member.societyMemberDetailsId
-                    };
-                }
-                return true;
-            }
-            catch (Exception) { throw; }
-        }
-
+      
         public async Task<List<VotingDevelopersDto>> VerifyVotingUrl(string code)
         {
             try

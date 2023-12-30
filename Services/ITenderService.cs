@@ -11,7 +11,7 @@ namespace castlers.Services
         public Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders();
         public Task<int> IsTenderExists(string tenderCode);
         public Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsByTenderId(int tenderId);
-        public Task<int> GetSocietyActiveTenderIdBySocietyId(int societyId);
+        public Task<object> GetSocietyActiveTenderIdBySocietyId(int societyId);
         public Task<bool> ChairmanResponseforSocietyTenderDetails(ChairmanTenderApprovalDto chairmanTenderApprovalDto);
         public Task<SocietyTenderDetailsDto?> VerifyGetTenderDetailURL(string code);
         public Task<int> UpdateTenderStatus(TenderStatusDto tenderStatusDto);
