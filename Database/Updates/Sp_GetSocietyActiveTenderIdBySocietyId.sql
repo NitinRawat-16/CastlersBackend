@@ -9,7 +9,7 @@ ALTER PROCEDURE [dbo].[GetSocietyActiveTenderIdBySocietyId]
 (
 	@SocietyId INT,
 	@TenderId INT OUT,
-	@Message NVARCHAR(500)
+	@Message NVARCHAR(500) OUT
 )
 AS 
 BEGIN

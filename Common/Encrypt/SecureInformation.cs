@@ -9,6 +9,7 @@ namespace castlers.Common.Encrypt
         public int societyId { get; set; }
         public int tenderId { get; set; }
         public bool interested { get; set; }
+        public int offerId { get; set; }
     }
 
     public class TenderNoticeObj

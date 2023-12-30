@@ -187,6 +187,7 @@ namespace castlers.Repository
                 para.Add(new("@Message", message));
                 para[1].Direction = System.Data.ParameterDirection.Output;
                 para[2].Direction = System.Data.ParameterDirection.Output;
+                para[2].Size = 500;
                 tenderId = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC GetSocietyActiveTenderIdBySocietyId @SocietyId, @TenderId OUT, @Message OUT", para));
 
                 tenderId = para[1].Value is DBNull ? 0 : Convert.ToInt32(para[1].Value);

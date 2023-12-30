@@ -1,4 +1,5 @@
-﻿using castlers.DbContexts;
+﻿using Azure.Storage.Blobs.Models;
+using castlers.DbContexts;
 using castlers.Dtos;
 using castlers.Models;
 using Microsoft.Data.SqlClient;
@@ -34,33 +35,35 @@ namespace castlers.Repository
             catch (Exception) { throw; }
         }
 
-        public async Task<bool> AddLetterOfInterestSendAsync(List<int> developerId, int societyId, int tenderId)
+        public async Task<int> AddLetterOfInterestSendAsync(int developerId, int societyId, int tenderId)
         {
             bool result = false;
             int offerId = 0;
-            int count = 0;
+            //int count = 0;
             try
             {
-                foreach (var id in developerId)
-                {
-                    List<SqlParameter> para = new List<SqlParameter>();
-                    para.Add(new("@DeveloperId", id));
-                    para.Add(new("@SocietyId", societyId));
-                    para.Add(new("@TenderId", tenderId));
-                    para.Add(new("@OfferId", offerId));
-                    para[3].Direction = System.Data.ParameterDirection.Output;
-                    await _dbContext.Database.ExecuteSqlRawAsync($"EXEC AddLetterOfInterestSendDetails @DeveloperId, @SocietyId, @TenderId, @OfferId OUT", para);
+                //foreach (var id in developerId)
+                //{
+                List<SqlParameter> para = new List<SqlParameter>();
+                para.Add(new("@DeveloperId", developerId));
+                para.Add(new("@SocietyId", societyId));
+                para.Add(new("@TenderId", tenderId));
+                para.Add(new("@OfferId", offerId));
+                para[3].Direction = System.Data.ParameterDirection.Output;
+                await _dbContext.Database.ExecuteSqlRawAsync($"EXEC AddLetterOfInterestSendDetails @DeveloperId, @SocietyId, @TenderId, @OfferId OUT", para);
 
-                    if (para[3].Value is not DBNull || Convert.ToInt32(para[3].Value) > 0)
-                        count++;
-                }
-                if (count == developerId.Count)
-                {
-                    return result = true;
-                }
+                if (para[3].Value is not DBNull || Convert.ToInt32(para[3].Value) > 0)
+                    return Convert.ToInt32(para[3].Value);
+
+                return 0;
+
+                //}
+                //if (count == developerId.Count)
+                //{
+                //    return result = true;
+                //}
             }
             catch (Exception) { throw; }
-            return result;
         }
         public async Task<List<PreTenderCompliancesDto>> GetSocietyPreTenderCompliances(int societyId)
         {
@@ -112,6 +115,27 @@ namespace castlers.Repository
                 else
                     return 0;
 
+            }
+            catch (Exception) { throw; }
+        }
+        public async Task<int> IsDeveloperSubmittedInterest(int offerId, int developerId)
+        {
+            try
+            {
+                int id = 0;
+                SqlParameter[] prmArray = new SqlParameter[]
+                {
+                    new("@OfferId", offerId),
+                    new("@DeveloperId", developerId),
+                    new("@Id", id)
+                };
+
+                prmArray[prmArray.Length - 1].Direction = System.Data.ParameterDirection.Output;
+
+                id = await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC IsDeveloperSubmittedInterest @OfferId, @DeveloperId, @Id OUT", prmArray);
+
+                return prmArray[prmArray.Length - 1].Value == DBNull.Value ? 0 :
+                    Convert.ToInt32(prmArray[prmArray.Length - 1].Value);
             }
             catch (Exception) { throw; }
         }

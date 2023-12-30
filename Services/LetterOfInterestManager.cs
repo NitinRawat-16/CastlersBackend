@@ -14,6 +14,7 @@ namespace castlers.Services
         #region Variables
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
+        private readonly ITenderService _tenderService;
         private readonly IConfiguration _configuration;
         private readonly IDeveloperService _developerService;
         private readonly ISecureInformation _secureInformation;
@@ -23,11 +24,12 @@ namespace castlers.Services
                                        IRegisteredSocietyService registeredSocietyService,
                                        ILetterOfInterestRepository letterOfInterestRepository,
                                        IDeveloperService developerService,
-                                       IMapper mapper, ISecureInformation secureInformation)
+                                       IMapper mapper, ISecureInformation secureInformation, ITenderService tenderService)
         {
             _mapper = mapper;
             _emailSender = emailSender;
             _configuration = configuration;
+            _tenderService = tenderService;
             _developerService = developerService;
             _secureInformation = secureInformation;
             _registeredSocietyService = registeredSocietyService;
@@ -38,12 +40,36 @@ namespace castlers.Services
         {
             try
             {
-                var sendIntimation = JsonSerializer.Deserialize<SendIntimationObj>(_secureInformation.Decrypt(queryParams));
+                var response = new MailResponseDto();
+                var sendIntimation = JsonSerializer.Deserialize<SendIntimationObj?>(_secureInformation.Decrypt(queryParams));
+
+                if (sendIntimation == null)
+                {
+                    response.SendMailCount = 0;
+                    response.Status = "failed";
+                    response.Message = "Invalid Request!";
+                    return response;
+                }
+
+                // Check Is developer already shows interested/not interested
+                bool alreadysubmitted = await IsDeveloperResponseReceived(sendIntimation.offerId, sendIntimation.developerId);
+
+                if (alreadysubmitted)
+                {
+                    response.SendMailCount = 0;
+                    response.Status = "failed";
+                    response.Message = "Already submitted response!";
+                    return response;
+                }
+
                 var developerDetails = await _developerService.GetDeveloperByIdAsync(sendIntimation.developerId);
 
                 if (developerCode != developerDetails.registeredDeveloperCode)
                 {
-                    throw new Exception("Invalid Developer Code!");
+                    response.SendMailCount = 0;
+                    response.Status = "failed";
+                    response.Message = "Invalid developer code!";
+                    return response;
                 }
 
                 var isSaved = await _letterOfInterestRepository.AddLetterOfInterestedReceivedAsync(sendIntimation.developerId, sendIntimation.tenderId, sendIntimation.interested);
@@ -53,7 +79,7 @@ namespace castlers.Services
                     Email = developerDetails.email,
                     EMailType = Common.Enums.EmailTypes.LetterOfInterestReceived
                 };
-                var response = new MailResponseDto();
+
                 if (isSaved)
                 {
                     response = await _emailSender.SendEmailAsync(sendTo);
@@ -74,54 +100,61 @@ namespace castlers.Services
         {
             try
             {
-                var LetterOfInterestAPI = _configuration.GetSection("Letter_Of_Interest_API").Value;
                 var developerEmailList = new List<SendTo>();
+                var LetterOfInterestAPI = _configuration.GetSection("Letter_Of_Interest_API").Value;
+
                 var societyId = sendLetterOfInterestDto[0].SocietyId > 0 ? sendLetterOfInterestDto[0].SocietyId : 0;
                 var tenderId = sendLetterOfInterestDto[0].TenderId > 0 ? sendLetterOfInterestDto[0].TenderId : 0;
+
+                // Check that initimation already send 
+                bool isInitimationSend = await IsInitimationSend(societyId, tenderId);
+                if (isInitimationSend)
+                {
+                    return new()
+                    {
+                        Status = "failed",
+                        SendMailCount = 0,
+                        Message = "Initimation already sent or Can't find active tender"
+                    };
+                }
+
                 var letterOfInterestDetails = await _registeredSocietyService.GetRegisteredSocietyWithTechnicalDetails(sendLetterOfInterestDto[0].SocietyId);
+
                 foreach (var developer in sendLetterOfInterestDto)
                 {
+                    int offerId = await _letterOfInterestRepository.AddLetterOfInterestSendAsync(developer.DeveloperId, societyId, tenderId);
 
                     var sendIntimationInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
                     {
-                        developerId = developer.DeveloperId,
-                        societyId = developer.SocietyId,
+                        interested = true,
+                        offerId = offerId,
                         tenderId = developer.TenderId,
-                        interested = true
+                        societyId = developer.SocietyId,
+                        developerId = developer.DeveloperId
                     }));
 
                     var sendIntimationNotInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
                     {
-                        developerId = developer.DeveloperId,
-                        societyId = developer.SocietyId,
+                        offerId = offerId,
+                        interested = false,
                         tenderId = developer.TenderId,
-                        interested = false
+                        societyId = developer.SocietyId,
+                        developerId = developer.DeveloperId
                     }));
 
                     developerEmailList.Add(new SendTo
                     {
                         Name = developer.Name,
                         Email = developer.Email,
-                        SocietyName = string.IsNullOrEmpty(developer.SocietyName) ? letterOfInterestDetails.societyName : "",
+                        SocietyName = letterOfInterestDetails.societyName,
                         EMailType = Common.Enums.EmailTypes.LetterOfInterest,
                         InterestedDevAPI = LetterOfInterestAPI + sendIntimationInterested + "&interested=true",
                         UninterestedDevAPI = LetterOfInterestAPI + sendIntimationNotInterested + "&interested=false",
                         SocietyLetterOfInterestDetails = letterOfInterestDetails
                     });
                 }
-                List<int> developerId = sendLetterOfInterestDto.Select(d => d.DeveloperId).ToList();
-                var haveSaved = await _letterOfInterestRepository.AddLetterOfInterestSendAsync(developerId, societyId, tenderId);
-                var response = new MailResponseDto();
-                if (haveSaved)
-                {
-                    response = await _emailSender.SendEmailAsync(developerEmailList);
-                }
-                else
-                {
-                    response.Status = "failed";
-                    response.SendMailCount = 0;
-                    response.Message = "Some error occurs while saving in database!";
-                }
+
+                var response = await _emailSender.SendEmailAsync(developerEmailList);
                 return response;
             }
             catch (Exception) { throw; }
@@ -191,6 +224,30 @@ namespace castlers.Services
             }
             catch (Exception) { throw; }
 
+        }
+
+        private async Task<bool> IsInitimationSend(int societyId, int tenderId)
+        {
+            try
+            {
+                dynamic initimation = await _tenderService.GetSocietyActiveTenderIdBySocietyId(societyId);
+                if (initimation.message == "Initimation already sent!" || initimation.tenderId <= 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception) { throw; }
+        }
+
+        private async Task<bool> IsDeveloperResponseReceived(int offerId, int developerId)
+        {
+            try
+            {
+                var id = await _letterOfInterestRepository.IsDeveloperSubmittedInterest(offerId, developerId);
+                return id > 0 ? true : false;
+            }
+            catch (Exception) { throw; }
         }
     }
 }
