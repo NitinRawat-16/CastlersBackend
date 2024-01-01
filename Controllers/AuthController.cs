@@ -1,7 +1,6 @@
 ﻿using castlers.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using castlers.Services.Authentication;
-using Microsoft.AspNetCore.Authorization;
 
 namespace castlers.Controllers
 {
@@ -41,6 +40,12 @@ namespace castlers.Controllers
                 return Ok(result);
             }
             catch (Exception) { throw; }
+        }
+
+        [HttpGet("APP_Initializer")]
+        public IActionResult APP_Initializer()
+        {
+            return Ok();
         }
     }
 }

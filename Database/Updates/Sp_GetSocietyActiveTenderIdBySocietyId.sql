@@ -23,13 +23,13 @@ BEGIN
 
 	IF EXISTS (SELECT 1 FROM Offer WHERE registeredSocietyId = @SocietyId AND tenderId = @TenderId)
 		BEGIN
-			SET @Message = 'Initimation already send';
+			SET @Message = 'Initimation already sent!';
 		END
 	ELSE 
 		BEGIN
 			IF (ISNULL(@TenderId, 0) <= 0)
 				BEGIN
-					SET @Message = 'Can not find active tender';
+					SET @Message = 'Can not find active tender!';
 				END;
 		END
 		

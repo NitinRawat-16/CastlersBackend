@@ -75,11 +75,12 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
+        ValidateIssuerSigningKey = true,
     };
 });
 
 builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 #endregion
 
 builder.Services.AddDbContext<ApplicationDbContext>();

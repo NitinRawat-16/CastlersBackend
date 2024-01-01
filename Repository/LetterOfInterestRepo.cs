@@ -1,7 +1,6 @@
-﻿using Azure.Storage.Blobs.Models;
-using castlers.DbContexts;
-using castlers.Dtos;
+﻿using castlers.Dtos;
 using castlers.Models;
+using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +13,18 @@ namespace castlers.Repository
         {
             _dbContext = dbContext;
         }
-        public async Task<bool> AddLetterOfInterestedReceivedAsync(int developerId, int offerId, bool interested)
+        public async Task<bool> AddLetterOfInterestedReceivedAsync(int developerId, int tenderId, bool interested)
         {
             int letterOfInterestId = 0;
             try
             {
                 List<SqlParameter> parameters = new List<SqlParameter>();
                 parameters.Add(new("@DeveloperId", developerId));
-                parameters.Add(new("@OfferId", offerId));
+                parameters.Add(new("@TenderId", tenderId));
                 parameters.Add(new("@Interested", interested));
                 parameters.Add(new("@LetterOfInterestId", letterOfInterestId));
                 parameters[3].Direction = System.Data.ParameterDirection.Output;
-                await _dbContext.Database.ExecuteSqlRawAsync($"AddLetterOfInterestReceivedDetails @DeveloperId, @OfferId, @Interested, @LetterOfInterestId OUT", parameters);
+                await _dbContext.Database.ExecuteSqlRawAsync($"AddLetterOfInterestReceivedDetails @DeveloperId, @TenderId, @Interested, @LetterOfInterestId OUT", parameters);
 
                 if (parameters[3].Value is DBNull || Convert.ToInt32(parameters[3].Value) < 0)
                     return false;
@@ -42,8 +41,6 @@ namespace castlers.Repository
             //int count = 0;
             try
             {
-                //foreach (var id in developerId)
-                //{
                 List<SqlParameter> para = new List<SqlParameter>();
                 para.Add(new("@DeveloperId", developerId));
                 para.Add(new("@SocietyId", societyId));
@@ -56,12 +53,6 @@ namespace castlers.Repository
                     return Convert.ToInt32(para[3].Value);
 
                 return 0;
-
-                //}
-                //if (count == developerId.Count)
-                //{
-                //    return result = true;
-                //}
             }
             catch (Exception) { throw; }
         }

@@ -158,7 +158,7 @@ namespace castlers.Repository.Authentication
         {
             int? userId = 0;
             int id = 0;
-            string userName = string.Empty;
+            string? userName = string.Empty;
             var userDetails = await _userRepo.GetUserAsyncByCode(userCode);
             if (userDetails != null)
             {
@@ -170,7 +170,6 @@ namespace castlers.Repository.Authentication
 
             try
             {
-
                 if (userRole == "Developer")
                 {
                     var developerDetails = await _developerRepo.GetDeveloperByCodeAsync(userCode);
@@ -203,8 +202,8 @@ namespace castlers.Repository.Authentication
                 ClaimsIdentity subject = new ClaimsIdentity(
                     new Claim[]
                     {
-                        new Claim("userId", userId == null ? string.Empty : userId.ToString()),
-                        new Claim("userName", userName), // Name of the user
+                        new Claim("userId", userId.ToString() ?? string.Empty),
+                        new Claim("userName", userName ?? string.Empty), // Name of the user
                         new Claim("userCode", userCode), // Code of the user
                         new Claim("userRole", userRole), // Role according to login time 
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -213,6 +212,8 @@ namespace castlers.Repository.Authentication
                 SecurityTokenDescriptor securityTokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = subject,
+                    Audience = _config.GetValue<string>("JwtConfig:Audience"),
+                    Issuer = _config.GetValue<string>("JwtConfig:Issuer"),
                     Expires = DateTime.Now.AddHours(_config.GetValue<int>("JwtConfig:Expiry_In")),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
@@ -240,12 +241,13 @@ namespace castlers.Repository.Authentication
             }
             catch (Exception) { throw; }
         }
-        protected async Task<Admin> GetAdminByCode(string adminCode)
+        protected async Task<Admin?> GetAdminByCode(string adminCode)
         {
             try
             {
                 SqlParameter prm = new SqlParameter("@AdminCode", adminCode);
-                var admin = await Task.Run(() => _dbContext.Admins.FromSqlRaw(@"EXEC uspGetAdminByCode @AdminCode", prm).AsEnumerable().FirstOrDefault());
+                var admin = await Task.Run(() => _dbContext.Admins.FromSqlRaw(@"EXEC uspGetAdminByCode @AdminCode", prm)
+                .AsEnumerable().FirstOrDefault());
                 if (admin != null)
                 {
                     return admin;

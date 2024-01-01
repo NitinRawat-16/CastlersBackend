@@ -2,6 +2,7 @@
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using castlers.Repository.Authentication;
 
 namespace castlers.Controllers
 {
@@ -15,6 +16,7 @@ namespace castlers.Controllers
             this._registeredSocietyService = registeredSocietyService;
         }
 
+        [AuthorizeAccess("Admin, Members")]
         [HttpGet("getRegisteredSocietylist")]
         public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyListAsync()
         {
@@ -76,8 +78,8 @@ namespace castlers.Controllers
             }
         }
 
-        [HttpPost("registerSociety")]
         [AllowAnonymous]
+        [HttpPost("registerSociety")]
         public async Task<IActionResult> AddSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
             if (registeredSocietyDto.societyName == null || registeredSocietyDto.societyName == "string")
@@ -93,8 +95,8 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
-        [HttpPost("UpdateTechnicalDetailsSocietyAsync")]
         [AllowAnonymous]
+        [HttpPost("UpdateTechnicalDetailsSocietyAsync")]
         public async Task<IActionResult> UpdateTechnicalDetailsSocietyAsync
             ([FromBody] UpdateTechnicalDetailsRegisteredSocietyDto updateTechnicalDetailsRegisteredSocietyDto)
         {
@@ -165,6 +167,7 @@ namespace castlers.Controllers
                 throw;
             }
         }
+        
         [HttpGet("GetRegisteredSocietyWithTechnicalDetails")]
         public async Task<IActionResult> GetRegisteredSocietyWithTechnicalDetails(int registeredSocietyId)
         {
