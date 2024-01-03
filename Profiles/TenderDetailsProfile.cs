@@ -12,6 +12,7 @@ namespace castlers.Profiles
             CreateMap<DeveloperTenderDetailsDto, DeveloperTenderDetails>();
             CreateMap<SocietyTenderDetails, SocietyTenderDetailsDto>();
             CreateMap<SocietyTenderDetailsDto,  SocietyTenderDetails>();
+            CreateMap<SocietyApprovedTendersDetails, SocietyApprovedTendersDetailsDto>();
         }
     }
 }

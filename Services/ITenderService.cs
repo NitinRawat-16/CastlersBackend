@@ -8,7 +8,7 @@ namespace castlers.Services
         public Task<string> AddSocietyTender(SocietyTenderDetailsDto tenderDetailsDto);
         public Task<string> AddDeveloperTender(DeveloperTenderDetailsDto tenderDetailsDto);
         public Task<List<SocietyTenderDetailsDto>> GetTenderDetailsByIdAsync(int regSocietyId);
-        public Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders();
+        public Task<List<SocietyApprovedTendersDetailsDto>> GetSocietyApprovedTenders();
         public Task<int> IsTenderExists(string tenderCode);
         public Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsByTenderId(int tenderId);
         public Task<object> GetSocietyActiveTenderIdBySocietyId(int societyId);
