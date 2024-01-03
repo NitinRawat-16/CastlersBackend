@@ -1,7 +1,8 @@
 ﻿using castlers.Dtos;
-using castlers.ResponseDtos;
 using castlers.Services;
+using castlers.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
+using castlers.Repository.Authentication;
 
 namespace castlers.Controllers
 {
@@ -14,6 +15,8 @@ namespace castlers.Controllers
         {
             _blogService = blogsService;
         }
+
+        [AuthorizeAccess("Admin")]
         [HttpPost("AddBlogs")]
         public async Task<IActionResult> AddBlogs([FromForm] BlogsDto blogsDto)
         {

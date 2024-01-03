@@ -215,5 +215,18 @@ namespace castlers.Controllers
             }
             catch (Exception)  {throw; }
         }
+
+        [HttpGet("GetSocietyListPublic")]
+        public async Task<IActionResult> GetSocietyListPublic()
+        {
+            try
+            {
+                return Ok(await _registeredSocietyService.GetSocietyListPublic());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace castlers.Profiles
     {
         public RegisteredSocietyProfile()
         {
+            CreateMap<RegisteredSociety, GenSocietyDto>();
             CreateMap<RegisteredSocietyDto, RegisteredSociety>();
             CreateMap<RegisteredSociety, RegisteredSocietyDto>();
             CreateMap<RegisteredSociety, UpdateTechnicalDetailsRegisteredSocietyDto>();

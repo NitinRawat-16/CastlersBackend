@@ -166,6 +166,18 @@ public class DeveloperManager : IDeveloperService
         catch (Exception) { throw; }
     }
 
+    public async Task<List<GenDeveloperDto>> GetDeveloperListPublic()
+    {
+        try
+        {
+            var developers = await _developerRepository.GetAllDeveloperAsync();
+            return _mapper.Map<List<GenDeveloperDto>>(developers);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
     protected async Task<string> UploadFile(string developerName, string fileType, IFormFile file)
     {
         try

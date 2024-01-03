@@ -78,7 +78,19 @@ namespace castlers.Controllers
                 return Ok(response);
             }
             catch (Exception) { throw; }
+        }
 
+        [HttpGet("GetDeveloperListPublic")]
+        public async Task<IActionResult> GetDeveloperListPublic()
+        {
+            try
+            {
+                return Ok(await _developerService.GetDeveloperListPublic());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

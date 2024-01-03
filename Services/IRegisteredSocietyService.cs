@@ -20,5 +20,6 @@ namespace castlers.Services
         public Task<GetInterestedDevelopersForTenderNoticeDto> GetSocietyLetterOfInterestReceived(int registeredSocietyId);
         public Task<RegisteredSocietyWithTechnicalDetails?> VerifyGetSocietyDetailsURL(string code);
         public Task<SocietyTenderDetailsDto?> GetTenderDetailsBySocietyId(int registeredSocietyId);
+        public Task<List<GenSocietyDto>> GetSocietyListPublic();
     }
 }

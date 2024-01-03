@@ -296,7 +296,18 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-       
+        public async Task<List<GenSocietyDto>> GetSocietyListPublic()
+        {
+            try
+            {
+                var registerdSocietyList = await _registeredSocietyRepository.GetAllRegisteredSocietyAsync();
+                return _mapper.Map<List<GenSocietyDto>>(registerdSocietyList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         #endregion
     }
