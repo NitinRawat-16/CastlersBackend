@@ -52,7 +52,7 @@ namespace castlers.Services
                 }
 
                 // Check Is developer already shows interested/not interested
-                bool alreadysubmitted = await IsDeveloperResponseReceived(sendIntimation.offerId, sendIntimation.developerId);
+                bool alreadysubmitted = await DeveloperResponseReceived(sendIntimation.offerId, sendIntimation.developerId);
 
                 if (alreadysubmitted)
                 {
@@ -107,7 +107,7 @@ namespace castlers.Services
                 var tenderId = sendLetterOfInterestDto[0].TenderId > 0 ? sendLetterOfInterestDto[0].TenderId : 0;
 
                 // Check that initimation already send 
-                bool isInitimationSend = await IsInitimationSend(societyId, tenderId);
+                bool isInitimationSend = await InitimationSend(societyId, tenderId);
                 if (isInitimationSend)
                 {
                     return new()
@@ -165,13 +165,20 @@ namespace castlers.Services
             try
             {
                 var sendTenderNoticeDetails = _mapper.Map<SendTenderNotice>(sendTenderNoticeDto);
+
+                bool isTenderPublished = await _tenderService.TenderPublished(sendTenderNoticeDetails.SocietyId ?? -1, sendTenderNoticeDetails.TenderCode!);
+
+                if (isTenderPublished)
+                {
+                    return 0;
+                }
+
                 var tenderNoticeId = await _letterOfInterestRepository.AddSendTenderNoticeDetails(sendTenderNoticeDetails);
 
                 // Send final tender Notice to the selected developers
                 if (sendTenderNoticeDetails.SocietyId == null || sendTenderNoticeDetails.SocietyId <= 0)
                     return 0;
-
-
+        
                 if (sendTenderNoticeDetails.SelectedDevelopersId?.Count > 0)
                 {
                     await SendNotice(tenderNoticeId, sendTenderNoticeDetails);
@@ -188,7 +195,7 @@ namespace castlers.Services
                 var filltenderAPI = _configuration.GetSection("Developer_Fill_Tender_API").Value;
                 var viewDocAPI = _configuration.GetSection("View_Society_Documents_API").Value;
 
-                foreach (int developerId in sendTender.SelectedDevelopersId)
+                foreach (int developerId in sendTender.SelectedDevelopersId!)
                 {
                     // Sending email to the developers 
                     var developerDetails = await _developerService.GetDeveloperByIdAsync(developerId);
@@ -226,7 +233,7 @@ namespace castlers.Services
 
         }
 
-        private async Task<bool> IsInitimationSend(int societyId, int tenderId)
+        private async Task<bool> InitimationSend(int societyId, int tenderId)
         {
             try
             {
@@ -237,17 +244,24 @@ namespace castlers.Services
                 }
                 return false;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        private async Task<bool> IsDeveloperResponseReceived(int offerId, int developerId)
+        private async Task<bool> DeveloperResponseReceived(int offerId, int developerId)
         {
             try
             {
                 var id = await _letterOfInterestRepository.IsDeveloperSubmittedInterest(offerId, developerId);
                 return id > 0 ? true : false;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+     
     }
 }

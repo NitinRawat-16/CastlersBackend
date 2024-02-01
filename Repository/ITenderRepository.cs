@@ -1,5 +1,4 @@
-﻿using castlers.Dtos;
-using castlers.Models;
+﻿using castlers.Models;
 
 namespace castlers.Repository
 {
@@ -19,5 +18,6 @@ namespace castlers.Repository
         public Task<DeveloperTenderDetails> GetDeveloperTenderAsync(int developerId);
         public Task<List<SendTenderNotice>> GetTenderPublicationsAsync();
         public Task<SocietyTenderDetails> GetTenderDetailsAsync(string tenderCode);
+        public Task<SendTenderNotice> TenderPublished(int societyId, string tenderCode);
     }
 }

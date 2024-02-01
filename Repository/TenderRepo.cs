@@ -56,7 +56,7 @@ namespace castlers.Repository
 
                 result = Convert.ToInt32(parameters[19].Value);
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
             return result.ToString();
         }
 
@@ -114,7 +114,7 @@ namespace castlers.Repository
 
                 result = Convert.ToInt32(parameters[19].Value);
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
             return result.ToString();
         }
 
@@ -129,7 +129,7 @@ namespace castlers.Repository
                     .AsEnumerable()
                     .ToList());
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
 
             return tenderDetails;
         }
@@ -145,7 +145,7 @@ namespace castlers.Repository
                     .AsEnumerable()
                     .ToList());
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
 
             return societyApprovedTenderList;
         }
@@ -160,7 +160,7 @@ namespace castlers.Repository
                     .Select(t => t.registeredSocietyId)
                     .FirstOrDefault()));
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
             return result;
         }
 
@@ -172,7 +172,7 @@ namespace castlers.Repository
                 var tenderDetails = await Task.Run(() => _dbContext.SocietyTenderDetails.FromSqlRaw(@"EXEC GetSocietyTenderDetailsByTenderId @TenderId", paras).AsEnumerable().FirstOrDefault());
                 return tenderDetails;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public async Task<object> GetSocietyActiveTenderIdBySocietyId(int societyId)
@@ -198,7 +198,7 @@ namespace castlers.Repository
                     message
                 };
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public async Task<bool> UpdatedTenderCodeforSocietyTenderId(int tenderId, string tenderCode, bool isApproved, string reason)
@@ -225,7 +225,7 @@ namespace castlers.Repository
                 }
                 return response;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public async Task<int> UpdateTenderStatus(int tenderId, int tenderStatus)
@@ -241,7 +241,7 @@ namespace castlers.Repository
                 return await _dbContext.Database.ExecuteSqlRawAsync(@"EXEC usp_UpdateTenderStatus @TenderId @TenderStatus", prmArray);
 
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public int IsDeveloperAlreadyFilledTender(int developerId, string tenderCode)
@@ -277,26 +277,34 @@ namespace castlers.Repository
 
                 return interesteddevelopers;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public async Task<DeveloperTenderDetails> GetDeveloperTenderAsync(int developerId)
         {
             try
             {
-                var tenderDetails = await _dbContext.DeveloperTenderDetails.FromSqlRaw(@"SELECT * FROM DeveloperTenderDetails WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId)).FirstOrDefaultAsync();
+                var tenderDetails = await _dbContext.DeveloperTenderDetails
+                    .FromSqlRaw(@"SELECT * FROM DeveloperTenderDetails WHERE developerId = @DeveloperId", new SqlParameter("@DeveloperId", developerId))
+                    .FirstOrDefaultAsync();
+
                 return tenderDetails ?? new();
             }
-            catch (Exception) { throw; }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<List<SendTenderNotice>> GetTenderPublicationsAsync()
         {
             try
             {
-                return await _dbContext.SendTenderNotices.FromSqlRaw(@"EXEC usp_GetTenderPublications").ToListAsync();
+                return await _dbContext.SendTenderNotices
+                    .FromSqlRaw(@"EXEC usp_GetTenderPublications") 
+                    .ToListAsync();
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
 
         public async Task<SocietyTenderDetails> GetTenderDetailsAsync(string tenderCode)
@@ -309,7 +317,22 @@ namespace castlers.Repository
 
                 return tender ?? new();
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { throw ex; }
         }
+
+        public async Task<SendTenderNotice> TenderPublished(int societyId, string tenderCode)
+        {
+            try
+            {
+                var tenderPublicationDetails = await _dbContext.SendTenderNotices
+                    .FromSqlRaw($"SELECT * FROM TenderNotice WHERE registeredSocietyId = {societyId} AND tenderCode = {tenderCode} AND isActive = 1")
+                    .FirstOrDefaultAsync();
+                return tenderPublicationDetails ?? new();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }      
     }
 }

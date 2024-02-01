@@ -19,7 +19,7 @@ namespace castlers.Repository.Authentication
                 if (context != null && context.HttpContext.User.Identity != null)
                 {
                     bool isAuthenticated = context.HttpContext.User.Identity.IsAuthenticated;
-                    if (isAuthenticated.Equals(false))
+                    if (!isAuthenticated)
                     {
                         context.Result = new UnauthorizedObjectResult(string.Empty);
                         return;

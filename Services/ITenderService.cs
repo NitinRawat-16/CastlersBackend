@@ -1,5 +1,6 @@
 ﻿using castlers.Dtos;
 using castlers.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace castlers.Services
 {
@@ -21,5 +22,6 @@ namespace castlers.Services
         public Task<DeveloperTenderDetailsDto> GetDeveloperTenderAsync(int developerId);
         public Task<List<SendTenderNoticeDto>> GetTenderPublicationsAsync();
         public Task<SocietyTenderDetailsDto> GetSocietyTenderDetailsAsync(string tenderCode);
+        public Task<bool> TenderPublished(int societyId, string tenderCode);
     }
 }

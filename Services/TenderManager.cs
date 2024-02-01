@@ -164,11 +164,11 @@ namespace castlers.Services
 
                 if (chairmanTenderApprovalDto.IsApproved)
                 {
-                    result = await UpdatedTenderCodeforSocietyTenderId(tenderApprovalRequest.tenderId, tenderApprovalRequest.societyId);
+                    result = await UpdatedTenderCodeforSocietyTenderId(tenderApprovalRequest!.tenderId, tenderApprovalRequest.societyId);
                 }
                 else
                 {
-                    await RejectTenderforSocietyTenderId(tenderApprovalRequest.tenderId, tenderApprovalRequest.societyId, chairmanTenderApprovalDto.Reason);
+                    await RejectTenderforSocietyTenderId(tenderApprovalRequest!.tenderId, tenderApprovalRequest.societyId, chairmanTenderApprovalDto.Reason);
                 }
 
                 return result;
@@ -222,7 +222,7 @@ namespace castlers.Services
             {
                 var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(code));
 
-                var isFilled = IsDeveloperAlreadyFilledTender((int)tenderNoticeObj.developerId, tenderNoticeObj.tenderCode);
+                var isFilled = IsDeveloperAlreadyFilledTender((int)tenderNoticeObj!.developerId, tenderNoticeObj.tenderCode!);
 
                 //if (isFilled)
                 //{
@@ -242,7 +242,7 @@ namespace castlers.Services
             {
                 var tenderNoticeObj = JsonSerializer.Deserialize<TenderNoticeObj>(_secureInformation.Decrypt(developerTenderVerifyDto.code));
 
-                if (tenderNoticeObj.tenderCode == null || tenderNoticeObj.tenderCode.Trim().Length <= 0)
+                if (tenderNoticeObj!.tenderCode == null || tenderNoticeObj.tenderCode.Trim().Length <= 0)
                 {
                     return 0;
                 }
@@ -339,7 +339,28 @@ namespace castlers.Services
             {
                return _mapper.Map<SocietyTenderDetailsDto>(await _tenderRepo.GetTenderDetailsAsync(tenderCode));
             }
-            catch (Exception) { throw; }
+            catch (Exception ex)
+            { 
+                throw ex;
+            }
+        }
+
+        public async Task<bool> TenderPublished(int societyId, string tenderCode)
+        {
+            try
+            {
+                var tenderPublication = await _tenderRepo.TenderPublished(societyId, tenderCode);
+
+                if(tenderPublication != null && tenderPublication.TenderNoticeId > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

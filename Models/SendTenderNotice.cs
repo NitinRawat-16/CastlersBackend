@@ -5,6 +5,7 @@ namespace castlers.Models
     [Keyless]
     public class SendTenderNotice
     {
+        public int TenderNoticeId { get; set; } = default;
         public int? SocietyId { get; set; }
         public string? SocietyName { get; set; }
         public string? TenderCode { get; set; }
