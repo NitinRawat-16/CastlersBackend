@@ -21,14 +21,13 @@ namespace castlers.Controllers
         [HttpGet("GetSocietyApprovedTenders")]
         public async Task<IActionResult> GetSocietyApprovedTenders()
         {
-            List<SocietyApprovedTendersDetails> societyTenderDetailsDto = new List<SocietyApprovedTendersDetails>();
             try
             {
-                societyTenderDetailsDto = await _tenderService.GetSocietyApprovedTenders();
+                var tenders = await _tenderService.GetSocietyApprovedTenders();
+                return Ok(tenders);
             }
             catch (Exception) { throw; }
 
-            return Ok(societyTenderDetailsDto);
         }
         [AuthorizeAccess("Admin")]
         [HttpGet("GetSocietyTenderDetailsByTenderId")]

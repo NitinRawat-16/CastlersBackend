@@ -6,8 +6,6 @@ using castlers.Repository;
 using castlers.Common.Email;
 using castlers.Common.Enums;
 using castlers.Common.Encrypt;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Services
 {
@@ -120,11 +118,11 @@ namespace castlers.Services
             catch (Exception) { throw; }
         }
 
-        public async Task<List<SocietyApprovedTendersDetails>> GetSocietyApprovedTenders()
+        public async Task<List<SocietyApprovedTendersDetailsDto>> GetSocietyApprovedTenders()
         {
             try
             {
-                return await _tenderRepo.GetSocietyApprovedTenders();
+                return _mapper.Map<List<SocietyApprovedTendersDetailsDto>>(await _tenderRepo.GetSocietyApprovedTenders());
             }
             catch (Exception) { throw; }
         }
