@@ -1,5 +1,6 @@
 ﻿using castlers.Dtos;
 using castlers.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -13,7 +14,7 @@ namespace castlers.Controllers
         {
             _votingService = votingService;
         }
-
+        [AllowAnonymous]
         [HttpPost("StartVoting")]
         public async Task<IActionResult> StartVoting()
         {
@@ -24,7 +25,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AllowAnonymous]
         [HttpPost("SubmitMembersVoting")]
         public async Task<IActionResult> SubmitMembersVoting([FromBody] SubmitVotingDto submitVoting)
         {
@@ -38,7 +39,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AllowAnonymous]
         [HttpPost("VerifyVotingUrl")]
         public async Task<IActionResult> VerifyVotingUrl([FromQuery] string code)
         {

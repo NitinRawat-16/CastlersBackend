@@ -1,7 +1,9 @@
 ﻿using castlers.Dtos;
 using castlers.Models;
+using castlers.Repository.Authentication;
 using castlers.ResponseDtos;
 using castlers.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
@@ -15,7 +17,7 @@ namespace castlers.Controllers
         {
             _tenderService = tenderService;
         }
-
+        [AllowAnonymous]
         [HttpGet("GetSocietyApprovedTenders")]
         public async Task<IActionResult> GetSocietyApprovedTenders()
         {
@@ -28,7 +30,7 @@ namespace castlers.Controllers
 
             return Ok(societyTenderDetailsDto);
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpGet("GetSocietyTenderDetailsByTenderId")]
         public async Task<IActionResult> GetSocietyTenderDetailsByTenderId(int tenderId)
         {
@@ -40,7 +42,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpGet("GetSocietyActiveTenderIdBySocietyId")]
         public async Task<IActionResult> GetSocietyActiveTenderIdBySocietyId(int societyId)
         {
@@ -52,7 +54,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpPost("IsTenderExists")]
         public async Task<IActionResult> IsTenderExists([FromBody] TenderCodeDto tenderCodeDto)
         {
@@ -69,7 +71,7 @@ namespace castlers.Controllers
             return Ok(result);
 
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpPost("AddTenderDetails")]
         public async Task<TenderResponseDto> AddSocietyTender([FromForm] SocietyTenderDetailsDto tenderDetailsDto)
         {
@@ -89,6 +91,7 @@ namespace castlers.Controllers
             return tenderResponseDto;
         }
 
+        [AllowAnonymous]
         [HttpPost("AddDeveloperTender")]
         public async Task<TenderResponseDto> AddDeveloperTender([FromForm] DeveloperTenderDetailsDto tenderDetailsDto)
         {
@@ -107,7 +110,7 @@ namespace castlers.Controllers
             tenderResponseDto.status = (result == null || result == "0") ? "failed" : "success";
             return tenderResponseDto;
         }
-
+        [AllowAnonymous]
         [HttpPost("ChairmanResponseForTenderDetails")]
         public async Task<IActionResult> ChairmanResponseForTenderDetails([FromBody] ChairmanTenderApprovalDto chairmanTenderApprovalDto)
         {
@@ -124,6 +127,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+        [AllowAnonymous]
         [HttpPost("VerifyGetTenderDetailURL")] // Verify chairman url for tender details
         public async Task<IActionResult> VerifyGetTenderDetailURL([FromQuery] string code)
         {
@@ -136,6 +140,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPost("UpdateTenderStatus")]
         public async Task<IActionResult> UpdateTenderStatus([FromBody] TenderStatusDto tenderStatusDto)
         {
@@ -148,6 +153,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+        [AllowAnonymous]
         [HttpPost("VerifyDeveloperTenderURL")]  //Verify developer url for tender details
         public IActionResult VerifyDeveloperTenderURL([FromQuery] string code)
         {
@@ -159,7 +165,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AllowAnonymous]
         [HttpPost("VerifyDeveloperTenderCodeWithURL")]
         public async Task<IActionResult> VerifyDeveloperTenderCodeWithURL([FromBody] DeveloperTenderVerifyDto developerTenderVerifyDto)
         {

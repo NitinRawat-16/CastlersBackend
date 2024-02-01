@@ -1,9 +1,12 @@
 ﻿using castlers.Dtos;
+using castlers.Repository.Authentication;
 using castlers.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace castlers.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class DeveloperController : ControllerBase
@@ -15,6 +18,7 @@ namespace castlers.Controllers
             this._developerService = _developerService;
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpGet("getDeveloperlist")]
         public async Task<List<DeveloperDto>> GetDeveloperAsync()
         {
@@ -25,6 +29,7 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpGet("getDeveloper")]
         public async Task<DeveloperDto> GetDeveloperAsync(int developerId)
         {
@@ -35,6 +40,7 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
+ 
         [HttpPost("addDeveloper")]
         public async Task<IActionResult> AddDeveloperAsync([FromForm] DeveloperDto developerDto)
         {
@@ -52,6 +58,7 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPut("UpdateDeveloper")]
         public async Task<IActionResult> UpdateDeveloperAsync(DeveloperDto developerDto)
         {
@@ -68,6 +75,7 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPost("UpdateDeveloperReviewRating")]
         public async Task<IActionResult> UpdateDeveloperReviewRating(UpdateDeveloperReviewRatingDto updateDeveloperReviewRatingDto)
         {
@@ -80,6 +88,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+        [AllowAnonymous]
         [HttpGet("GetDeveloperListPublic")]
         public async Task<IActionResult> GetDeveloperListPublic()
         {

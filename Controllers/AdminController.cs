@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Repository.Authentication;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,8 @@ namespace castlers.Controllers
         {
             _adminService = adminService;
         }
+
+        [AuthorizeAccess("Admin")]
         [HttpPost("AdminRegistration")]
         public async Task<IActionResult> AddAdmin([FromBody] AdminDto adminDto)
         {

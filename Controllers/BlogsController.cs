@@ -41,6 +41,7 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+
         [HttpGet("GetBlogById")]
         public async Task<IActionResult> GetBlogById([FromQuery] int blogId)
         {

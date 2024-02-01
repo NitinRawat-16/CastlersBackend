@@ -16,7 +16,7 @@ namespace castlers.Controllers
             this._registeredSocietyService = registeredSocietyService;
         }
 
-        [AuthorizeAccess("Admin, Members")]
+        [AuthorizeAccess("Admin")]
         [HttpGet("getRegisteredSocietylist")]
         public async Task<List<RegisteredSocietyDto>> GetRegisteredSocietyListAsync()
         {
@@ -30,6 +30,7 @@ namespace castlers.Controllers
             }
         }
 
+        [AuthorizeAccess("Admin,Member")]
         [HttpGet("getRegisteredSocietyById")]
         public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyAsync(int registeredSocietyId)
         {
@@ -48,6 +49,7 @@ namespace castlers.Controllers
             }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpGet("getSocietyMemberDesignationList")]
         public async Task<List<SocietyMemberDesignationDto>> GetSocietyMemberDesignationsAsync()
         {
@@ -61,6 +63,7 @@ namespace castlers.Controllers
             }
         }
 
+        [AuthorizeAccess("Admin,Member")]
         [HttpGet("getRegisteredSocietyInfo/{registeredSocietyCode}")]
         public async Task<ActionResult<RegisteredSocietyDto>> GetRegisteredSocietyInfoAsync(string registeredSocietyCode)
         {
@@ -78,7 +81,7 @@ namespace castlers.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [AuthorizeAccess("Admin")]
         [HttpPost("registerSociety")]
         public async Task<IActionResult> AddSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
@@ -95,7 +98,7 @@ namespace castlers.Controllers
             catch { throw; }
         }
 
-        [AllowAnonymous]
+        [AuthorizeAccess("Admin")]
         [HttpPost("UpdateTechnicalDetailsSocietyAsync")]
         public async Task<IActionResult> UpdateTechnicalDetailsSocietyAsync
             ([FromBody] UpdateTechnicalDetailsRegisteredSocietyDto updateTechnicalDetailsRegisteredSocietyDto)
@@ -115,6 +118,7 @@ namespace castlers.Controllers
             }
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPut("UpdateRegisteredSociety")]
         public async Task<IActionResult> UpdateRegisteredSocietyAsync([FromBody] RegisteredSocietyDto registeredSocietyDto)
         {
@@ -135,6 +139,8 @@ namespace castlers.Controllers
         }
 
         // After login this method will called.
+
+        //[AuthorizeAccess("Admin,Member")]
         [HttpGet("GetRegSocietyInfoViewById/{registeredSocietyId}")]
         public async Task<ActionResult<SocietyInfoViewDto>> GetRegisteredSocietyInfoViewAsync(int registeredSocietyId)
         {
@@ -153,6 +159,8 @@ namespace castlers.Controllers
 
         }
 
+
+        [AuthorizeAccess("Admin")]
         [HttpGet("GetRegisterdSocietyTechnicalDetailsById/{registeredSocietyId}")]
         public async Task<IActionResult> GetRegisteredSocietyTechnicalDetails(int registeredSocietyId)
         {
@@ -167,7 +175,8 @@ namespace castlers.Controllers
                 throw;
             }
         }
-        
+
+        [AuthorizeAccess("Admin")]
         [HttpGet("GetRegisteredSocietyWithTechnicalDetails")]
         public async Task<IActionResult> GetRegisteredSocietyWithTechnicalDetails(int registeredSocietyId)
         {
@@ -180,6 +189,8 @@ namespace castlers.Controllers
             catch (Exception) { throw; }
         }
 
+
+        [AuthorizeAccess("Admin,Member")]
         [HttpGet("GetSocietyLetterOfInterestReceived")]
         public async Task<IActionResult> GetSocietyLetterOfInterestReceived(int registeredSocietyId)
         {
@@ -191,7 +202,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AllowAnonymous]
         [HttpPost("VerifyGetSocietyDetailURL")]
         public async Task<IActionResult> VerifyGetSocietyDetailURL([FromQuery] string code)
         {
@@ -203,7 +214,7 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
-
+        [AllowAnonymous]
         [HttpGet("GetTenderDetailsBySocietyId")]
         public async Task<IActionResult> GetTenderDetailsBySocietyId(int registeredSocietyId)
         {

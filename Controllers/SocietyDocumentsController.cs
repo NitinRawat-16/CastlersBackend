@@ -2,6 +2,8 @@
 using castlers.Services;
 using castlers.ResponseDtos;
 using Microsoft.AspNetCore.Mvc;
+using castlers.Repository.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace castlers.Controllers
 {
@@ -15,6 +17,7 @@ namespace castlers.Controllers
             _societyDocumentsService = societyDocumentsService;
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPost("SocietyDocumentUpload")]
         public async Task<SaveDocResponseDto> SocietyDocumentUpload([FromForm] SocietyDocumentDto documentDto)
         {
@@ -37,8 +40,10 @@ namespace castlers.Controllers
             {
                 throw;
             }
+
         }
 
+        [AllowAnonymous]
         [HttpPost("GetSocietyDocumentList")]
         public async Task<IActionResult> GetSocietyDocumentList([FromQuery] string code)
         {

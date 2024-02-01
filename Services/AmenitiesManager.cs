@@ -42,7 +42,10 @@ namespace castlers.Services
                 int amenitiesId = await _amenitiesRepo.AddDeveloperAmenities(_mapper.Map<DeveloperAmenities>(developerAmenitiesDto));
                 return amenitiesId;
             }
-            catch (Exception) { throw; }
+            catch (Exception ex) { 
+                throw ex;
+                ;
+            }
         }
 
         public async Task<int> AddDeveloperAmenitiesDetails(DeveloperAmenitiesDetailsDto developerAmenitiesDetailsDto)

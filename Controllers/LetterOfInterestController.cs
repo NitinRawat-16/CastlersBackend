@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Repository.Authentication;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace castlers.Controllers
             _letterOfInterestService = letterOfInterestService;
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpPost("SendLetterOfInterest")]
         public async Task<IActionResult> SendLetterOfInterest([FromBody] List<DevDetailsForLetterOfInterest> sendLetterOfInterestDto)
         {
@@ -40,6 +42,8 @@ namespace castlers.Controllers
             }
             catch (Exception) { throw; }
         }
+
+        [AuthorizeAccess("Admin")]
         [HttpPost("SendTenderNotice")]
         public async Task<IActionResult> SendTenderNotice([FromBody] SendTenderNoticeDto sendTenderNoticeDto)
         {
