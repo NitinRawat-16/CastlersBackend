@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using castlers.Common.Email;
 using castlers.Dtos;
 using castlers.Models;
 using castlers.Repository;
+using castlers.Common.Email;
 using System.Security.Cryptography;
 
 namespace castlers.Services

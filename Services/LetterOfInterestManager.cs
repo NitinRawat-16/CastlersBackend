@@ -124,34 +124,37 @@ namespace castlers.Services
                 {
                     int offerId = await _letterOfInterestRepository.AddLetterOfInterestSendAsync(developer.DeveloperId, societyId, tenderId);
 
-                    var sendIntimationInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
-                    {
-                        interested = true,
-                        offerId = offerId,
-                        tenderId = developer.TenderId,
-                        societyId = developer.SocietyId,
-                        developerId = developer.DeveloperId
-                    }));
+                    var sendIntimationInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(
+                        new SendIntimationObj
+                        {
+                            interested = true,
+                            offerId = offerId,
+                            tenderId = developer.TenderId,
+                            societyId = developer.SocietyId,
+                            developerId = developer.DeveloperId
+                        }));
 
-                    var sendIntimationNotInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(new SendIntimationObj
-                    {
-                        offerId = offerId,
-                        interested = false,
-                        tenderId = developer.TenderId,
-                        societyId = developer.SocietyId,
-                        developerId = developer.DeveloperId
-                    }));
+                    var sendIntimationNotInterested = _secureInformation.Encrypt(JsonSerializer.Serialize(
+                        new SendIntimationObj
+                        {
+                            offerId = offerId,
+                            interested = false,
+                            tenderId = developer.TenderId,
+                            societyId = developer.SocietyId,
+                            developerId = developer.DeveloperId
+                        }));
 
-                    developerEmailList.Add(new SendTo
-                    {
-                        Name = developer.Name,
-                        Email = developer.Email,
-                        SocietyName = letterOfInterestDetails.societyName,
-                        EMailType = Common.Enums.EmailTypes.LetterOfInterest,
-                        InterestedDevAPI = LetterOfInterestAPI + sendIntimationInterested + "&interested=true",
-                        UninterestedDevAPI = LetterOfInterestAPI + sendIntimationNotInterested + "&interested=false",
-                        SocietyLetterOfInterestDetails = letterOfInterestDetails
-                    });
+                    developerEmailList.Add(
+                        new SendTo
+                        {
+                            Name = developer.Name,
+                            Email = developer.Email,
+                            SocietyName = letterOfInterestDetails.societyName,
+                            EMailType = Common.Enums.EmailTypes.LetterOfInterest,
+                            InterestedDevAPI = LetterOfInterestAPI + sendIntimationInterested + "&interested=true",
+                            UninterestedDevAPI = LetterOfInterestAPI + sendIntimationNotInterested + "&interested=false",
+                            SocietyLetterOfInterestDetails = letterOfInterestDetails
+                        });
                 }
 
                 var response = await _emailSender.SendEmailAsync(developerEmailList);
@@ -178,7 +181,7 @@ namespace castlers.Services
                 // Send final tender Notice to the selected developers
                 if (sendTenderNoticeDetails.SocietyId == null || sendTenderNoticeDetails.SocietyId <= 0)
                     return 0;
-        
+
                 if (sendTenderNoticeDetails.SelectedDevelopersId?.Count > 0)
                 {
                     await SendNotice(tenderNoticeId, sendTenderNoticeDetails);
@@ -262,6 +265,6 @@ namespace castlers.Services
                 throw ex;
             }
         }
-     
+
     }
 }

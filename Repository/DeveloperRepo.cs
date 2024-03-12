@@ -5,6 +5,7 @@ using castlers.ResponseDtos;
 using Microsoft.Data.SqlClient;
 using castlers.Common.AzureStorage;
 using Microsoft.EntityFrameworkCore;
+using castlers.Common.Utilities;
 
 namespace castlers.Repository
 {
@@ -22,38 +23,38 @@ namespace castlers.Repository
         {
             var parameter = new List<SqlParameter>
             {
-                new("@name", developer.name),
-                new("@address", developer.address),
-                new("@city", developer.city),
-                new("@logoPath", developer.logoPath),
-                new("@siteLink", developer.siteLink),
-                new("@email", developer.email),
-                new("@profilePath", developer.profilePath),
-                new("@mobileNumber", developer.mobileNumber),
-                new("@registeredDeveloperCode", developer.registeredDeveloperCode),
-                new("@createdBy", developer.createdBy),
-                new("@createdDate", developer.createdDate),
-                new("@updatedBy", developer.updatedBy),
-                new("@updatedDate", developer.updatedDate),
-                new("@organisationTypeId", developer.organisationTypeId),
-                new("@experienceYear", developer.experienceYear),
-                new("@projectsInHand", developer.projectsInHand),
-                new("@numberOfRERARegisteredProjects", developer.numberOfRERARegisteredProjects),
-                new("@totalCompletedProjects", developer.totalCompletedProjects),
-                new("@totalConstructionAreaDevTillToday", developer.totalConstructionAreaDevTillToday),
-                new("@sizeOfTheLargestProjectHandled", developer.sizeOfTheLargestProjectHandled),
-                new("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings),
-                new("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears),
-                new("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation),
-                new("@awardsAndRecognition", developer.awardsAndRecognition),
-                new("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities),
-                new("@affilicationDevAssociationName", developer.affilicationDevAssociationName),
-                new("@lastThreeYearReturns", developer.lastThreeYearReturns == null ? DBNull.Value : developer.lastThreeYearReturns),
-                new("@financialSecurityToTheSociety", developer.financialSecurityToTheSociety == null ? DBNull.Value : developer.financialSecurityToTheSociety),
-                new("@developerId", developer.developerId)
+                SqlHelper.AddNullableParameter("@name", developer.name),
+                SqlHelper.AddNullableParameter("@address", developer.address),
+                SqlHelper.AddNullableParameter("@city", developer.city),
+                SqlHelper.AddNullableParameter("@logoPath", developer.logoPath),
+                SqlHelper.AddNullableParameter("@siteLink", developer.siteLink),
+                SqlHelper.AddNullableParameter("@email", developer.email),
+                SqlHelper.AddNullableParameter("@profilePath", developer.profilePath),
+                SqlHelper.AddNullableParameter("@mobileNumber", developer.mobileNumber),
+                SqlHelper.AddNullableParameter("@registeredDeveloperCode", developer.registeredDeveloperCode),
+                SqlHelper.AddNullableParameter("@createdBy", developer.createdBy),
+                SqlHelper.AddNullableParameter("@createdDate", developer.createdDate),
+                SqlHelper.AddNullableParameter("@updatedBy", developer.updatedBy),
+                SqlHelper.AddNullableParameter("@updatedDate", developer.updatedDate),
+                SqlHelper.AddNullableParameter("@organisationTypeId", developer.organisationTypeId),
+                SqlHelper.AddNullableParameter("@experienceYear", developer.experienceYear),
+                SqlHelper.AddNullableParameter("@projectsInHand", developer.projectsInHand),
+                SqlHelper.AddNullableParameter("@numberOfRERARegisteredProjects", developer.numberOfRERARegisteredProjects),
+                SqlHelper.AddNullableParameter("@totalCompletedProjects", developer.totalCompletedProjects),
+                SqlHelper.AddNullableParameter("@totalConstructionAreaDevTillToday", developer.totalConstructionAreaDevTillToday),
+                SqlHelper.AddNullableParameter("@sizeOfTheLargestProjectHandled", developer.sizeOfTheLargestProjectHandled),
+                SqlHelper.AddNullableParameter("@experienceInHighRiseBuildings", developer.experienceInHighRiseBuildings),
+                SqlHelper.AddNullableParameter("@avgTurnOverforLastThreeYears", developer.avgTurnOverforLastThreeYears),
+                SqlHelper.AddNullableParameter("@affilicationToAnyDevAssociation", developer.affilicationToAnyDevAssociation),
+                SqlHelper.AddNullableParameter("@awardsAndRecognition", developer.awardsAndRecognition),
+                SqlHelper.AddNullableParameter("@haveBusinessInMultipleCities", developer.haveBusinessInMultipleCities),
+                SqlHelper.AddNullableParameter("@affilicationDevAssociationName", developer.affilicationDevAssociationName),
+                SqlHelper.AddNullableParameter("@lastThreeYearReturns", developer.lastThreeYearReturns),
+                SqlHelper.AddNullableParameter("@financialSecurityToTheSociety", developer.financialSecurityToTheSociety),
+                SqlHelper.AddOutputParameter("@developerId")
             };
 
-            parameter[parameter.Count - 1].Direction = ParameterDirection.Output;
+            //parameter[parameter.Count - 1].Direction = ParameterDirection.Output;
 
             try
             {
@@ -75,16 +76,16 @@ namespace castlers.Repository
             int id = 0;
             SqlParameter[] prmArray = new SqlParameter[]
             {
-                    new SqlParameter("@ProjectName", developerPastProjects.projectName),
-                    new SqlParameter("@ProjectLocation", developerPastProjects.projectLocation),
-                    new SqlParameter("@ReraRegistrationNumber", developerPastProjects.reraRegistrationNumber),
-                    new SqlParameter("@ReraCertificateUrl", developerPastProjects.reraCertificateUrl),
-                    new SqlParameter("@ProjectStartDate", developerPastProjects.projectStartDate),
-                    new SqlParameter("@ProjectEndDate", developerPastProjects.projectEndDate),
-                    new SqlParameter("@DeveloperId", developerPastProjects.developerId),
-                    new SqlParameter("@Id", id)
+                    SqlHelper.AddNullableParameter("@ProjectName", developerPastProjects.projectName),
+                    SqlHelper.AddNullableParameter("@ProjectLocation", developerPastProjects.projectLocation),
+                    SqlHelper.AddNullableParameter("@ReraRegistrationNumber", developerPastProjects.reraRegistrationNumber),
+                    SqlHelper.AddNullableParameter("@ReraCertificateUrl", developerPastProjects.reraCertificateUrl),
+                    SqlHelper.AddNullableParameter("@ProjectStartDate", developerPastProjects.projectStartDate),
+                    SqlHelper.AddNullableParameter("@ProjectEndDate", developerPastProjects.projectEndDate),
+                    SqlHelper.AddNullableParameter("@DeveloperId", developerPastProjects.developerId),
+                    SqlHelper.AddOutputParameter("@Id")
             };
-            prmArray[prmArray.Length - 1].Direction = ParameterDirection.Output;
+          //  prmArray[prmArray.Length - 1].Direction = ParameterDirection.Output;
 
             try
             {
@@ -138,23 +139,24 @@ namespace castlers.Repository
 
         public async Task<int> UpdateDeveloperAsync(Developer developer)
         {
-            var parameter = new List<SqlParameter>();
-            parameter.Add(new SqlParameter("@developerId", developer.developerId));
-            parameter.Add(new SqlParameter("@name", developer.name));
-            parameter.Add(new SqlParameter("@address", developer.address));
-            parameter.Add(new SqlParameter("@logoPath", developer.logoPath));
-            parameter.Add(new SqlParameter("@siteLink", developer.siteLink));
-            parameter.Add(new SqlParameter("@email", developer.email));
-            parameter.Add(new SqlParameter("@profilePath", developer.profilePath));
-            parameter.Add(new SqlParameter("@mobileNumber", developer.mobileNumber));
-            parameter.Add(new SqlParameter("@registeredDeveloperCode", developer.siteLink));
-            parameter.Add(new SqlParameter("@createdBy", developer.createdBy));
-            parameter.Add(new SqlParameter("@createdDate", developer.createdDate));
-            parameter.Add(new SqlParameter("@updatedBy", developer.updatedBy));
-            parameter.Add(new SqlParameter("@updatedDate", developer.updatedDate));
+            var parameter = new List<SqlParameter>
+            {
+                SqlHelper.AddNullableParameter("@developerId", developer.developerId),
+                SqlHelper.AddNullableParameter("@name", developer.name),
+                SqlHelper.AddNullableParameter("@address", developer.address),
+                SqlHelper.AddNullableParameter("@logoPath", developer.logoPath),
+                SqlHelper.AddNullableParameter("@siteLink", developer.siteLink),
+                SqlHelper.AddNullableParameter("@email", developer.email),
+                SqlHelper.AddNullableParameter("@profilePath", developer.profilePath),
+                SqlHelper.AddNullableParameter("@mobileNumber", developer.mobileNumber),
+                SqlHelper.AddNullableParameter("@registeredDeveloperCode", developer.siteLink),
+                SqlHelper.AddNullableParameter("@createdBy", developer.createdBy),
+                SqlHelper.AddNullableParameter("@createdDate", developer.createdDate),
+                SqlHelper.AddNullableParameter("@updatedBy", developer.updatedBy),
+                SqlHelper.AddNullableParameter("@updatedDate", developer.updatedDate)
+            };
 
-            var result = await Task.Run(() => _dbContext.Database
-           .ExecuteSqlRawAsync(@"exec UpdateDeveloper @developerId,@name,@address,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,@registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+            var result = await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"exec UpdateDeveloper @developerId,@name,@address,@logoPath,@siteLink,@email,@profilePath,@mobileNumber,@registeredDeveloperCode,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
 
             return result;
         }

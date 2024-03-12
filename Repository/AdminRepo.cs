@@ -1,5 +1,5 @@
-﻿using castlers.DbContexts;
-using castlers.Models;
+﻿using castlers.Models;
+using castlers.DbContexts;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +34,6 @@ namespace castlers.Repository
                 return Convert.ToInt32(prmArray[prmArray.Length - 1].Value);
             }
             catch (Exception) { throw; }
-        }
+        }        
     }
 }

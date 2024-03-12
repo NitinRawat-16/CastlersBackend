@@ -1,7 +1,7 @@
 ﻿using castlers.Dtos;
-using castlers.Repository.Authentication;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
+using castlers.Repository.Authentication;
 
 namespace castlers.Controllers
 {

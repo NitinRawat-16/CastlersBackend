@@ -1,8 +1,8 @@
 ﻿using castlers.Dtos;
-using castlers.Repository.Authentication;
 using castlers.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using castlers.Repository.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace castlers.Controllers
 {
@@ -72,7 +72,10 @@ namespace castlers.Controllers
                 var result = await _developerService.UpdateDeveloperAsync(developerDto);
                 return Ok(result);
             }
-            catch { throw; }
+            catch(Exception ex)
+            { 
+                throw ex;
+            }
         }
 
         [AuthorizeAccess("Admin")]
@@ -85,7 +88,10 @@ namespace castlers.Controllers
                 var response = await _developerService.UpdateDeveloperReviewRating(updateDeveloperReviewRatingDto);
                 return Ok(response);
             }
-            catch (Exception) { throw; }
+            catch (Exception ex)
+            { 
+                throw ex;
+            }
         }
 
         [AllowAnonymous]

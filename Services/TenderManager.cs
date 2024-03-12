@@ -275,9 +275,9 @@ namespace castlers.Services
 
             var sendTo = new SendTo
             {
-                Email = societyChairman.email,
+                Email = societyChairman!.email,
                 SocietyName = societyDetails.societyName,
-                EMailType = Common.Enums.EmailTypes.ChairmanApproveTender,
+                EMailType = EmailTypes.ChairmanApproveTender,
                 Message = approvalApi + chairmanRespondLink
             };
             await _emailSender.SendEmailAsync(sendTo);

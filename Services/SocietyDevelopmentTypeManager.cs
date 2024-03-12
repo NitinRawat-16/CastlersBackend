@@ -1,20 +1,16 @@
 ﻿using AutoMapper;
-using castlers.DbContexts;
 using castlers.Dtos;
-using castlers.Models;
 using castlers.Repository;
 
 namespace castlers.Services
 {
     public class SocietyDevelopmentTypeManager : ISocietyDevelopmentTypeService
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ISocietyDevelopmentTypeRepository _societyDevelopmentTypeRepository;
         private readonly IMapper _mapper;
+        private readonly ISocietyDevelopmentTypeRepository _societyDevelopmentTypeRepository;
 
-        public SocietyDevelopmentTypeManager(ApplicationDbContext dbContext, ISocietyDevelopmentTypeRepository societyDevelopmentTypeRepository, IMapper mapper)
+        public SocietyDevelopmentTypeManager(ISocietyDevelopmentTypeRepository societyDevelopmentTypeRepository, IMapper mapper)
         {
-            _dbContext = dbContext;
             _societyDevelopmentTypeRepository = societyDevelopmentTypeRepository;
             _mapper = mapper;
         }
