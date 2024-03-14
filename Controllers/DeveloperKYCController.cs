@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Repository.Authentication;
 using castlers.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace castlers.Controllers
             this._developerKYCService = _developerKYCService;
         }
 
+        [AuthorizeAccess("Admin,Member")]
         [HttpGet("getDeveloperKYClist")]
         public async Task<List<DeveloperKYCDto>> GetDeveloperKYCAsync()
         {
@@ -29,6 +31,7 @@ namespace castlers.Controllers
             }
         }
 
+        [AuthorizeAccess("Admin,Member")]
         [HttpGet("getDeveloperKYC")]
         public async Task<DeveloperKYCDto> GetDeveloperKYCAsync(int developerKYCId)
         {
@@ -41,6 +44,7 @@ namespace castlers.Controllers
                 throw;
             }
         }
+
 
         [HttpPost("addDeveloperKYC")]
         public async Task<IActionResult> AddDeveloperKYCAsync(DeveloperKYCDto developerKYCDto)

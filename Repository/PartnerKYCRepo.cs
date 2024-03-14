@@ -17,27 +17,55 @@ namespace castlers.Repository
         {
             foreach (PartnerKYC partnerKYC in partnerKYCs)
             {
-                try {
-                    var parameter = new List<SqlParameter>();
-
-                    parameter.Add(new SqlParameter("@designationTypeId", partnerKYC.designationTypeId));
-                    parameter.Add(new SqlParameter("@developerId", partnerKYC.developerId));
-                    parameter.Add(new SqlParameter("@email", partnerKYC.email));
-                    parameter.Add(new SqlParameter("@contactNumber", partnerKYC.contactNumber));
-                    parameter.Add(new SqlParameter("@panCard", partnerKYC.panCard));
-                    parameter.Add(new SqlParameter("@adharCard", partnerKYC.adharCard));
-                    parameter.Add(new SqlParameter("@createdBy", partnerKYC.createdBy));
-                    parameter.Add(new SqlParameter("@createdDate", partnerKYC.createdDate));
-                    parameter.Add(new SqlParameter("@updatedBy", partnerKYC.updatedBy));
-                    parameter.Add(new SqlParameter("@updatedDate", partnerKYC.updatedDate));
-
-                    await Task.Run(() => _dbContext.Database
-                   .ExecuteSqlRawAsync(@"exec AddPartnerKYC @designationTypeId,@developerId,@email,@contactNumber,@panCard,adharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
-                }
-                catch
+                try
                 {
-                    return 0;
-                }               
+                    List<SqlParameter> parameters = new List<SqlParameter>();
+                    parameters.Add(new("@designationTypeId", partnerKYC.designationTypeId));
+                    parameters.Add(new("@developerId", partnerKYC.developerId));
+                    parameters.Add(new("@email", partnerKYC.email));
+                    parameters.Add(new("@contactNumber", partnerKYC.contactNumber));
+                    parameters.Add(new("@panCard", partnerKYC.panCard));
+                    parameters.Add(new("@aadharCard", partnerKYC.aadharCard));
+                    parameters.Add(new("@partnerFileUrl", partnerKYC.partnerFileUrl == null ? DBNull.Value : partnerKYC.partnerFileUrl));
+                    parameters.Add(new("@createdDate", partnerKYC.createdDate));
+                    parameters.Add(new("@updatedDate", partnerKYC.updatedDate));
+                    parameters.Add(new("@partnerKYCId", partnerKYC.partnerKYCId));
+
+                    parameters[9].Direction = System.Data.ParameterDirection.Output;
+
+                    await Task.Run(() => _dbContext.Database.ExecuteSqlRawAsync(@"EXEC AddPartnerKYCDetails @designationTypeId, @developerId, @email, @contactNumber, @panCard, @aadharCard, @partnerFileUrl, @createdDate, @updatedDate, @partnerKYCId OUT", parameters.ToArray())
+                    );
+                    if (parameters[9].Value is DBNull)
+                        partnerKYC.partnerKYCId = -1;
+                    else
+                        partnerKYC.partnerKYCId = Convert.ToInt32(parameters[9].Value);
+                }
+                catch (Exception) { throw; }
+
+                #region Commented code
+                //try {
+                //    var parameter = new List<SqlParameter>();
+
+                //    parameter.Add(new SqlParameter("@designationTypeId", partnerKYC.designationTypeId));
+                //    parameter.Add(new SqlParameter("@developerId", partnerKYC.developerId));
+                //    parameter.Add(new SqlParameter("@email", partnerKYC.email));
+                //    parameter.Add(new SqlParameter("@contactNumber", partnerKYC.contactNumber));
+                //    parameter.Add(new SqlParameter("@panCard", partnerKYC.panCard));
+                //    parameter.Add(new SqlParameter("@aadharCard", partnerKYC.aadharCard));
+                //    parameter.Add(new SqlParameter("@createdBy", partnerKYC.createdBy));
+                //    parameter.Add(new SqlParameter("@createdDate", partnerKYC.createdDate));
+                //    parameter.Add(new SqlParameter("@updatedBy", partnerKYC.updatedBy));
+                //    parameter.Add(new SqlParameter("@updatedDate", partnerKYC.updatedDate));
+
+                //    await Task.Run(() => _dbContext.Database
+                //   .ExecuteSqlRawAsync(@"exec AddPartnerKYC @designationTypeId,@developerId,@email,@contactNumber,@panCard,aadharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+                //}
+                //catch
+                //{
+                //    return 0;
+                //}
+                #endregion
+
             }
             return 1;
         }
@@ -73,14 +101,14 @@ namespace castlers.Repository
             parameter.Add(new SqlParameter("@email", partnerKYC.email));
             parameter.Add(new SqlParameter("@contactNumber", partnerKYC.contactNumber));
             parameter.Add(new SqlParameter("@panCard", partnerKYC.panCard));
-            parameter.Add(new SqlParameter("@adharCard", partnerKYC.adharCard));
+            parameter.Add(new SqlParameter("@aadharCard", partnerKYC.aadharCard));
             parameter.Add(new SqlParameter("@createdBy", partnerKYC.createdBy));
             parameter.Add(new SqlParameter("@createdDate", partnerKYC.createdDate));
             parameter.Add(new SqlParameter("@updatedBy", partnerKYC.updatedBy));
             parameter.Add(new SqlParameter("@updatedDate", partnerKYC.updatedDate));
 
-           return await Task.Run(() => _dbContext.Database
-                   .ExecuteSqlRawAsync(@"exec UpdatePartnerKYC @partnerKYCId,@designationTypeId,@developerId,@email,@contactNumber,@panCard,@adharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
+            return await Task.Run(() => _dbContext.Database
+                    .ExecuteSqlRawAsync(@"exec UpdatePartnerKYC @partnerKYCId,@designationTypeId,@developerId,@email,@contactNumber,@panCard,@aadharCard,@createdBy,@createdDate,@updatedBy,@updatedDate", parameter.ToArray()));
         }
     }
 }

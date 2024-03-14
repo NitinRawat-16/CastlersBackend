@@ -1,50 +1,57 @@
-using castlers.Common.Email;
-using castlers.Common.SMS;
+using System.Text;
+using castlers.Services;
 using castlers.DbContexts;
 using castlers.Repository;
+using castlers.Common.SMS;
+using castlers.Common.Email;
+using castlers.Common.Encrypt;
+using castlers.Common.AzureStorage;
+using Microsoft.IdentityModel.Tokens;
+using castlers.Services.Authentication;
 using castlers.Repository.Authentication;
-using castlers.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Graph;
-using Microsoft.Graph.Models.ExternalConnectors;
-using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Add Transient
 // Add services to the container.
-builder.Services.AddTransient<IRegisteredSocietyService, RegisteredSocietyManager>();
-builder.Services.AddTransient<IRegisteredSocietyRepository, RegisteredSocietyRepo>();
-builder.Services.AddTransient<IDeveloperService, DeveloperManager>();
+builder.Services.AddTransient<ISMSSender, SMSSender>();
+builder.Services.AddTransient<IUploadFile, UploadFile>();
+builder.Services.AddTransient<IUserRepository, UserRepo>();
+builder.Services.AddTransient<IAuthService, AuthManager>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<ILoginService, LoginManager>();
+builder.Services.AddTransient<IBlogsService, BlogsManager>();
+builder.Services.AddTransient<IBlogsRepository, BlogsRepo>();
+builder.Services.AddTransient<IAdminService, AdminManager>();
+builder.Services.AddTransient<IAdminRepository, AdminRepo>();
+builder.Services.AddTransient<ITenderRepository, TenderRepo>();
+builder.Services.AddTransient<ITenderService, TenderManager>();
+builder.Services.AddTransient<IVotingRepository, VotingRepo>();
+builder.Services.AddTransient<IVotingService, VotingManager>();
 builder.Services.AddTransient<IDeveloperRepository, DeveloperRepo>();
-builder.Services.AddTransient<IDeveloperKYCService, DeveloperKYCManager>();
-builder.Services.AddTransient<IDeveloperKYCRepository, DeveloperKYCRepo>();
+builder.Services.AddTransient<IDeveloperService, DeveloperManager>();
+builder.Services.AddTransient<IAmenitiesRepository, AmenitiesRepo>();
+builder.Services.AddTransient<IAmenitiesService, AmenitiesManager>();
+builder.Services.AddTransient<ISecureInformation, SecureInformation>();
+builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
 builder.Services.AddTransient<IPartnerKYCService, PartnerKYCManager>();
 builder.Services.AddTransient<IPartnerKYCRepository, PartnerKYCRepo>();
+builder.Services.AddTransient<IDeveloperKYCService, DeveloperKYCManager>();
+builder.Services.AddTransient<IDeveloperKYCRepository, DeveloperKYCRepo>();
+builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
+builder.Services.AddTransient<ISocietyDocumentsService, SocietyDocumentsManager>();
+builder.Services.AddTransient<ILetterOfInterestRepository, LetterOfInterestRepo>();
+builder.Services.AddTransient<ILetterOfInterestService, LetterOfInterestManager>();
+builder.Services.AddTransient<IRegisteredSocietyRepository, RegisteredSocietyRepo>();
+builder.Services.AddTransient<IRegisteredSocietyService, RegisteredSocietyManager>();
 builder.Services.AddTransient<ISocietyMemberDetailsService, SocietyMemberDetailsManager>();
 builder.Services.AddTransient<ISocietyMemberDetailsRepository, SocietyMemberDetailsRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeRepository, SocietyDevelopmentTypeRepo>();
 builder.Services.AddTransient<ISocietyDevelopmentTypeService, SocietyDevelopmentTypeManager>();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
-builder.Services.AddTransient<ISMSSender, SMSSender>();
-builder.Services.AddTransient<ISocietyDocumentsService, SocietyDocumentsManager>();
-builder.Services.AddTransient<ILoginService, LoginManager>();
-builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepo>();
-builder.Services.AddTransient<ISocietyDocRepository, SocietyDocRepo>();
+#endregion
 
-//builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration)
-//    .AddMicrosoftGraph( x=>
-//    string tenantId = Configuration.GeT
-    
-//    )
-//    .AddInMemoryTokenCaches();
-
-
-builder.Services.AddDbContext<ApplicationDbContext>();
-var emailConfig = builder.Configuration
-        .GetSection("EmailConfiguration")
-        .Get<EmailConfiguration>();
-builder.Services.AddSingleton(emailConfig);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddControllers();
 
@@ -53,20 +60,43 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
-//builder.Services.AddCors(opt =>
+//builder.Services.AddCors(options =>
 //{
-//    opt.AddPolicy(name: "CorsPolicy", builder =>
-//    {
-//        builder.WithOrigins("http://localhost:4200")
-//        .AllowAnyHeader()
-//        .AllowAnyMethod();
-//    });
+//    options.AddPolicy(name: MyAllowSpecificOrigins,
+//                      policy =>
+//                      {
+//                          policy.WithOrigins(builder.Configuration["CorsPolicies:AllowOrigin"])
+//                           .AllowAnyMethod()
+//                           .AllowAnyHeader();
+//                      });
 //});
 
+#region JWT Configuration
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
+        ValidAudience = builder.Configuration["JwtConfig:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Secret_key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+    };
+});
+
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+#endregion
+
+builder.Services.AddDbContext<ApplicationDbContext>();
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -74,8 +104,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
@@ -84,10 +113,7 @@ app.UseCors(builder => builder
 
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

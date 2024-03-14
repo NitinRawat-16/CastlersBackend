@@ -9,5 +9,6 @@
         public string incorporationDocPath { get; set; }
         public string incorporationName { get; set; }
         public string gstNumber { get; set; }
+       
     }
 }

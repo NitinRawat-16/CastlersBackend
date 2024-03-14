@@ -1,8 +1,11 @@
-﻿namespace castlers.Common.Email
+﻿using castlers.Models;
+using castlers.ResponseDtos;
+
+namespace castlers.Common.Email
 {
     public interface IEmailSender
     {
-        public Task<string> SendEmailAsync(Message message);
-        
+        public Task<MailResponseDto> SendEmailAsync(SendTo sendTo);
+        public Task<MailResponseDto> SendEmailAsync(List<SendTo> sendToList);
     }
 }

@@ -10,6 +10,11 @@ namespace castlers.Profiles
         {
             CreateMap<DeveloperDto, Developer>();
             CreateMap<Developer, DeveloperDto>();
+            CreateMap<Developer, GenDeveloperDto>();
+            
+            // Mapping of developer past project details between model and dto.
+            CreateMap<DeveloperPastProjectDetails, DeveloperPastProjectDetailsDto>();
+            CreateMap<DeveloperPastProjectDetailsDto, DeveloperPastProjectDetails>();
         }
     }
 }

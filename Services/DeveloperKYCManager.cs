@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using castlers.DbContexts;
 using castlers.Dtos;
 using castlers.Models;
 using castlers.Repository;
@@ -8,13 +7,11 @@ namespace castlers.Services
 {
     public class DeveloperKYCManager : IDeveloperKYCService
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IDeveloperKYCRepository _developerKYCRepository;
         private readonly IMapper _mapper;
+        private readonly IDeveloperKYCRepository _developerKYCRepository;
 
-        public DeveloperKYCManager(ApplicationDbContext dbContext, IDeveloperKYCRepository developerKYCRepository, IMapper mapper)
+        public DeveloperKYCManager(IDeveloperKYCRepository developerKYCRepository, IMapper mapper)
         {
-            _dbContext = dbContext;
             _developerKYCRepository = developerKYCRepository;
             _mapper = mapper;
         }

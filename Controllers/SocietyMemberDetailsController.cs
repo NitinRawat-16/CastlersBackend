@@ -1,4 +1,5 @@
 ﻿using castlers.Dtos;
+using castlers.Repository.Authentication;
 using castlers.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ namespace castlers.Controllers
             _societyMemberDetailsService = societyMemberDetailsService;
         }
 
+        [AuthorizeAccess("Admin")]
         [HttpGet("GetRegisteredSocietyMembersBySocietyId/{registeredSocietyId}")]
         public async Task<List<SocietyMemberDetailsDto>> GetRegisteredSocietyMembers(int registeredSocietyId)
         {
@@ -29,7 +31,7 @@ namespace castlers.Controllers
             }
 
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpPost("AddRegisteredSocietyNewMembers")]
         public async Task<int> AddRegisteredSocietyNewMembers([FromForm] SocietyNewMemberDetailsDto societyNewMemberDetailsDto)
         {
@@ -43,7 +45,7 @@ namespace castlers.Controllers
             }
 
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpPut("UpdateRegisteredSocietyMembers")]
         public async Task<int> UpdateRegisteredSocietyMembers([FromBody] List<SocietyMemberDetailsDto> societyMemberDetails)
         {
@@ -58,7 +60,7 @@ namespace castlers.Controllers
             }
 
         }
-
+        [AuthorizeAccess("Admin")]
         [HttpPost("DeleteRegisteredSocietyMemberById")]
         public async Task<int> DeleteMember([FromBody] DeleteSocietyMemberDto deleteSocietyMemberDto)
         {

@@ -2,9 +2,9 @@
 {
     public interface ISMSSender
     {
-        public SMSResponse OTPVerification(string otp, string mobileNumber);
+        public Task<SMSResponse> SendOTP(string otp, string mobileNumber);
 
-        public SMSResponse SocietyMembersRegistation(string text, List<string?> societyMembersNumber);
+        public SMSResponse SendBlukSMS(string text, List<string?> societyMembersNumber);
         
     }
 }

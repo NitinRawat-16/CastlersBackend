@@ -1,10 +1,8 @@
-﻿using Azure.Identity;
-using castlers.Dtos;
-using castlers.Services;
-using Microsoft.AspNetCore.Http;
+﻿using castlers.Dtos;
+using castlers.Models;
+using castlers.Common.Email;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Graph;
-using Microsoft.Kiota.Abstractions;
+using castlers.Services.Authentication;
 
 namespace castlers.Controllers
 {
@@ -12,38 +10,40 @@ namespace castlers.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        //private readonly GraphServiceClient _graphServiceClient;
         private readonly ILoginService _loginService;
-        public LoginController(ILoginService loginService)
+        private readonly IEmailSender _emailSender;
+        public LoginController(ILoginService loginService, IEmailSender emailSender)
         {
             _loginService = loginService;
+            _emailSender = emailSender;
         }
 
         [HttpPost("SocietyLogin")]
         public async Task<bool> RegisteredSocietyLogin(string registeredSocietyCode)
-        {      
+        {
+            SendTo sendTo = new SendTo
+            {
+                Name = "Nitin Rawat",
+                Email = "nitinrawatsde@gmail.com",
+                EMailType = Common.Enums.EmailTypes.LetterOfInterest
+            };
+            await _emailSender.SendEmailAsync(sendTo);
             return await Task.FromResult(true);
         }
 
         [HttpPost("UserLogin")]
-        public LoginResponseDto Login(loginDto dto)
+        public async Task<IActionResult> Login(loginDto dto)
         {
-            LoginResponseDto loginResponseDto = new LoginResponseDto();
-            bool response = true ;
+            if (dto.UserName.Length <= 0 || dto.UserMobileNumber.Length <= 0  || dto.UserRole.Length <= 0)
+            {
+                return BadRequest("Values are not correct!");
+            }
             try
             {
-                response =  _loginService.IsUserExists(dto.username, dto.password);                     
+                var response = await _loginService.SendOTPAsync(dto);
+                return Ok(response);
             }
-            catch (Exception ex)
-            {
-                response = false;
-            }
-
-            if(response)
-            {
-               loginResponseDto.role = "Admin";
-            }
-            return loginResponseDto;
+            catch (Exception) { throw; }
         }
     }
 }

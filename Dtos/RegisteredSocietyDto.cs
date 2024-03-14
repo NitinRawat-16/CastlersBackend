@@ -2,7 +2,6 @@
 {
     public class RegisteredSocietyDto
     {
-
         public RegisteredSocietyDto() { }
         public RegisteredSocietyDto(List<SocietyMemberDetailsDto> societyMemberDetails) {
 
@@ -19,6 +18,8 @@
         public float age { get; set; }
         public string societyRegisteredCode { get; set; }
         public string city { get; set; }
+        public DateTime createdDate { get; set; }
+        public int? ActiveTenderId { get; set; }
         public List<SocietyMemberDetailsDto> societyMemberDetails { get; set; }
               
     }
